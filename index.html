@@ -551,7 +551,7 @@
                   </div>
 
                   <div class="py-1">
-                    <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-blue-800 tracking-wider uppercase">SERTIFIKAT</h2>
+                    <h2 id="cert-view-heading" class="font-display font-extrabold text-2xl sm:text-4xl text-blue-800 tracking-wider uppercase">SERTIFIKAT</h2>
                     <p class="text-xs font-semibold text-slate-500 mt-1" id="cert-view-number">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
                   </div>
 
@@ -563,7 +563,7 @@
                   </div>
 
                   <p class="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                    Atas partisipasi aktif sebagai <strong class="text-navy-900">PESERTA</strong> dalam kegiatan <strong id="cert-view-category" class="text-blue-800">Bimtek</strong>:
+                    Atas partisipasi aktif sebagai <strong id="cert-view-role" class="text-navy-900">PESERTA</strong> dalam kegiatan <strong id="cert-view-category" class="text-blue-800">Bimtek</strong>:
                     <br/>
                     <span id="cert-view-event" class="font-bold text-navy-900 text-sm sm:text-base">"Judul Kegiatan"</span>
                     <br/>
@@ -657,8 +657,8 @@
 
   <script>
 
-const STORAGE_KEY = 'jsit_lampung_events_v1';
-const SETTINGS_KEY = 'jsit_lampung_settings_v1';
+const STORAGE_KEY = 'jsit_lampung_events_v2';
+const SETTINGS_KEY = 'jsit_lampung_settings_v2';
 
 const DEFAULT_SETTINGS = {
   orgName: 'JSIT Wilayah Lampung',
@@ -712,7 +712,7 @@ const DEFAULT_EVENTS = [
       { id: 'm-103', title: 'Template Modul Ajar & Rubrik Asesmen Terpadu', type: 'DOCX', url: 'https://drive.google.com', desc: 'Format siap edit untuk praktik penyusunan perangkat ajar.' }
     ],
     recordings: [
-      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' },
+      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' },
       { id: 'r-102', title: 'Album Dokumentasi Foto & Galeri Bimtek', platform: 'Google Drive', url: 'https://drive.google.com', notes: 'Dokumentasi kegiatan hari pertama dan kedua.' }
     ],
     certificate: {
@@ -1437,6 +1437,8 @@ const DEFAULT_EVENTS = [
       const prefix = (ev.certificate && ev.certificate.prefix) ? ev.certificate.prefix : 'SERT/JSIT-LPG/2026';
       const certNumber = `${seqNum}/${prefix}`;
       const jp = (ev.certificate && ev.certificate.jp) ? ev.certificate.jp : '8 JP';
+      const roleLabel = (ev.certificate && ev.certificate.roleLabel) ? ev.certificate.roleLabel : 'PESERTA';
+      const themeColor = (ev.certificate && ev.certificate.themeColor) ? ev.certificate.themeColor : '#1E3A8A';
       const signerName = (ev.certificate && ev.certificate.signerName) ? ev.certificate.signerName : appSettings.signerName;
       const signerTitle = (ev.certificate && ev.certificate.signerTitle) ? ev.certificate.signerTitle : appSettings.signerTitle;
       const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
@@ -1451,12 +1453,17 @@ const DEFAULT_EVENTS = [
         dateRange: formatDateIndo(ev.dateStart, ev.dateEnd),
         location: ev.location,
         jp,
+        roleLabel,
+        themeColor,
         issuedDate,
         signerName,
         signerTitle,
         verCode
       };
 
+      document.getElementById('certificate-print-area').style.borderColor = themeColor;
+      document.getElementById('cert-view-heading').style.color = themeColor;
+      document.getElementById('cert-view-role').textContent = roleLabel;
       document.getElementById('cert-view-number').textContent = `Nomor: ${certNumber}`;
       document.getElementById('cert-view-name').textContent = attendee.name;
       document.getElementById('cert-view-school').textContent = `${attendee.school} — ${attendee.region}`;
@@ -1530,7 +1537,7 @@ const DEFAULT_EVENTS = [
       ctx.fill();
 
       // Outer Navy Frame & Inner Gold Frame
-      ctx.strokeStyle = '#0B1F3A';
+      ctx.strokeStyle = p.themeColor || '#0B1F3A';
       ctx.lineWidth = 14;
       ctx.strokeRect(48, 48, W - 96, H - 96);
 
@@ -1583,7 +1590,7 @@ const DEFAULT_EVENTS = [
       // Body Paragraph
       ctx.fillStyle = '#334155';
       ctx.font = '500 25px Inter, sans-serif';
-      ctx.fillText(`Atas partisipasi aktif sebagai PESERTA dalam kegiatan ${p.category}:`, W / 2, 650);
+      ctx.fillText(`Atas partisipasi aktif sebagai ${p.roleLabel || 'PESERTA'} dalam kegiatan ${p.category}:`, W / 2, 650);
 
       ctx.fillStyle = '#0B1F3A';
       ctx.font = '800 30px Plus Jakarta Sans, sans-serif';

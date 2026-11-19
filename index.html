@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Manajemen Kegiatan JSIT Wilayah Lampung</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              950: '#061224',
+              900: '#0B1F3A',
+              800: '#12315B',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #F1F6FC; color: #0F172A; }
+    h1, h2, h3, h4, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+
+  <!-- LOGIN GATE -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-800">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-blue-100 p-7 sm:p-8 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-700 to-sky-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-600/25">
+          <i data-lucide="shield-check" class="w-7 h-7"></i>
+        </div>
+        <h1 class="font-display font-extrabold text-2xl text-navy-900">Panel Admin JSIT Lampung</h1>
+        <p class="text-xs text-slate-500">Kelola Seminar, Webinar, Pelatihan, Workshop, Bimtek, Absensi, Materi, Rekaman & E-Sertifikat.</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Pengelola</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="password" id="admin-password-input" required placeholder="Masukkan kata sandi admin..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1.5">Sandi default awal: <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold">jsitlampung2026</code> (dapat diubah di menu Pengaturan)</p>
+        </div>
+        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span>Masuk Dashboard Admin</span>
+        </button>
+      </form>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+        <a href="index.html" class="text-blue-600 hover:underline font-semibold inline-flex items-center gap-1">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Kembali ke Portal Publik
+        </a>
+        <span class="text-slate-400">JSIT Wilayah Lampung</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN ADMIN DASHBOARD -->
+  <div id="admin-app" class="hidden min-h-screen flex flex-col lg:flex-row">
+    
+    <!-- Sidebar -->
+    <aside class="w-full lg:w-68 bg-navy-950 text-white flex flex-col justify-between shrink-0 lg:min-h-screen">
+      <div>
+        <!-- Brand -->
+        <div class="p-5 border-b border-blue-900/60 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center text-white font-bold">
+              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="font-display font-extrabold text-sm tracking-wide block">JSIT LAMPUNG</span>
+              <span class="text-[10px] text-sky-300 uppercase tracking-wider font-semibold">Admin Workspace</span>
+            </div>
+          </div>
+          <button onclick="logoutAdmin()" class="lg:hidden text-xs text-rose-300 hover:text-white">Keluar</button>
+        </div>
+
+        <!-- Nav Menu -->
+        <nav class="p-3 flex lg:flex-col gap-1.5 overflow-x-auto">
+          <button onclick="switchAdminSection('dashboard')" data-sec="dashboard" class="admin-nav-btn active flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white whitespace-nowrap transition">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Dashboard & Statistik</span>
+          </button>
+          <button onclick="switchAdminSection('kegiatan')" data-sec="kegiatan" class="admin-nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 whitespace-nowrap transition">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+            <span>Kelola Kegiatan</span>
+          </button>
+          <button onclick="switchAdminSection('github')" data-sec="github" class="admin-nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 whitespace-nowrap transition">
+            <i data-lucide="github" class="w-4 h-4"></i>
+            <span>Sync GitHub & Backup</span>
+          </button>
+          <button onclick="switchAdminSection('pengaturan')" data-sec="pengaturan" class="admin-nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 whitespace-nowrap transition">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span>Pengaturan & TTD</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="p-4 border-t border-blue-900/60 hidden lg:block space-y-2">
+        <a href="index.html" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-sky-300 text-xs font-bold flex items-center justify-center gap-2 transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Lihat Portal Peserta</span>
+        </a>
+        <button onclick="logoutAdmin()" class="w-full py-2 px-3 rounded-xl text-rose-300 hover:bg-rose-500/10 text-xs font-semibold flex items-center justify-center gap-2 transition">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span>Keluar Admin</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+      
+      <!-- SECTION 1: DASHBOARD -->
+      <section id="sec-dashboard" class="admin-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-extrabold text-navy-900">Dashboard Manajemen Diklat</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Ringkasan seluruh kegiatan pelatihan, kehadiran peserta, dan kesiapan sertifikat JSIT Lampung.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openEventFormModal()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Tambah Kegiatan Baru</span>
+            </button>
+            <button onclick="exportGitHubJSON()" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition">
+              <i data-lucide="download-cloud" class="w-4 h-4 text-sky-400"></i>
+              <span>Export JSON GitHub</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs">
+            <div class="flex items-center justify-between text-blue-600 mb-2">
+              <span class="text-xs font-bold uppercase text-slate-400">Total Kegiatan</span>
+              <i data-lucide="calendar-days" class="w-5 h-5"></i>
+            </div>
+            <div class="text-3xl font-extrabold text-navy-900" id="kpi-events">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Seminar, Webinar, Bimtek, dll</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs">
+            <div class="flex items-center justify-between text-sky-600 mb-2">
+              <span class="text-xs font-bold uppercase text-slate-400">Total Kehadiran</span>
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <div class="text-3xl font-extrabold text-navy-900" id="kpi-attendees">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Peserta mengisi daftar hadir</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs">
+            <div class="flex items-center justify-between text-indigo-600 mb-2">
+              <span class="text-xs font-bold uppercase text-slate-400">Materi & Rekaman</span>
+              <i data-lucide="folder-open" class="w-5 h-5"></i>
+            </div>
+            <div class="text-3xl font-extrabold text-navy-900" id="kpi-resources">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Modul ajar & video sesi</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs">
+            <div class="flex items-center justify-between text-amber-500 mb-2">
+              <span class="text-xs font-bold uppercase text-slate-400">Sertifikat Dirilis</span>
+              <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <div class="text-3xl font-extrabold text-navy-900" id="kpi-certs">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Kegiatan aktif e-sertifikat</p>
+          </div>
+        </div>
+
+        <!-- Analytics Breakdown -->
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs space-y-4">
+            <h3 class="font-bold text-navy-900 text-sm flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-600"></i> Distribusi Jenis Kegiatan
+            </h3>
+            <div id="chart-categories" class="space-y-3 text-xs"></div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs space-y-4">
+            <h3 class="font-bold text-navy-900 text-sm flex items-center gap-2">
+              <i data-lucide="map-pin" class="w-4 h-4 text-sky-600"></i> Sebaran Peserta per Wilayah Lampung (Top 6)
+            </h3>
+            <div id="chart-regions" class="space-y-3 text-xs"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: KELOLA KEGIATAN -->
+      <section id="sec-kegiatan" class="admin-section hidden space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-extrabold text-navy-900">Manajemen Kegiatan & Sub-Fitur</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru atau klik <strong>Kelola Fitur</strong> untuk mengatur Daftar Hadir, Materi, Rekaman, dan Sertifikat.</p>
+          </div>
+          <button onclick="openEventFormModal()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition self-start">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Tambah Kegiatan</span>
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-blue-100 flex flex-col sm:flex-row gap-3">
+          <input type="text" id="admin-search-events" oninput="renderAdminEventsTable()" placeholder="Cari judul kegiatan atau kategori..." class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-600" />
+          <select id="admin-filter-cat" onchange="renderAdminEventsTable()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-sm bg-white outline-none">
+            <option value="ALL">Semua Kategori</option>
+            <option value="Seminar">Seminar</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Pelatihan">Pelatihan</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Bimtek">Bimtek</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+
+        <!-- Events Table/List -->
+        <div id="admin-events-list" class="space-y-4">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION 3: GITHUB SYNC & BACKUP -->
+      <section id="sec-github" class="admin-section hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-extrabold text-navy-900">Publikasi GitHub Pages & Sinkronisasi Data</h1>
+          <p class="text-xs sm:text-sm text-slate-500">Cara memublikasikan pembaruan data kegiatan ke seluruh peserta melalui repository GitHub Anda.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-2xl border border-blue-100 p-6 space-y-4 shadow-xs">
+            <div class="w-11 h-11 rounded-xl bg-navy-900 text-sky-400 flex items-center justify-center">
+              <i data-lucide="github" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-bold text-lg text-navy-900">1. Export Database untuk GitHub</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Karena GitHub Pages bersifat statis, setiap kali Anda menambah kegiatan, materi, atau merilis sertifikat di halaman Admin ini, klik tombol di bawah untuk mengunduh file <code class="bg-blue-50 text-blue-800 px-1.5 py-0.5 rounded font-bold">data-kegiatan.json</code>, lalu unggah (commit) file tersebut ke folder utama repository GitHub Anda bersama <code class="font-mono">index.html</code> dan <code class="font-mono">admin.html</code>.
+            </p>
+            <button onclick="exportGitHubJSON()" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Download data-kegiatan.json</span>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-blue-100 p-6 space-y-4 shadow-xs">
+            <div class="w-11 h-11 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center">
+              <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-bold text-lg text-navy-900">2. Restore / Import Cadangan JSON</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Punya file cadangan <code class="font-mono">data-kegiatan.json</code> dari perangkat lain? Unggah di sini untuk memulihkan seluruh data kegiatan dan daftar hadir.
+            </p>
+            <label class="block w-full py-3 px-4 rounded-xl border-2 border-dashed border-blue-300 hover:border-blue-600 bg-blue-50/40 text-center text-xs font-bold text-blue-800 cursor-pointer transition">
+              <span>Pilih File JSON untuk Di-import</span>
+              <input type="file" accept=".json" onchange="importGitHubJSON(event)" class="hidden" />
+            </label>
+            <div class="pt-2 border-t border-slate-100 flex justify-end">
+              <button onclick="resetToFactorySample()" class="text-xs text-rose-600 hover:underline font-semibold">Reset ke Data Contoh Bawaan</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PENGATURAN -->
+      <section id="sec-pengaturan" class="admin-section hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-extrabold text-navy-900">Pengaturan Sistem & E-Sertifikat</h1>
+          <p class="text-xs sm:text-sm text-slate-500">Sesuaikan kata sandi admin, pejabat penandatangan default sertifikat, dan integrasi Google Sheets.</p>
+        </div>
+
+        <form onsubmit="saveAdminSettings(event)" class="bg-white rounded-2xl border border-blue-100 p-6 max-w-2xl space-y-4 shadow-xs">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi Login Admin</label>
+            <input type="text" id="set-admin-pass" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Penandatangan Default Sertifikat</label>
+              <input type="text" id="set-signer-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
+              <input type="text" id="set-signer-title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Webhook URL / Google Apps Script (Opsional untuk Sync Absensi Cloud)</label>
+            <input type="url" id="set-webhook" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+            <p class="text-[11px] text-slate-400 mt-1">Jika diisi, setiap peserta yang mengisi Daftar Hadir di index.html otomatis dikirim ke endpoint ini.</p>
+          </div>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
+            Simpan Pengaturan
+          </button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: TAMBAH / EDIT KEGIATAN -->
+  <div id="event-form-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/70 backdrop-blur-sm p-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-6">
+      <div class="bg-navy-900 text-white p-5 flex items-center justify-between">
+        <h3 class="font-bold text-base" id="form-modal-title">Tambah Kegiatan Baru</h3>
+        <button onclick="closeEventFormModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form onsubmit="saveEventForm(event)" class="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <input type="hidden" id="edit-event-id" />
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Judul Kegiatan <span class="text-red-500">*</span></label>
+          <input type="text" id="ev-title" required placeholder="Contoh: Workshop Implementasi Kurikulum Merdeka JSIT Lampung" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jenis / Kategori <span class="text-red-500">*</span></label>
+            <input type="text" id="ev-category" list="cat-suggestions" required placeholder="Pilih atau ketik..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
+            <datalist id="cat-suggestions">
+              <option value="Seminar"></option>
+              <option value="Webinar"></option>
+              <option value="Pelatihan"></option>
+              <option value="Workshop"></option>
+              <option value="Bimtek"></option>
+              <option value="Mukerwil / Raker"></option>
+            </datalist>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Status Kegiatan</label>
+            <select id="ev-status" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none">
+              <option value="Buka Pendaftaran">Buka Pendaftaran</option>
+              <option value="Berlangsung">Berlangsung</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kuota Peserta</label>
+            <input type="number" id="ev-quota" value="200" min="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
+            <input type="date" id="ev-date-start" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Selesai</label>
+            <input type="date" id="ev-date-end" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Waktu (WIB)</label>
+            <input type="text" id="ev-time" value="08.00 - 15.30 WIB" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Moda Pelaksanaan</label>
+            <select id="ev-mode" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none">
+              <option value="Offline / Tatap Muka">Offline / Tatap Muka</option>
+              <option value="Online (Zoom / YouTube)">Online (Zoom / YouTube)</option>
+              <option value="Hybrid (Offline & Online)">Hybrid (Offline & Online)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">PIN Absensi (Opsional)</label>
+            <input type="text" id="ev-pin" placeholder="Kosongkan jika tanpa PIN" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi Gedung / Tautan Zoom <span class="text-red-500">*</span></label>
+          <input type="text" id="ev-location" required placeholder="Contoh: Aula Islamic Center Bandar Lampung" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Narasumber Utama</label>
+            <input type="text" id="ev-speaker-name" placeholder="Nama & Gelar Narasumber" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan / Instansi Narasumber</label>
+            <input type="text" id="ev-speaker-role" placeholder="Contoh: Ketua JSIT Wilayah Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Kegiatan</label>
+          <textarea id="ev-description" rows="3" placeholder="Jelaskan tujuan, sasaran peserta, dan gambaran singkat kegiatan..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEventFormModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm">Simpan Kegiatan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: KELOLA FITUR PER KEGIATAN (ABSENSI, MATERI, REKAMAN, SERTIFIKAT) -->
+  <div id="feature-manager-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-2 sm:p-5">
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-4">
+      <div class="bg-gradient-to-r from-navy-900 to-blue-800 text-white p-5 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-400 text-navy-950 px-2 py-0.5 rounded" id="fm-category">Bimtek</span>
+          <h3 class="font-bold text-base sm:text-lg mt-1" id="fm-title">Kelola Fitur Kegiatan</h3>
+        </div>
+        <button onclick="closeFeatureManager()" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Sub-feature Tabs -->
+      <div class="bg-blue-50 border-b border-blue-100 px-4 flex items-center gap-1 overflow-x-auto">
+        <button onclick="switchFmTab('absensi')" data-fmtab="absensi" class="fm-tab-btn active px-4 py-3 text-xs sm:text-sm font-bold border-b-2 border-blue-600 text-blue-700 whitespace-nowrap">1. Daftar Hadir</button>
+        <button onclick="switchFmTab('materi')" data-fmtab="materi" class="fm-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 whitespace-nowrap">2. Materi Kegiatan</button>
+        <button onclick="switchFmTab('rekaman')" data-fmtab="rekaman" class="fm-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 whitespace-nowrap">3. Rekaman Kegiatan</button>
+        <button onclick="switchFmTab('sertifikat')" data-fmtab="sertifikat" class="fm-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 whitespace-nowrap">4. Pengaturan Sertifikat</button>
+      </div>
+
+      <div class="p-5 sm:p-6 max-h-[75vh] overflow-y-auto">
+        
+        <!-- FM TAB 1: ABSENSI -->
+        <div id="fm-panel-absensi" class="fm-panel space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h4 class="font-bold text-navy-900 text-sm">Daftar Peserta Hadir (<span id="fm-att-count">0</span>)</h4>
+            <div class="flex gap-2">
+              <button onclick="exportAttendeesCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export CSV / Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Add Manual Attendee -->
+          <form onsubmit="addManualAttendee(event)" class="bg-blue-50/70 p-3.5 rounded-xl border border-blue-100 grid sm:grid-cols-5 gap-2">
+            <input type="text" id="man-name" required placeholder="Nama & Gelar" class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+            <input type="text" id="man-school" required placeholder="Asal Sekolah SIT" class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+            <select id="man-region" class="px-2.5 py-2 rounded-lg border border-slate-300 text-xs bg-white"></select>
+            <input type="text" id="man-phone" required placeholder="No. WhatsApp" class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+            <button type="submit" class="px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">+ Tambah Manual</button>
+          </form>
+
+          <div class="border border-slate-200 rounded-xl overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                <tr>
+                  <th class="p-3">No</th>
+                  <th class="p-3">Nama Peserta</th>
+                  <th class="p-3">Sekolah & Wilayah</th>
+                  <th class="p-3">WhatsApp</th>
+                  <th class="p-3">Waktu</th>
+                  <th class="p-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="fm-att-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FM TAB 2: MATERI -->
+        <div id="fm-panel-materi" class="fm-panel hidden space-y-4">
+          <form onsubmit="addEventMaterial(event)" class="bg-blue-50/70 p-4 rounded-xl border border-blue-100 space-y-3">
+            <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider">Tambah Materi / Modul Baru</h4>
+            <div class="grid sm:grid-cols-4 gap-2.5">
+              <input type="text" id="mat-title" required placeholder="Judul Materi (mis: Slide Sesi 1)" class="sm:col-span-2 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+              <select id="mat-type" class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white">
+                <option value="PDF">PDF</option>
+                <option value="PPTX">PPTX / Slide</option>
+                <option value="DOCX">DOCX / Modul</option>
+                <option value="XLSX">XLSX / Template</option>
+                <option value="GDRIVE">Google Drive</option>
+              </select>
+              <input type="url" id="mat-url" required placeholder="https://drive.google.com/..." class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+            </div>
+            <div class="flex gap-2.5">
+              <input type="text" id="mat-desc" placeholder="Keterangan singkat materi..." class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+              <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">+ Tambah Materi</button>
+            </div>
+          </form>
+          <div id="fm-mat-list" class="space-y-2.5"></div>
+        </div>
+
+        <!-- FM TAB 3: REKAMAN -->
+        <div id="fm-panel-rekaman" class="fm-panel hidden space-y-4">
+          <form onsubmit="addEventRecording(event)" class="bg-blue-50/70 p-4 rounded-xl border border-blue-100 space-y-3">
+            <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider">Tambah Tautan Rekaman / Dokumentasi</h4>
+            <div class="grid sm:grid-cols-4 gap-2.5">
+              <input type="text" id="rec-title" required placeholder="Judul Rekaman (mis: Full Replay Sesi Pagi)" class="sm:col-span-2 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+              <select id="rec-platform" class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white">
+                <option value="YouTube">YouTube (Auto Embed)</option>
+                <option value="Google Drive">Google Drive Video</option>
+                <option value="Zoom Cloud">Zoom Cloud Recording</option>
+                <option value="Galeri Foto">Album Dokumentasi Foto</option>
+              </select>
+              <input type="url" id="rec-url" required placeholder="https://www.youtube.com/watch?v=..." class="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+            </div>
+            <div class="flex gap-2.5">
+              <input type="text" id="rec-notes" placeholder="Catatan sesi / ringkasan video..." class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
+              <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">+ Tambah Rekaman</button>
+            </div>
+          </form>
+          <div id="fm-rec-list" class="space-y-2.5"></div>
+        </div>
+
+        <!-- FM TAB 4: SERTIFIKAT -->
+        <div id="fm-panel-sertifikat" class="fm-panel hidden">
+          <form onsubmit="saveEventCertConfig(event)" class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4 max-w-2xl">
+            <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-blue-200">
+              <div>
+                <h4 class="font-bold text-sm text-navy-900">Status Rilis E-Sertifikat Peserta</h4>
+                <p class="text-xs text-slate-500">Aktifkan agar peserta yang hadir dapat mengunduh E-Sertifikat mandiri.</p>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="cert-cfg-enabled" class="w-5 h-5 accent-blue-600 rounded" />
+                <span class="text-xs font-bold text-blue-800">Rilis Aktif</span>
+              </label>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Jam Pelajaran (JP)</label>
+                <input type="text" id="cert-cfg-jp" placeholder="Contoh: 16 JP" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Format Prefix Nomor Sertifikat</label>
+                <input type="text" id="cert-cfg-prefix" placeholder="SERT-JSIT-LPG/XI/2026" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white" />
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Penandatangan</label>
+                <input type="text" id="cert-cfg-signer" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
+                <input type="text" id="cert-cfg-title" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white" />
+              </div>
+            </div>
+
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm">
+              Simpan Pengaturan Sertifikat
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="admin-toast" class="fixed bottom-5 right-5 z-50 hidden">
+    <div class="bg-navy-900 text-white px-4 py-3 rounded-xl shadow-xl border border-blue-600 flex items-center gap-2 text-xs font-bold">
+      <i data-lucide="check-circle" class="w-4 h-4 text-sky-400"></i>
+      <span id="admin-toast-msg">Tersimpan!</span>
+    </div>
+  </div>
+
+  <script>
+
+const STORAGE_KEY = 'jsit_lampung_events_v1';
+const SETTINGS_KEY = 'jsit_lampung_settings_v1';
+
+const DEFAULT_SETTINGS = {
+  orgName: 'JSIT Wilayah Lampung',
+  orgSub: 'Jaringan Sekolah Islam Terpadu Indonesia — Wilayah Lampung',
+  adminPass: 'jsitlampung2026',
+  signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
+  signerTitle: 'Ketua JSIT Wilayah Lampung',
+  webhookUrl: ''
+};
+
+const LAMPUNG_REGIONS = [
+  'Kota Bandar Lampung',
+  'Kota Metro',
+  'Kab. Lampung Selatan',
+  'Kab. Lampung Tengah',
+  'Kab. Lampung Utara',
+  'Kab. Lampung Timur',
+  'Kab. Lampung Barat',
+  'Kab. Pesawaran',
+  'Kab. Pringsewu',
+  'Kab. Tanggamus',
+  'Kab. Tulang Bawang',
+  'Kab. Tulang Bawang Barat',
+  'Kab. Mesuji',
+  'Kab. Way Kanan',
+  'Kab. Pesisir Barat',
+  'Luar Provinsi Lampung'
+];
+
+const DEFAULT_EVENTS = [
+  {
+    id: 'evt-jsit-001',
+    title: 'Bimtek Implementasi Kurikulum Khas JSIT & Pembelajaran Mendalam (Deep Learning)',
+    category: 'Bimtek',
+    status: 'Buka Pendaftaran',
+    dateStart: '2026-11-28',
+    dateEnd: '2026-11-29',
+    time: '08.00 - 16.00 WIB',
+    mode: 'Offline / Tatap Muka',
+    location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
+    quota: 250,
+    pin: '',
+    speakers: [
+      { name: 'Dr. H. Ahmad Fauzi, M.Pd.', role: 'Ketua JSIT Wilayah Lampung' },
+      { name: 'Ust. Rahmat Hidayat, M.Pd.I.', role: 'Tim Pengembang Kurikulum JSIT Pusat' }
+    ],
+    description: 'Bimbingan teknis intensif bagi Wakil Kepala Sekolah Bidang Kurikulum dan Guru Inti SIT se-Provinsi Lampung dalam merancang modul ajar terpadu berbasis pendekatan Deep Learning dan Standar Mutu Kekhasan JSIT Edisi Terbaru.',
+    materials: [
+      { id: 'm-101', title: 'Panduan Umum Kekhasan Kurikulum JSIT 2026', type: 'PDF', url: 'https://drive.google.com', desc: 'Dokumen acuan resmi standar mutu pendidikan SIT.' },
+      { id: 'm-102', title: 'Slide Materi: Desain Pembelajaran Mendalam (Deep Learning)', type: 'PPTX', url: 'https://drive.google.com', desc: 'Paparan narasumber sesi 1 dan sesi 2.' },
+      { id: 'm-103', title: 'Template Modul Ajar & Rubrik Asesmen Terpadu', type: 'DOCX', url: 'https://drive.google.com', desc: 'Format siap edit untuk praktik penyusunan perangkat ajar.' }
+    ],
+    recordings: [
+      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' },
+      { id: 'r-102', title: 'Album Dokumentasi Foto & Galeri Bimtek', platform: 'Google Drive', url: 'https://drive.google.com', notes: 'Dokumentasi kegiatan hari pertama dan kedua.' }
+    ],
+    certificate: {
+      enabled: true,
+      jp: '16 JP',
+      prefix: 'SERT-BIMTEK/JSIT-LPG/XI/2026',
+      signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
+      signerTitle: 'Ketua JSIT Wilayah Lampung'
+    },
+    attendees: [
+      { id: 'att-1', name: 'Siti Aminah, S.Pd.', school: 'SDIT Permata Bunda 1', region: 'Kota Bandar Lampung', role: 'Guru Kelas', phone: '081272001101', email: 'siti.aminah@example.com', timestamp: '2026-11-18 09:15', verified: true },
+      { id: 'att-2', name: 'Muhammad Rizki Pratama, M.Pd.', school: 'SMPIT Baitul Jannah', region: 'Kota Bandar Lampung', role: 'Wakasek Kurikulum', phone: '081369002202', email: 'rizki.pratama@example.com', timestamp: '2026-11-18 10:22', verified: true },
+      { id: 'att-3', name: 'Nurul Hidayah, S.Pd.I.', school: 'SDIT Cahaya Madani', region: 'Kota Metro', role: 'Kepala Sekolah', phone: '085269003303', email: 'nurul.hidayah@example.com', timestamp: '2026-11-19 08:40', verified: true }
+    ]
+  },
+  {
+    id: 'evt-jsit-002',
+    title: 'Workshop Kepemimpinan Transformasional Kepala Sekolah & Manajemen Mutu SIT',
+    category: 'Workshop',
+    status: 'Berlangsung',
+    dateStart: '2026-11-19',
+    dateEnd: '2026-11-20',
+    time: '08.30 - 15.30 WIB',
+    mode: 'Hybrid (Offline & Zoom)',
+    location: 'Hotel Emersia Bandar Lampung & Zoom Cloud Meeting',
+    quota: 150,
+    pin: '',
+    speakers: [
+      { name: 'Prof. Dr. Irwan Syahputra, M.Si.', role: 'Pakar Manajemen Pendidikan Nasional' },
+      { name: 'Ust. Hendra Wijaya, S.T., M.M.', role: 'Bidang Pembinaan Sekolah JSIT Lampung' }
+    ],
+    description: 'Workshop strategis untuk memperkuat tata kelola sekolah Islam terpadu, penyusunan Rencana Kerja Jangka Menengah (RKJM), supervisi akademik efektif, serta penguatan budaya mutu sekolah.',
+    materials: [
+      { id: 'm-201', title: 'Instrumen Audit Mutu Internal Sekolah Islam Terpadu', type: 'PDF', url: 'https://drive.google.com', desc: 'Checklist evaluasi diri sekolah berbasis standar JSIT.' },
+      { id: 'm-202', title: 'Workbook Penyusunan RKJM & KPI Kepala Sekolah', type: 'XLSX', url: 'https://drive.google.com', desc: 'Lembar kerja praktis perencanaan strategis sekolah.' }
+    ],
+    recordings: [
+      { id: 'r-201', title: 'Rekaman Hari 1: Kepemimpinan Visioner Kepala Sekolah SIT', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Sesi pemaparan & studi kasus manajemen mutu.' }
+    ],
+    certificate: {
+      enabled: true,
+      jp: '12 JP',
+      prefix: 'SERT-WS/JSIT-LPG/XI/2026',
+      signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
+      signerTitle: 'Ketua JSIT Wilayah Lampung'
+    },
+    attendees: [
+      { id: 'att-4', name: 'Ahmad Zulkarnain, S.Pd.', school: 'SMAIT Insan Kamil', region: 'Kab. Pringsewu', role: 'Kepala Sekolah', phone: '082181004404', email: 'zulkarnain@example.com', timestamp: '2026-11-19 08:12', verified: true },
+      { id: 'att-5', name: 'Dewi Kartika Sari, S.Si.', school: 'SMPIT Fitrah Insani', region: 'Kab. Pesawaran', role: 'Kepala Sekolah', phone: '081279005505', email: 'dewi.kartika@example.com', timestamp: '2026-11-19 08:25', verified: true }
+    ]
+  },
+  {
+    id: 'evt-jsit-003',
+    title: 'Webinar Nasional Parenting Islami: Sinergi Orang Tua & Sekolah di Era Kecerdasan Artifisial',
+    category: 'Webinar',
+    status: 'Selesai',
+    dateStart: '2026-11-10',
+    dateEnd: '2026-11-10',
+    time: '19.30 - 21.30 WIB',
+    mode: 'Online (Zoom & YouTube Live)',
+    location: 'Zoom Meeting & Channel YouTube JSIT Lampung Official',
+    quota: 1000,
+    pin: '',
+    speakers: [
+      { name: 'Ustadzah Dr. Aisyah Humaira, M.Psi.', role: 'Psikolog Pendidikan & Keluarga' },
+      { name: 'Fajar Nugroho, M.Kom.', role: 'Praktisi Literasi Digital & AI Pendidikan' }
+    ],
+    description: 'Webinar terbuka bagi guru, pengurus komite, dan orang tua siswa SIT se-Lampung untuk membangun ketahanan karakter anak, adab bermedia digital, serta pendampingan bijak pemanfaatan AI.',
+    materials: [
+      { id: 'm-301', title: 'E-Booklet Panduan Orang Tua Mendampingi Anak di Era AI', type: 'PDF', url: 'https://drive.google.com', desc: 'Ringkasan praktis pengasuhan digital Islami.' },
+      { id: 'm-302', title: 'Slide Presentasi Psikologi Perkembangan Remaja Digital', type: 'PPTX', url: 'https://drive.google.com', desc: 'Materi sesi utama psikolog pendidikan.' }
+    ],
+    recordings: [
+      { id: 'r-301', title: 'Full Replay Webinar Parenting Islami JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=LXb3EKWsInQ', notes: 'Rekaman lengkap beserta sesi tanya jawab interaktif.' }
+    ],
+    certificate: {
+      enabled: true,
+      jp: '4 JP',
+      prefix: 'SERT-WEB/JSIT-LPG/XI/2026',
+      signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
+      signerTitle: 'Ketua JSIT Wilayah Lampung'
+    },
+    attendees: [
+      { id: 'att-6', name: 'Rina Marlina, S.Pd.', school: 'TKIT Qurrata Ayun', region: 'Kab. Lampung Selatan', role: 'Guru', phone: '085377006606', email: 'rina.marlina@example.com', timestamp: '2026-11-10 19:45', verified: true },
+      { id: 'att-7', name: 'Budi Santoso, S.E.', school: 'SDIT Al-Furqon', region: 'Kab. Lampung Tengah', role: 'Komite / Orang Tua', phone: '081373007707', email: 'budi.santoso@example.com', timestamp: '2026-11-10 20:05', verified: true }
+    ]
+  },
+  {
+    id: 'evt-jsit-004',
+    title: 'Pelatihan Publikasi Ilmiah & Pemanfaatan AI Produktif untuk Guru Kreatif',
+    category: 'Pelatihan',
+    status: 'Buka Pendaftaran',
+    dateStart: '2026-12-05',
+    dateEnd: '2026-12-06',
+    time: '08.00 - 15.00 WIB',
+    mode: 'Offline / Lab Praktik',
+    location: 'Gedung Diklat LPMP / Balai Guru Penggerak Lampung',
+    quota: 120,
+    pin: '',
+    speakers: [
+      { name: 'Dr. Kurniawan Adi, M.Pd.', role: 'Dosen & Reviewer Jurnal Pendidikan' },
+      { name: 'Tim Digitalisasi JSIT Lampung', role: 'Instruktur EdTech & AI' }
+    ],
+    description: 'Pelatihan berbasis praktik langsung (hands-on) penyusunan Penelitian Tindakan Kelas (PTK), penulisan artikel ilmiah terpublikasi, serta pembuatan media ajar interaktif berbasis AI.',
+    materials: [
+      { id: 'm-401', title: 'Silabus & Panduan Instalasi Tools Pelatihan', type: 'PDF', url: 'https://drive.google.com', desc: 'Persiapan perangkat laptop sebelum hari pelaksanaan.' }
+    ],
+    recordings: [],
+    certificate: {
+      enabled: false,
+      jp: '16 JP',
+      prefix: 'SERT-PEL/JSIT-LPG/XII/2026',
+      signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
+      signerTitle: 'Ketua JSIT Wilayah Lampung'
+    },
+    attendees: []
+  }
+];
+
+
+    let eventsData = [];
+    let appSettings = { ...DEFAULT_SETTINGS };
+    let managedEventId = null;
+
+    function initAdmin() {
+      const savedSettings = localStorage.getItem(SETTINGS_KEY);
+      if (savedSettings) {
+        try { appSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch (e) {}
+      }
+
+      const savedEvents = localStorage.getItem(STORAGE_KEY);
+      if (savedEvents) {
+        try { eventsData = JSON.parse(savedEvents); } catch (e) { eventsData = [...DEFAULT_EVENTS]; }
+      } else {
+        eventsData = [...DEFAULT_EVENTS];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
+      }
+
+      // Populate settings form
+      document.getElementById('set-admin-pass').value = appSettings.adminPass;
+      document.getElementById('set-signer-name').value = appSettings.signerName;
+      document.getElementById('set-signer-title').value = appSettings.signerTitle;
+      document.getElementById('set-webhook').value = appSettings.webhookUrl || '';
+
+      // Populate region dropdown
+      document.getElementById('man-region').innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+
+      if (sessionStorage.getItem('jsit_admin_auth') === '1') {
+        showDashboardUI();
+      }
+      lucide.createIcons();
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('admin-password-input').value;
+      if (pass === appSettings.adminPass) {
+        sessionStorage.setItem('jsit_admin_auth', '1');
+        showDashboardUI();
+      } else {
+        alert('Kata sandi salah! Gunakan kata sandi admin JSIT Lampung.');
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('jsit_admin_auth');
+      location.reload();
+    }
+
+    function showDashboardUI() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('admin-app').classList.remove('hidden');
+      refreshAllViews();
+    }
+
+    function persistData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
+      refreshAllViews();
+    }
+
+    function refreshAllViews() {
+      updateAdminKPIs();
+      renderAdminEventsTable();
+      if (managedEventId) renderFeatureManagerContent();
+      lucide.createIcons();
+    }
+
+    function switchAdminSection(sec) {
+      document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+        if (btn.dataset.sec === sec) {
+          btn.className = 'admin-nav-btn active flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white whitespace-nowrap transition';
+        } else {
+          btn.className = 'admin-nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 whitespace-nowrap transition';
+        }
+      });
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`sec-${sec}`).classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function updateAdminKPIs() {
+      const totalEvents = eventsData.length;
+      const totalAttendees = eventsData.reduce((s, e) => s + (e.attendees ? e.attendees.length : 0), 0);
+      const totalRes = eventsData.reduce((s, e) => s + (e.materials ? e.materials.length : 0) + (e.recordings ? e.recordings.length : 0), 0);
+      const totalCerts = eventsData.filter(e => e.certificate && e.certificate.enabled).length;
+
+      document.getElementById('kpi-events').textContent = totalEvents;
+      document.getElementById('kpi-attendees').textContent = totalAttendees;
+      document.getElementById('kpi-resources').textContent = totalRes;
+      document.getElementById('kpi-certs').textContent = totalCerts;
+
+      // Category Chart
+      const catCounts = {};
+      eventsData.forEach(e => { catCounts[e.category] = (catCounts[e.category] || 0) + 1; });
+      const maxCat = Math.max(1, ...Object.values(catCounts));
+      document.getElementById('chart-categories').innerHTML = Object.entries(catCounts).map(([cat, count]) => `
+        <div>
+          <div class="flex justify-between font-semibold mb-1">
+            <span class="text-slate-700">${cat}</span>
+            <span class="text-blue-700">${count} Kegiatan</span>
+          </div>
+          <div class="w-full h-2 bg-blue-50 rounded-full overflow-hidden">
+            <div class="h-full bg-blue-600 rounded-full" style="width: ${Math.round((count/maxCat)*100)}%"></div>
+          </div>
+        </div>
+      `).join('') || '<p class="text-slate-400">Belum ada data.</p>';
+
+      // Region Chart
+      const regCounts = {};
+      eventsData.forEach(e => (e.attendees || []).forEach(a => {
+        regCounts[a.region] = (regCounts[a.region] || 0) + 1;
+      }));
+      const sortedRegs = Object.entries(regCounts).sort((a,b) => b[1] - a[1]).slice(0, 6);
+      const maxReg = sortedRegs.length ? sortedRegs[0][1] : 1;
+      document.getElementById('chart-regions').innerHTML = sortedRegs.map(([reg, count]) => `
+        <div>
+          <div class="flex justify-between font-semibold mb-1">
+            <span class="text-slate-700">${reg}</span>
+            <span class="text-sky-700">${count} Peserta</span>
+          </div>
+          <div class="w-full h-2 bg-sky-50 rounded-full overflow-hidden">
+            <div class="h-full bg-sky-500 rounded-full" style="width: ${Math.round((count/maxReg)*100)}%"></div>
+          </div>
+        </div>
+      `).join('') || '<p class="text-slate-400">Belum ada data peserta.</p>';
+    }
+
+    function renderAdminEventsTable() {
+      const q = (document.getElementById('admin-search-events').value || '').toLowerCase();
+      const cat = document.getElementById('admin-filter-cat').value;
+      const container = document.getElementById('admin-events-list');
+
+      const filtered = eventsData.filter(ev => {
+        const mCat = cat === 'ALL' || (cat === 'Lainnya' ? !['Seminar','Webinar','Pelatihan','Workshop','Bimtek'].includes(ev.category) : ev.category === cat);
+        const mQ = !q || ev.title.toLowerCase().includes(q) || ev.category.toLowerCase().includes(q);
+        return mCat && mQ;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-white rounded-2xl border border-blue-100 p-8 text-center text-xs text-slate-500">Tidak ada kegiatan ditemukan.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(ev => {
+        const attCount = (ev.attendees || []).length;
+        const matCount = (ev.materials || []).length;
+        const recCount = (ev.recordings || []).length;
+        const certOn = ev.certificate && ev.certificate.enabled;
+
+        return `
+          <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-1.5 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold">${ev.category}</span>
+                <span class="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold">${ev.status}</span>
+                <span class="px-2.5 py-0.5 rounded-md ${certOn ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700'} text-[11px] font-semibold">
+                  Sertifikat: ${certOn ? 'Aktif' : 'Belum Dirilis'}
+                </span>
+              </div>
+              <h3 class="font-bold text-base text-navy-900">${ev.title}</h3>
+              <p class="text-xs text-slate-500">${ev.dateStart} • ${ev.location} • <strong>${attCount} Hadir</strong> | <strong>${matCount} Materi</strong> | <strong>${recCount} Rekaman</strong></p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <button onclick="openFeatureManager('${ev.id}')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                <span>Kelola Fitur (Absensi/Materi/Sertifikat)</span>
+              </button>
+              <button onclick="openEventFormModal('${ev.id}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-xs font-bold flex items-center gap-1 transition" title="Edit Info">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit
+              </button>
+              <button onclick="duplicateEvent('${ev.id}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 text-xs font-bold transition" title="Duplikat">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="deleteEvent('${ev.id}')" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition" title="Hapus">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    // Add / Edit Event Modal
+    function openEventFormModal(eventId = null) {
+      document.getElementById('edit-event-id').value = eventId || '';
+      if (eventId) {
+        const ev = eventsData.find(e => e.id === eventId);
+        document.getElementById('form-modal-title').textContent = 'Edit Informasi Kegiatan';
+        document.getElementById('ev-title').value = ev.title;
+        document.getElementById('ev-category').value = ev.category;
+        document.getElementById('ev-status').value = ev.status;
+        document.getElementById('ev-quota').value = ev.quota || 200;
+        document.getElementById('ev-date-start').value = ev.dateStart;
+        document.getElementById('ev-date-end').value = ev.dateEnd || ev.dateStart;
+        document.getElementById('ev-time').value = ev.time || '08.00 - 15.30 WIB';
+        document.getElementById('ev-mode').value = ev.mode || 'Offline / Tatap Muka';
+        document.getElementById('ev-pin').value = ev.pin || '';
+        document.getElementById('ev-location').value = ev.location;
+        document.getElementById('ev-speaker-name').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].name : '';
+        document.getElementById('ev-speaker-role').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].role : '';
+        document.getElementById('ev-description').value = ev.description || '';
+      } else {
+        document.getElementById('form-modal-title').textContent = 'Tambah Kegiatan Baru';
+        document.getElementById('edit-event-id').value = '';
+        document.getElementById('ev-title').value = '';
+        document.getElementById('ev-category').value = 'Pelatihan';
+        document.getElementById('ev-status').value = 'Buka Pendaftaran';
+        document.getElementById('ev-quota').value = 200;
+        document.getElementById('ev-date-start').value = new Date().toISOString().slice(0,10);
+        document.getElementById('ev-date-end').value = new Date().toISOString().slice(0,10);
+        document.getElementById('ev-time').value = '08.00 - 15.30 WIB';
+        document.getElementById('ev-pin').value = '';
+        document.getElementById('ev-location').value = '';
+        document.getElementById('ev-speaker-name').value = '';
+        document.getElementById('ev-speaker-role').value = '';
+        document.getElementById('ev-description').value = '';
+      }
+      document.getElementById('event-form-modal').classList.remove('hidden');
+    }
+
+    function closeEventFormModal() {
+      document.getElementById('event-form-modal').classList.add('hidden');
+    }
+
+    function saveEventForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-event-id').value;
+      const payload = {
+        title: document.getElementById('ev-title').value.trim(),
+        category: document.getElementById('ev-category').value.trim(),
+        status: document.getElementById('ev-status').value,
+        quota: parseInt(document.getElementById('ev-quota').value) || 200,
+        dateStart: document.getElementById('ev-date-start').value,
+        dateEnd: document.getElementById('ev-date-end').value || document.getElementById('ev-date-start').value,
+        time: document.getElementById('ev-time').value.trim(),
+        mode: document.getElementById('ev-mode').value,
+        pin: document.getElementById('ev-pin').value.trim(),
+        location: document.getElementById('ev-location').value.trim(),
+        speakers: document.getElementById('ev-speaker-name').value.trim() ? [{
+          name: document.getElementById('ev-speaker-name').value.trim(),
+          role: document.getElementById('ev-speaker-role').value.trim() || 'Narasumber JSIT Lampung'
+        }] : [],
+        description: document.getElementById('ev-description').value.trim()
+      };
+
+      if (id) {
+        const idx = eventsData.findIndex(item => item.id === id);
+        if (idx !== -1) {
+          eventsData[idx] = { ...eventsData[idx], ...payload };
+        }
+        showAdminToast('Perubahan kegiatan disimpan!');
+      } else {
+        const newEvent = {
+          id: 'evt-' + Date.now(),
+          ...payload,
+          materials: [],
+          recordings: [],
+          certificate: {
+            enabled: false,
+            jp: '8 JP',
+            prefix: `SERT-${payload.category.toUpperCase().slice(0,6)}/JSIT-LPG/2026`,
+            signerName: appSettings.signerName,
+            signerTitle: appSettings.signerTitle
+          },
+          attendees: []
+        };
+        eventsData.unshift(newEvent);
+        showAdminToast('Kegiatan baru berhasil ditambahkan!');
+      }
+
+      closeEventFormModal();
+      persistData();
+    }
+
+    function duplicateEvent(eventId) {
+      const orig = eventsData.find(e => e.id === eventId);
+      if (!orig) return;
+      const copy = JSON.parse(JSON.stringify(orig));
+      copy.id = 'evt-' + Date.now();
+      copy.title = orig.title + ' (Salinan)';
+      copy.attendees = [];
+      eventsData.unshift(copy);
+      persistData();
+      showAdminToast('Kegiatan berhasil diduplikat!');
+    }
+
+    function deleteEvent(eventId) {
+      if (!confirm('Hapus kegiatan ini beserta seluruh daftar hadir dan materinya?')) return;
+      eventsData = eventsData.filter(e => e.id !== eventId);
+      persistData();
+      showAdminToast('Kegiatan dihapus.');
+    }
+
+    // Feature Manager Modal
+    function openFeatureManager(eventId) {
+      managedEventId = eventId;
+      switchFmTab('absensi');
+      renderFeatureManagerContent();
+      document.getElementById('feature-manager-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeFeatureManager() {
+      document.getElementById('feature-manager-modal').classList.add('hidden');
+      managedEventId = null;
+    }
+
+    function switchFmTab(tab) {
+      document.querySelectorAll('.fm-tab-btn').forEach(b => {
+        if (b.dataset.fmtab === tab) {
+          b.className = 'fm-tab-btn active px-4 py-3 text-xs sm:text-sm font-bold border-b-2 border-blue-600 text-blue-700 whitespace-nowrap';
+        } else {
+          b.className = 'fm-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-600 whitespace-nowrap';
+        }
+      });
+      document.querySelectorAll('.fm-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`fm-panel-${tab}`).classList.remove('hidden');
+    }
+
+    function renderFeatureManagerContent() {
+      const ev = eventsData.find(e => e.id === managedEventId);
+      if (!ev) return;
+
+      document.getElementById('fm-category').textContent = ev.category;
+      document.getElementById('fm-title').textContent = ev.title;
+
+      // 1. Attendees
+      const atts = ev.attendees || [];
+      document.getElementById('fm-att-count').textContent = atts.length;
+      document.getElementById('fm-att-tbody').innerHTML = atts.length ? atts.map((a, idx) => `
+        <tr class="hover:bg-blue-50/40">
+          <td class="p-3 font-bold text-slate-500">${idx + 1}</td>
+          <td class="p-3 font-bold text-navy-900">${a.name}</td>
+          <td class="p-3 text-slate-600">${a.school} <span class="text-slate-400">(${a.region})</span></td>
+          <td class="p-3 font-mono text-slate-700">${a.phone}</td>
+          <td class="p-3 text-slate-400">${a.timestamp || '-'}</td>
+          <td class="p-3 text-right">
+            <button onclick="removeAttendee('${a.id}')" class="text-rose-600 hover:underline font-semibold">Hapus</button>
+          </td>
+        </tr>
+      `).join('') : `<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada peserta hadir.</td></tr>`;
+
+      // 2. Materials
+      const mats = ev.materials || [];
+      document.getElementById('fm-mat-list').innerHTML = mats.length ? mats.map(m => `
+        <div class="p-3.5 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+          <div>
+            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">${m.type}</span>
+            <p class="font-bold text-xs sm:text-sm text-navy-900 mt-1">${m.title}</p>
+            <a href="${m.url}" target="_blank" class="text-[11px] text-blue-600 hover:underline break-all">${m.url}</a>
+          </div>
+          <button onclick="removeMaterial('${m.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>
+        </div>
+      `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada materi ditambahkan.</p>';
+
+      // 3. Recordings
+      const recs = ev.recordings || [];
+      document.getElementById('fm-rec-list').innerHTML = recs.length ? recs.map(r => `
+        <div class="p-3.5 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+          <div>
+            <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-bold">${r.platform}</span>
+            <p class="font-bold text-xs sm:text-sm text-navy-900 mt-1">${r.title}</p>
+            <a href="${r.url}" target="_blank" class="text-[11px] text-blue-600 hover:underline break-all">${r.url}</a>
+          </div>
+          <button onclick="removeRecording('${r.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>
+        </div>
+      `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada rekaman ditambahkan.</p>';
+
+      // 4. Certificate Config
+      const cert = ev.certificate || { enabled: false, jp: '8 JP', prefix: 'SERT/JSIT-LPG/2026', signerName: appSettings.signerName, signerTitle: appSettings.signerTitle };
+      document.getElementById('cert-cfg-enabled').checked = !!cert.enabled;
+      document.getElementById('cert-cfg-jp').value = cert.jp || '8 JP';
+      document.getElementById('cert-cfg-prefix').value = cert.prefix || 'SERT/JSIT-LPG/2026';
+      document.getElementById('cert-cfg-signer').value = cert.signerName || appSettings.signerName;
+      document.getElementById('cert-cfg-title').value = cert.signerTitle || appSettings.signerTitle;
+    }
+
+    function addManualAttendee(e) {
+      e.preventDefault();
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      const now = new Date();
+      const record = {
+        id: 'att-' + Date.now(),
+        name: document.getElementById('man-name').value.trim(),
+        school: document.getElementById('man-school').value.trim(),
+        region: document.getElementById('man-region').value,
+        role: 'Peserta',
+        phone: document.getElementById('man-phone').value.trim(),
+        email: '',
+        timestamp: now.toISOString().slice(0,10) + ' ' + now.toTimeString().slice(0,5),
+        verified: true
+      };
+      if (!eventsData[idx].attendees) eventsData[idx].attendees = [];
+      eventsData[idx].attendees.unshift(record);
+      document.getElementById('man-name').value = '';
+      document.getElementById('man-school').value = '';
+      document.getElementById('man-phone').value = '';
+      persistData();
+      showAdminToast('Peserta berhasil ditambahkan!');
+    }
+
+    function removeAttendee(attId) {
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      eventsData[idx].attendees = eventsData[idx].attendees.filter(a => a.id !== attId);
+      persistData();
+      showAdminToast('Data peserta dihapus.');
+    }
+
+    function exportAttendeesCSV() {
+      const ev = eventsData.find(e => e.id === managedEventId);
+      if (!ev || !ev.attendees || ev.attendees.length === 0) {
+        alert('Belum ada data peserta untuk diexport.');
+        return;
+      }
+      const headers = ['No', 'Nama Lengkap', 'Asal Sekolah/Instansi', 'Kabupaten/Kota', 'Jabatan', 'No WhatsApp', 'Email', 'Waktu Presensi'];
+      const rows = ev.attendees.map((a, i) => [
+        i + 1,
+        `"${(a.name || '').replace(/"/g, '""')}"`,
+        `"${(a.school || '').replace(/"/g, '""')}"`,
+        `"${(a.region || '').replace(/"/g, '""')}"`,
+        `"${(a.role || '').replace(/"/g, '""')}"`,
+        `"${(a.phone || '').replace(/"/g, '""')}"`,
+        `"${(a.email || '').replace(/"/g, '""')}"`,
+        `"${(a.timestamp || '').replace(/"/g, '""')}"`
+      ]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `Daftar_Hadir_${ev.id}.csv`);
+      link.click();
+      showAdminToast('File CSV Daftar Hadir diunduh!');
+    }
+
+    function addEventMaterial(e) {
+      e.preventDefault();
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      if (!eventsData[idx].materials) eventsData[idx].materials = [];
+      eventsData[idx].materials.push({
+        id: 'm-' + Date.now(),
+        title: document.getElementById('mat-title').value.trim(),
+        type: document.getElementById('mat-type').value,
+        url: document.getElementById('mat-url').value.trim(),
+        desc: document.getElementById('mat-desc').value.trim()
+      });
+      document.getElementById('mat-title').value = '';
+      document.getElementById('mat-url').value = '';
+      document.getElementById('mat-desc').value = '';
+      persistData();
+      showAdminToast('Materi berhasil ditambahkan!');
+    }
+
+    function removeMaterial(matId) {
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      eventsData[idx].materials = eventsData[idx].materials.filter(m => m.id !== matId);
+      persistData();
+      showAdminToast('Materi dihapus.');
+    }
+
+    function addEventRecording(e) {
+      e.preventDefault();
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      if (!eventsData[idx].recordings) eventsData[idx].recordings = [];
+      eventsData[idx].recordings.push({
+        id: 'r-' + Date.now(),
+        title: document.getElementById('rec-title').value.trim(),
+        platform: document.getElementById('rec-platform').value,
+        url: document.getElementById('rec-url').value.trim(),
+        notes: document.getElementById('rec-notes').value.trim()
+      });
+      document.getElementById('rec-title').value = '';
+      document.getElementById('rec-url').value = '';
+      document.getElementById('rec-notes').value = '';
+      persistData();
+      showAdminToast('Rekaman berhasil ditambahkan!');
+    }
+
+    function removeRecording(recId) {
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      eventsData[idx].recordings = eventsData[idx].recordings.filter(r => r.id !== recId);
+      persistData();
+      showAdminToast('Rekaman dihapus.');
+    }
+
+    function saveEventCertConfig(e) {
+      e.preventDefault();
+      const idx = eventsData.findIndex(e => e.id === managedEventId);
+      if (idx === -1) return;
+      eventsData[idx].certificate = {
+        enabled: document.getElementById('cert-cfg-enabled').checked,
+        jp: document.getElementById('cert-cfg-jp').value.trim() || '8 JP',
+        prefix: document.getElementById('cert-cfg-prefix').value.trim() || 'SERT/JSIT-LPG/2026',
+        signerName: document.getElementById('cert-cfg-signer').value.trim() || appSettings.signerName,
+        signerTitle: document.getElementById('cert-cfg-title').value.trim() || appSettings.signerTitle
+      };
+      persistData();
+      showAdminToast('Pengaturan E-Sertifikat disimpan!');
+    }
+
+    // GitHub Sync & Settings
+    function exportGitHubJSON() {
+      const dataStr = JSON.stringify(eventsData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data-kegiatan.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showAdminToast('data-kegiatan.json berhasil diunduh untuk GitHub!');
+    }
+
+    function importGitHubJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (Array.isArray(parsed)) {
+            eventsData = parsed;
+            persistData();
+            showAdminToast('Database berhasil di-import!');
+          } else {
+            alert('Format JSON tidak valid.');
+          }
+        } catch (err) {
+          alert('Gagal membaca file JSON.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToFactorySample() {
+      if (!confirm('Kembalikan data ke contoh awal bawaan?')) return;
+      eventsData = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+      persistData();
+      showAdminToast('Data direset ke contoh awal.');
+    }
+
+    function saveAdminSettings(e) {
+      e.preventDefault();
+      appSettings.adminPass = document.getElementById('set-admin-pass').value.trim() || 'jsitlampung2026';
+      appSettings.signerName = document.getElementById('set-signer-name').value.trim();
+      appSettings.signerTitle = document.getElementById('set-signer-title').value.trim();
+      appSettings.webhookUrl = document.getElementById('set-webhook').value.trim();
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
+      showAdminToast('Pengaturan sistem disimpan!');
+    }
+
+    function showAdminToast(msg) {
+      const el = document.getElementById('admin-toast');
+      document.getElementById('admin-toast-msg').textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initAdmin);
+  </script>
+</body>
+</html>

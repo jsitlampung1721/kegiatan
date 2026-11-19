@@ -65,19 +65,18 @@
       </form>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <a href="index.html" class="text-blue-600 hover:underline font-semibold">&larr; Lihat Portal Peserta (index.html)</a>
+        <a href="index.html" class="text-blue-600 hover:underline font-semibold">&larr; Kembali ke Portal Peserta (index.html)</a>
         <span class="text-slate-400">JSIT Lampung</span>
       </div>
     </div>
   </div>
 
-  <!-- MAIN ADMIN WORKSPACE v2.1 -->
+  <!-- MAIN ADMIN WORKSPACE -->
   <div id="admin-app" class="hidden min-h-screen flex flex-col lg:flex-row">
     
     <!-- LEFT SIDEBAR -->
     <aside class="w-full lg:w-72 bg-navy-950 text-white flex flex-col justify-between shrink-0 lg:min-h-screen border-r border-blue-900/50">
       <div>
-        <!-- Brand Header -->
         <div class="p-5 border-b border-blue-900/60 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center text-white font-bold shadow">
@@ -91,7 +90,6 @@
           <button onclick="logoutAdmin()" class="lg:hidden px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 text-xs font-bold">Keluar</button>
         </div>
 
-        <!-- Navigation Menu -->
         <div class="p-3">
           <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-blue-400/70 mb-2 hidden lg:block">Menu Utama Pengelola</p>
           <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1">
@@ -130,7 +128,7 @@
     <!-- RIGHT CONTENT AREA -->
     <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
 
-      <!-- TOP SUMMARY BAR (Always Visible) -->
+      <!-- TOP SUMMARY BAR -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div class="bg-white rounded-2xl border border-blue-100 p-4 shadow-xs">
           <span class="text-[11px] font-bold uppercase text-slate-400">Total Kegiatan</span>
@@ -150,21 +148,18 @@
         </div>
       </div>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 1: KELOLA KEGIATAN (DEFAULT LANDING PANEL)               -->
-      <!-- ============================================================== -->
+      <!-- PANEL 1: KELOLA KEGIATAN -->
       <section id="panel-kegiatan" class="admin-panel space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Program Diklat</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru (Seminar, Webinar, Pelatihan, Workshop, Bimtek, dll) atau kelola sub-fitur setiap kegiatan.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru (Seminar, Webinar, Pelatihan, Workshop, Bimtek, dll), atur link Zoom, atau kelola sub-fitur setiap kegiatan.</p>
           </div>
           <button onclick="openEventModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition shrink-0">
             + Tambah Kegiatan Baru
           </button>
         </div>
 
-        <!-- Filter & Search -->
         <div class="flex flex-col sm:flex-row gap-3">
           <input type="text" id="filter-event-search" oninput="renderEventsList()" placeholder="Cari judul kegiatan, lokasi, atau kategori..." class="flex-1 px-4 py-2.5 rounded-xl border border-blue-200 bg-white text-sm outline-none focus:border-blue-600" />
           <select id="filter-event-category" onchange="renderEventsList()" class="px-4 py-2.5 rounded-xl border border-blue-200 bg-white text-sm font-medium outline-none">
@@ -177,20 +172,15 @@
           </select>
         </div>
 
-        <!-- List of Events -->
-        <div id="admin-events-container" class="space-y-4">
-          <!-- Rendered by JS -->
-        </div>
+        <div id="admin-events-container" class="space-y-4"></div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 2: ATUR & TERBITKAN E-SERTIFIKAT (STUDIO SERTIFIKAT)     -->
-      <!-- ============================================================== -->
+      <!-- PANEL 2: ATUR & TERBITKAN E-SERTIFIKAT -->
       <section id="panel-sertifikat" class="admin-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Pengaturan & Studio E-Sertifikat</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Pilih kegiatan untuk mengatur status rilis sertifikat, nomor surat, jumlah JP, pejabat penandatangan, dan melihat pratinjau langsung.</p>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Pengaturan & Studio E-Sertifikat (A4 Landscape)</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Pilih kegiatan untuk mengatur status rilis sertifikat, nomor surat, jumlah JP, pejabat penandatangan, dan pratinjau A4 Landscape.</p>
           </div>
           <div class="md:w-80">
             <label class="block text-[11px] font-bold uppercase text-blue-700 mb-1">Pilih Kegiatan:</label>
@@ -199,7 +189,6 @@
         </div>
 
         <div class="grid lg:grid-cols-12 gap-6 items-start">
-          <!-- Certificate Config Form -->
           <form onsubmit="saveCertificateStudio(event)" class="lg:col-span-5 bg-white rounded-2xl border border-blue-100 p-5 sm:p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between p-3.5 rounded-xl bg-blue-50 border border-blue-200">
               <div>
@@ -252,35 +241,37 @@
             </button>
           </form>
 
-          <!-- Live Certificate Preview -->
+          <!-- Live A4 Landscape Preview -->
           <div class="lg:col-span-7 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pratinjau Tampilan E-Sertifikat (Live Preview)</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pratinjau A4 Landscape (297mm × 210mm)</span>
               <span class="text-xs text-blue-700 font-semibold">Otomatis sinkron ke index.html</span>
             </div>
 
-            <div id="studio-preview-box" class="bg-white border-8 border-double border-blue-900 rounded-2xl p-6 sm:p-8 shadow-lg text-center space-y-3 relative overflow-hidden">
-              <div class="border border-amber-400/80 p-5 sm:p-6 rounded-xl space-y-3">
-                <span class="inline-block px-3 py-0.5 rounded-full bg-blue-900 text-amber-300 text-[10px] font-bold uppercase tracking-widest">Jaringan Sekolah Islam Terpadu Indonesia</span>
-                <h4 class="font-display font-extrabold text-base sm:text-lg text-navy-900">WILAYAH PROVINSI LAMPUNG</h4>
+            <div id="studio-preview-box" class="bg-white border-8 border-double border-blue-900 rounded-2xl p-5 sm:p-6 shadow-lg text-center aspect-[297/210] flex flex-col justify-between relative overflow-hidden">
+              <div class="border border-amber-400/80 p-4 sm:p-5 rounded-xl flex-1 flex flex-col justify-between">
+                <div>
+                  <span class="inline-block px-3 py-0.5 rounded-full bg-blue-900 text-amber-300 text-[10px] font-bold uppercase tracking-widest">Jaringan Sekolah Islam Terpadu Indonesia</span>
+                  <h4 class="font-display font-extrabold text-sm sm:text-base text-navy-900 mt-1">WILAYAH PROVINSI LAMPUNG</h4>
+                </div>
                 <div>
                   <h2 id="prev-cert-heading" class="font-display font-extrabold text-2xl sm:text-3xl text-blue-800 tracking-wider">SERTIFIKAT</h2>
                   <p class="text-[11px] font-semibold text-slate-500" id="prev-cert-num">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
                 </div>
-                <p class="text-xs text-slate-500">Diberikan dengan hormat kepada:</p>
                 <div>
-                  <p class="font-display font-extrabold text-xl sm:text-2xl text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4">Contoh Nama Peserta, S.Pd., M.Pd.</p>
-                  <p class="text-xs font-semibold text-blue-700 mt-1">SDIT Permata Bunda — Kota Bandar Lampung</p>
+                  <p class="text-[11px] text-slate-500">Diberikan dengan hormat kepada:</p>
+                  <p class="font-display font-extrabold text-lg sm:text-xl text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4">Contoh Nama Peserta, S.Pd., M.Pd.</p>
+                  <p class="text-[11px] font-semibold text-blue-700 mt-0.5">SDIT Permata Bunda — Kota Bandar Lampung</p>
                 </div>
-                <p class="text-xs text-slate-600 leading-relaxed max-w-lg mx-auto">
+                <p class="text-[11px] text-slate-600 leading-relaxed max-w-lg mx-auto">
                   Atas partisipasi aktif sebagai <strong id="prev-cert-role">PESERTA</strong> dalam kegiatan <strong id="prev-cert-cat">Bimtek</strong>:<br/>
                   <strong class="text-navy-900" id="prev-cert-event">"Judul Kegiatan"</strong><br/>
                   dengan bobot pelatihan setara <strong class="text-blue-800" id="prev-cert-jp">16 JP</strong>.
                 </p>
-                <div class="pt-3 flex justify-end">
+                <div class="flex justify-end">
                   <div class="text-center pr-4">
                     <p class="text-[10px] text-slate-500" id="prev-cert-title">Ketua JSIT Wilayah Lampung</p>
-                    <div class="my-1.5 px-3 py-1 rounded bg-blue-50 border border-blue-200 text-[10px] italic text-blue-800">TTD Elektronik Sah</div>
+                    <div class="my-1 px-3 py-0.5 rounded bg-blue-50 border border-blue-200 text-[10px] italic text-blue-800">TTD Elektronik Sah</div>
                     <p class="text-xs font-extrabold text-navy-900 underline" id="prev-cert-signer">Dr. H. Ahmad Fauzi, M.Pd.</p>
                   </div>
                 </div>
@@ -290,9 +281,7 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 3: KELOLA DAFTAR HADIR PESERTA                           -->
-      <!-- ============================================================== -->
+      <!-- PANEL 3: KELOLA DAFTAR HADIR PESERTA -->
       <section id="panel-absensi" class="admin-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -307,7 +296,6 @@
           </div>
         </div>
 
-        <!-- Add Manual Attendee Form -->
         <form onsubmit="handleAddManualAttendee(event)" class="bg-white p-4 rounded-2xl border border-blue-100 grid sm:grid-cols-5 gap-2.5 items-end">
           <div>
             <label class="block text-[11px] font-bold text-slate-600 mb-1">Nama & Gelar Peserta</label>
@@ -330,7 +318,6 @@
           </button>
         </form>
 
-        <!-- Attendees Table -->
         <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
@@ -352,9 +339,7 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 4: KELOLA MATERI & REKAMAN KEGIATAN                      -->
-      <!-- ============================================================== -->
+      <!-- PANEL 4: KELOLA MATERI & REKAMAN KEGIATAN -->
       <section id="panel-materi" class="admin-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -368,7 +353,6 @@
         </div>
 
         <div class="grid lg:grid-cols-2 gap-6">
-          <!-- Materi Column -->
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">A. Modul & Bahan Tayang (Materi)</h3>
             <form onsubmit="handleAddMaterial(event)" class="space-y-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
@@ -391,7 +375,6 @@
             <div id="res-mat-list" class="space-y-2.5"></div>
           </div>
 
-          <!-- Rekaman Column -->
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">B. Video Rekaman & Dokumentasi</h3>
             <form onsubmit="handleAddRecording(event)" class="space-y-2.5 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100">
@@ -415,9 +398,7 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 5: SYNC GITHUB & BACKUP                                  -->
-      <!-- ============================================================== -->
+      <!-- PANEL 5: SYNC GITHUB & BACKUP -->
       <section id="panel-github" class="admin-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl border border-blue-100 shadow-xs space-y-4">
           <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Publikasi GitHub Pages & Backup Data</h1>
@@ -439,9 +420,7 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PANEL 6: PENGATURAN & TTD                                      -->
-      <!-- ============================================================== -->
+      <!-- PANEL 6: PENGATURAN & TTD -->
       <section id="panel-pengaturan" class="admin-panel hidden space-y-6">
         <form onsubmit="saveSystemSettings(event)" class="bg-white p-6 rounded-2xl border border-blue-100 shadow-xs max-w-2xl space-y-4">
           <h1 class="text-xl font-extrabold text-navy-900">Pengaturan Sistem & Pejabat Default</h1>
@@ -488,7 +467,7 @@
         <div class="grid sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kegiatan <span class="text-red-500">*</span></label>
-            <input type="text" id="form-ev-category" list="cat-list" required placeholder="Seminar/Webinar/Bimtek..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />
+            <input type="text" id="form-ev-category" list="cat-list" required placeholder="Seminar/Webinar/Bimtek..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
             <datalist id="cat-list">
               <option value="Seminar"></option>
               <option value="Webinar"></option>
@@ -508,7 +487,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Kuota Peserta</label>
-            <input type="number" id="form-ev-quota" value="200" min="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />
+            <input type="number" id="form-ev-quota" value="200" min="1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
           </div>
         </div>
         <div class="grid sm:grid-cols-3 gap-3">
@@ -539,9 +518,15 @@
             <input type="text" id="form-ev-pin" placeholder="Kosongkan jika bebas" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi / Tautan Ruang <span class="text-red-500">*</span></label>
-          <input type="text" id="form-ev-location" required placeholder="Contoh: Aula Islamic Center Bandar Lampung" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi / Tempat Kegiatan <span class="text-red-500">*</span></label>
+            <input type="text" id="form-ev-location" required placeholder="Contoh: Aula Islamic Center Bandar Lampung" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-blue-700 mb-1">Tautan Zoom Meeting Kegiatan</label>
+            <input type="url" id="form-ev-zoom" placeholder="https://zoom.us/j/..." class="w-full px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50/30 text-sm" />
+          </div>
         </div>
         <div class="grid sm:grid-cols-2 gap-3">
           <div>
@@ -571,7 +556,6 @@
   </div>
 
   <script>
-
 const STORAGE_KEY = 'jsit_lampung_events_v2';
 const SETTINGS_KEY = 'jsit_lampung_settings_v2';
 
@@ -616,6 +600,7 @@ const DEFAULT_EVENTS = [
     time: '08.00 - 16.00 WIB',
     mode: 'Offline / Tatap Muka',
     location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
+    zoomUrl: 'https://zoom.us/join',
     quota: 250,
     pin: '',
     speakers: [
@@ -657,6 +642,7 @@ const DEFAULT_EVENTS = [
     time: '08.30 - 15.30 WIB',
     mode: 'Hybrid (Offline & Zoom)',
     location: 'Hotel Emersia Bandar Lampung & Zoom Cloud Meeting',
+    zoomUrl: 'https://zoom.us/join',
     quota: 150,
     pin: '',
     speakers: [
@@ -695,6 +681,7 @@ const DEFAULT_EVENTS = [
     time: '19.30 - 21.30 WIB',
     mode: 'Online (Zoom & YouTube Live)',
     location: 'Zoom Meeting & Channel YouTube JSIT Lampung Official',
+    zoomUrl: 'https://zoom.us/join',
     quota: 1000,
     pin: '',
     speakers: [
@@ -733,6 +720,7 @@ const DEFAULT_EVENTS = [
     time: '08.00 - 15.00 WIB',
     mode: 'Offline / Lab Praktik',
     location: 'Gedung Diklat LPMP / Balai Guru Penggerak Lampung',
+    zoomUrl: 'https://zoom.us/join',
     quota: 120,
     pin: '',
     speakers: [
@@ -751,12 +739,11 @@ const DEFAULT_EVENTS = [
       roleLabel: 'PESERTA',
       signerName: 'Dr. H. Ahmad Fauzi, M.Pd.',
       signerTitle: 'Ketua JSIT Wilayah Lampung',
-      themeColor: '#0F172A'
+      themeColor: '#1E3A8A'
     },
     attendees: []
   }
 ];
-
 
     let events = [];
     let settings = { ...DEFAULT_SETTINGS };
@@ -774,13 +761,10 @@ const DEFAULT_EVENTS = [
         localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
       }
 
-      // Populate settings fields
       document.getElementById('cfg-pass').value = settings.adminPass;
       document.getElementById('cfg-signer').value = settings.signerName;
       document.getElementById('cfg-title').value = settings.signerTitle;
       document.getElementById('cfg-webhook').value = settings.webhookUrl || '';
-
-      // Populate region dropdown
       document.getElementById('quick-att-region').innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
 
       if (sessionStorage.getItem('jsit_lpg_admin_logged') === 'true') {
@@ -817,13 +801,11 @@ const DEFAULT_EVENTS = [
     }
 
     function syncAllAdminUI() {
-      // Top Stats
       document.getElementById('stat-events').textContent = events.length;
       document.getElementById('stat-attendees').textContent = events.reduce((s, e) => s + (e.attendees ? e.attendees.length : 0), 0);
       document.getElementById('stat-resources').textContent = events.reduce((s, e) => s + (e.materials ? e.materials.length : 0) + (e.recordings ? e.recordings.length : 0), 0);
       document.getElementById('stat-certs').textContent = events.filter(e => e.certificate && e.certificate.enabled).length;
 
-      // Sync Event Selectors in Certificate, Attendance, and Resources tabs
       const optionsHTML = events.map(e => `<option value="${e.id}">[${e.category}] ${e.title}</option>`).join('');
       ['cert-event-selector', 'att-event-selector', 'res-event-selector'].forEach(selId => {
         const el = document.getElementById(selId);
@@ -872,7 +854,7 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    // ================= PANEL 1: KELOLA KEGIATAN =================
+    // PANEL 1: KELOLA KEGIATAN
     function renderEventsList() {
       const q = (document.getElementById('filter-event-search').value || '').toLowerCase();
       const cat = document.getElementById('filter-event-category').value;
@@ -917,7 +899,6 @@ const DEFAULT_EVENTS = [
               </div>
             </div>
 
-            <!-- Direct Sub-Feature Action Bar -->
             <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
               <button onclick="jumpToEventSubFeature('absensi', '${ev.id}')" class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-xs font-bold transition">
                 Daftar Hadir (${attCount} Peserta)
@@ -949,6 +930,7 @@ const DEFAULT_EVENTS = [
         document.getElementById('form-ev-mode').value = ev.mode || 'Offline / Tatap Muka';
         document.getElementById('form-ev-pin').value = ev.pin || '';
         document.getElementById('form-ev-location').value = ev.location;
+        document.getElementById('form-ev-zoom').value = ev.zoomUrl || '';
         document.getElementById('form-ev-speaker').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].name : '';
         document.getElementById('form-ev-speaker-role').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].role : '';
         document.getElementById('form-ev-desc').value = ev.description || '';
@@ -964,6 +946,7 @@ const DEFAULT_EVENTS = [
         document.getElementById('form-ev-time').value = '08.00 - 15.30 WIB';
         document.getElementById('form-ev-pin').value = '';
         document.getElementById('form-ev-location').value = '';
+        document.getElementById('form-ev-zoom').value = 'https://zoom.us/join';
         document.getElementById('form-ev-speaker').value = '';
         document.getElementById('form-ev-speaker-role').value = '';
         document.getElementById('form-ev-desc').value = '';
@@ -989,6 +972,7 @@ const DEFAULT_EVENTS = [
         mode: document.getElementById('form-ev-mode').value,
         pin: document.getElementById('form-ev-pin').value.trim(),
         location: document.getElementById('form-ev-location').value.trim(),
+        zoomUrl: document.getElementById('form-ev-zoom').value.trim(),
         speakers: document.getElementById('form-ev-speaker').value.trim() ? [{
           name: document.getElementById('form-ev-speaker').value.trim(),
           role: document.getElementById('form-ev-speaker-role').value.trim() || 'Narasumber JSIT Lampung'
@@ -1042,7 +1026,7 @@ const DEFAULT_EVENTS = [
       toast('Kegiatan dihapus.');
     }
 
-    // ================= PANEL 2: STUDIO SERTIFIKAT =================
+    // PANEL 2: STUDIO SERTIFIKAT
     function loadCertificateStudio() {
       const evId = document.getElementById('cert-event-selector').value;
       const ev = events.find(e => e.id === evId);
@@ -1112,10 +1096,10 @@ const DEFAULT_EVENTS = [
         themeColor: document.getElementById('studio-cert-color').value || '#1E3A8A'
       };
       saveEvents();
-      toast('Pengaturan E-Sertifikat berhasil disimpan!');
+      toast('Pengaturan E-Sertifikat A4 Landscape berhasil disimpan!');
     }
 
-    // ================= PANEL 3: DAFTAR HADIR =================
+    // PANEL 3: DAFTAR HADIR
     function renderAttendeesPanel() {
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
@@ -1199,7 +1183,7 @@ const DEFAULT_EVENTS = [
       toast('CSV Daftar Hadir diunduh!');
     }
 
-    // ================= PANEL 4: MATERI & REKAMAN =================
+    // PANEL 4: MATERI & REKAMAN
     function renderResourcesPanel() {
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
@@ -1288,7 +1272,7 @@ const DEFAULT_EVENTS = [
       toast('Rekaman dihapus.');
     }
 
-    // ================= PANEL 5 & 6: GITHUB & SETTINGS =================
+    // PANEL 5 & 6: GITHUB & SETTINGS
     function downloadGitHubJSON() {
       const blob = new Blob([JSON.stringify(events, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);

@@ -267,12 +267,12 @@
       </div>
 
       <!-- Section Header -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h2 class="text-xl sm:text-2xl font-bold text-navy-900">Daftar Kegiatan & Program Diklat</h2>
           <p class="text-sm text-slate-500">Pilih kegiatan untuk masuk ke ruang kegiatan, mengisi daftar hadir, mengunduh materi, atau mencetak sertifikat.</p>
         </div>
-        <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800" id="showing-count">Menampilkan 0 kegiatan</span>
+        <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 self-start sm:self-auto" id="showing-count">Menampilkan 0 kegiatan</span>
       </div>
 
       <!-- Loading Skeleton -->
@@ -304,7 +304,7 @@
       
       <!-- LEFT COLLAPSIBLE SIDEBAR (Garis 3 Hamburger <-> X) -->
       <aside id="room-sidebar" class="w-full md:w-16 bg-navy-950 text-white transition-all duration-300 ease-in-out shrink-0 flex flex-col border-b md:border-b-0 md:border-r border-blue-900/60 shadow-lg z-30">
-        <div class="h-14 px-3.5 flex items-center justify-between border-b border-blue-900/60">
+        <div class="h-14 px-3.5 hidden md:flex items-center justify-between border-b border-blue-900/60">
           <button id="sidebar-toggle-btn" onclick="toggleRoomSidebar()" title="Perlebar / Ciutkan Menu Kegiatan" aria-label="Toggle Menu Ruang Kegiatan" class="w-9 h-9 rounded-xl bg-blue-600/25 hover:bg-blue-600 text-sky-300 hover:text-white flex items-center justify-center transition shrink-0">
             <svg id="icon-hamburger-bars" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
               <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -320,31 +320,36 @@
         </div>
 
         <nav id="room-sidebar-nav" class="p-2.5 flex flex-row md:flex-col gap-1.5 overflow-x-auto md:overflow-x-visible">
-          <button onclick="switchRoomTab('info')" data-tab="info" title="Info & Narasumber" class="room-tab-btn active flex items-center gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs transition shrink-0">
-            <i data-lucide="info" class="w-5 h-5 shrink-0"></i>
+          <button onclick="switchRoomTab('info')" data-tab="info" title="Info & Narasumber" class="room-tab-btn active flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs transition shrink-0">
+            <i data-lucide="info" class="w-4 h-4 md:w-5 md:h-5 shrink-0"></i>
+            <span class="md:hidden whitespace-nowrap">Info</span>
             <span class="room-nav-label hidden whitespace-nowrap">Info & Narasumber</span>
           </button>
 
-          <button onclick="switchRoomTab('absensi')" data-tab="absensi" title="Daftar Hadir" class="room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0 relative">
-            <i data-lucide="clipboard-check" class="w-5 h-5 shrink-0"></i>
+          <button onclick="switchRoomTab('absensi')" data-tab="absensi" title="Daftar Hadir" class="room-tab-btn flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0 relative">
+            <i data-lucide="clipboard-check" class="w-4 h-4 md:w-5 md:h-5 shrink-0"></i>
+            <span class="md:hidden whitespace-nowrap">Hadir</span>
             <span class="room-nav-label hidden whitespace-nowrap flex-1 text-left">Daftar Hadir</span>
             <span id="tab-count-absensi" class="room-nav-label hidden px-2 py-0.5 rounded-full text-[10px] bg-sky-400 text-navy-950 font-extrabold">0</span>
           </button>
 
-          <button onclick="switchRoomTab('materi')" data-tab="materi" title="Materi Kegiatan" class="room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
-            <i data-lucide="folder-down" class="w-5 h-5 shrink-0"></i>
+          <button onclick="switchRoomTab('materi')" data-tab="materi" title="Materi Kegiatan" class="room-tab-btn flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
+            <i data-lucide="folder-down" class="w-4 h-4 md:w-5 md:h-5 shrink-0"></i>
+            <span class="md:hidden whitespace-nowrap">Materi</span>
             <span class="room-nav-label hidden whitespace-nowrap flex-1 text-left">Materi Kegiatan</span>
             <span id="tab-count-materi" class="room-nav-label hidden px-2 py-0.5 rounded-full text-[10px] bg-sky-400 text-navy-950 font-extrabold">0</span>
           </button>
 
-          <button onclick="switchRoomTab('rekaman')" data-tab="rekaman" title="Rekaman Kegiatan" class="room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
-            <i data-lucide="video" class="w-5 h-5 shrink-0"></i>
+          <button onclick="switchRoomTab('rekaman')" data-tab="rekaman" title="Rekaman Kegiatan" class="room-tab-btn flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
+            <i data-lucide="video" class="w-4 h-4 md:w-5 md:h-5 shrink-0"></i>
+            <span class="md:hidden whitespace-nowrap">Rekaman</span>
             <span class="room-nav-label hidden whitespace-nowrap flex-1 text-left">Rekaman Kegiatan</span>
             <span id="tab-count-rekaman" class="room-nav-label hidden px-2 py-0.5 rounded-full text-[10px] bg-sky-400 text-navy-950 font-extrabold">0</span>
           </button>
 
-          <button onclick="switchRoomTab('sertifikat')" data-tab="sertifikat" title="E-Sertifikat" class="room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
-            <i data-lucide="award" class="w-5 h-5 shrink-0"></i>
+          <button onclick="switchRoomTab('sertifikat')" data-tab="sertifikat" title="E-Sertifikat" class="room-tab-btn flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0">
+            <i data-lucide="award" class="w-4 h-4 md:w-5 md:h-5 shrink-0"></i>
+            <span class="md:hidden whitespace-nowrap">Sertifikat</span>
             <span class="room-nav-label hidden whitespace-nowrap flex-1 text-left">E-Sertifikat</span>
           </button>
         </nav>
@@ -364,10 +369,16 @@
           <div class="edu-grid-bg absolute inset-0 pointer-events-none"></div>
           <div class="max-w-5xl mx-auto relative z-10 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <button onclick="backToCatalog()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-sm transition">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-                <span>Kembali ke Daftar Kegiatan</span>
-              </button>
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="backToCatalog()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-sm transition">
+                  <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                  <span>Kembali ke Daftar Kegiatan</span>
+                </button>
+                <button onclick="shareCurrentEventLink()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/25 hover:bg-sky-500/40 text-sky-200 border border-sky-400/30 text-xs font-bold backdrop-blur-sm transition">
+                  <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                  <span>Salin Link Kegiatan</span>
+                </button>
+              </div>
               <div class="flex flex-wrap items-center gap-2">
                 <span id="room-category-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-sky-400 text-navy-950">Bimtek</span>
                 <span id="room-status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20">Buka Pendaftaran</span>
@@ -395,7 +406,7 @@
                     <h4 class="font-bold text-navy-900 flex items-center gap-2 text-base">
                       <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> Deskripsi & Tujuan Kegiatan
                     </h4>
-                    <p id="room-description" class="text-sm text-slate-600 leading-relaxed"></p>
+                    <p id="room-description" class="text-sm text-slate-600 leading-relaxed whitespace-pre-line"></p>
                   </div>
 
                   <!-- Tautan Zoom Meeting Kegiatan -->
@@ -424,11 +435,12 @@
                         <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-indigo-900">
                           <i data-lucide="image" class="w-3.5 h-3.5 text-indigo-600"></i> Flyer Resmi Kegiatan
                         </span>
-                        <a id="room-flyer-open-link" href="#" target="_blank" rel="noopener" class="text-[11px] font-bold text-blue-600 hover:underline">
-                          Lihat Ukuran Penuh &nearr;
-                        </a>
+                        <button type="button" onclick="openFlyerLightbox()" class="text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                          <i data-lucide="maximize-2" class="w-3 h-3"></i>
+                          <span>Perbesar Flyer</span>
+                        </button>
                       </div>
-                      <div class="rounded-xl overflow-hidden bg-white border border-indigo-100 flex items-center justify-center">
+                      <div onclick="openFlyerLightbox()" title="Klik untuk memperbesar flyer" class="rounded-xl overflow-hidden bg-white border border-indigo-100 flex items-center justify-center cursor-zoom-in">
                         <img id="room-flyer-img" src="" alt="Flyer Kegiatan" class="w-full max-h-[520px] object-contain mx-auto" />
                       </div>
                     </div>
@@ -478,6 +490,22 @@
 
             <!-- TAB 2: DAFTAR HADIR DIGITAL -->
             <div id="tab-panel-absensi" class="room-panel hidden space-y-6">
+              <!-- Banner Konfirmasi Setelah Presensi -->
+              <div id="att-success-banner" class="hidden bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                  </div>
+                  <div class="text-xs sm:text-sm text-emerald-950">
+                    <strong class="block text-emerald-800 text-sm sm:text-base" id="att-success-title">Kehadiran Berhasil Tercatat!</strong>
+                    <span id="att-success-desc">Nama Anda sudah masuk ke daftar hadir dan terdaftar untuk penerbitan E-Sertifikat.</span>
+                  </div>
+                </div>
+                <button type="button" onclick="goToMyCertificateAfterAttend()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 shadow-xs transition">
+                  Cek E-Sertifikat Saya &rarr;
+                </button>
+              </div>
+
               <div class="grid lg:grid-cols-12 gap-6">
                 <!-- Form Isi Daftar Hadir -->
                 <div class="lg:col-span-5">
@@ -771,6 +799,28 @@
     </div>
   </div>
 
+  <!-- ===================================================================== -->
+  <!-- MODAL LIGHTBOX FLYER KEGIATAN (AMAN UNTUK BASE64 & URL EKSTERNAL)     -->
+  <!-- ===================================================================== -->
+  <div id="flyer-lightbox-modal" onclick="if(event.target===this) closeFlyerLightbox()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/85 backdrop-blur-sm p-4 flex items-center justify-center">
+    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-blue-200 my-auto">
+      <div class="bg-navy-900 text-white px-5 py-3.5 flex items-center justify-between gap-2">
+        <span class="font-bold text-sm truncate" id="lightbox-flyer-title">Flyer Resmi Kegiatan</span>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="downloadCurrentFlyer()" class="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-navy-950 text-xs font-extrabold transition">
+            Unduh Flyer
+          </button>
+          <button type="button" onclick="closeFlyerLightbox()" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition">
+            Tutup &times;
+          </button>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-100 flex items-center justify-center max-h-[80vh] overflow-auto">
+        <img id="lightbox-flyer-img" src="" alt="Flyer Kegiatan Penuh" class="max-w-full max-h-[74vh] object-contain rounded-lg shadow" />
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300">
     <div class="bg-navy-900 text-white px-4 py-3 rounded-xl shadow-xl border border-blue-500/40 flex items-center gap-3 text-sm font-medium">
@@ -798,8 +848,10 @@
   </footer>
 
   <script>
+window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {};
 const STORAGE_KEY = 'jsit_lampung_events_v3';
 const SETTINGS_KEY = 'jsit_lampung_settings_v3';
+const PARTICIPANT_PROFILE_KEY = 'jsit_lampung_participant_profile_v1';
 
 const DEFAULT_SETTINGS = {
   orgName: 'JSIT Wilayah Lampung',
@@ -1055,6 +1107,16 @@ const DEFAULT_EVENTS = [
     let activeCertPayload = null;
     let activeVerificationPayload = null;
     let isRoomSidebarExpanded = false;
+    let lastSubmittedQuery = '';
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     function isFirebaseConfigured() {
       const cfg = window.FIREBASE_CONFIG;
@@ -1133,10 +1195,10 @@ const DEFAULT_EVENTS = [
       if (!pill) return;
       if (status === 'online') {
         pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${text}`;
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${escapeHtml(text)}`;
       } else {
         pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${text}`;
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${escapeHtml(text)}`;
       }
     }
 
@@ -1159,11 +1221,34 @@ const DEFAULT_EVENTS = [
         });
     }
 
+    function restoreSavedParticipantProfile() {
+      try {
+        const raw = localStorage.getItem(PARTICIPANT_PROFILE_KEY);
+        if (!raw) return;
+        const prof = JSON.parse(raw);
+        if (prof.name && !document.getElementById('att-name').value) document.getElementById('att-name').value = prof.name;
+        if (prof.school && !document.getElementById('att-school').value) document.getElementById('att-school').value = prof.school;
+        if (prof.region && LAMPUNG_REGIONS.includes(prof.region)) document.getElementById('att-region').value = prof.region;
+        if (prof.role) document.getElementById('att-role').value = prof.role;
+        if (prof.phone && !document.getElementById('att-phone').value) document.getElementById('att-phone').value = prof.phone;
+        if (prof.email && !document.getElementById('att-email').value) document.getElementById('att-email').value = prof.email;
+      } catch (_) {}
+    }
+
     function initApp() {
       const regionSelect = document.getElementById('att-region');
       if (regionSelect) {
-        regionSelect.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+        regionSelect.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
       }
+      restoreSavedParticipantProfile();
+
+      // Real-time sync antar tab browser saat mode lokal digunakan
+      window.addEventListener('storage', (e) => {
+        if (!isFirebaseReady && (e.key === STORAGE_KEY || e.key === SETTINGS_KEY)) {
+          loadLocalFallbackData(false);
+          if (currentEventId) refreshOpenRoomState();
+        }
+      });
 
       if (window.firebase && isFirebaseConfigured()) {
         try {
@@ -1206,12 +1291,12 @@ const DEFAULT_EVENTS = [
             renderEvents();
             if (currentEventId) refreshOpenRoomState();
             refreshVerificationPageFromLiveEvents();
-            checkVerificationHash();
+            handleInitialRouteHash();
           }, (err) => {
             console.error('Firestore events error:', err);
             document.getElementById('loading-events-state')?.classList.add('hidden');
             updateCloudPill('local', 'Mode Lokal');
-            loadLocalFallbackData();
+            loadLocalFallbackData(true);
           });
           return;
         } catch (err) {
@@ -1221,10 +1306,10 @@ const DEFAULT_EVENTS = [
 
       document.getElementById('loading-events-state')?.classList.add('hidden');
       updateCloudPill('local', 'Mode Lokal');
-      loadLocalFallbackData();
+      loadLocalFallbackData(true);
     }
 
-    function loadLocalFallbackData() {
+    function loadLocalFallbackData(shouldHandleHash = true) {
       const savedSettings = localStorage.getItem(SETTINGS_KEY);
       if (savedSettings) {
         try { settingsData = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch (e) {}
@@ -1245,7 +1330,19 @@ const DEFAULT_EVENTS = [
       updateStats();
       renderEvents();
       refreshVerificationPageFromLiveEvents();
-      checkVerificationHash();
+      if (shouldHandleHash) handleInitialRouteHash();
+    }
+
+    function handleInitialRouteHash() {
+      const hash = window.location.hash || '';
+      if (hash.startsWith('#verifikasi')) {
+        checkVerificationHash();
+      } else if (hash.startsWith('#kegiatan/')) {
+        const targetId = decodeURIComponent(hash.replace('#kegiatan/', '').split('?')[0]);
+        if (targetId && currentEventId !== targetId && eventsData.some(e => e.id === targetId)) {
+          openEventRoom(targetId, 'info');
+        }
+      }
     }
 
     function applyHeaderSettings() {
@@ -1307,9 +1404,9 @@ const DEFAULT_EVENTS = [
       const filtered = eventsData.filter(ev => {
         const matchCat = activeCategory === 'ALL' || (ev.category || '').toLowerCase() === activeCategory.toLowerCase();
         const matchStatus = statusVal === 'ALL' || ev.status === statusVal;
-        const speakerNames = (ev.speakers || []).map(s => s.name.toLowerCase()).join(' ');
+        const speakerNames = (ev.speakers || []).map(s => (s.name || '').toLowerCase()).join(' ');
         const matchQuery = !query ||
-          ev.title.toLowerCase().includes(query) ||
+          (ev.title || '').toLowerCase().includes(query) ||
           (ev.description || '').toLowerCase().includes(query) ||
           (ev.location || '').toLowerCase().includes(query) ||
           speakerNames.includes(query);
@@ -1331,41 +1428,40 @@ const DEFAULT_EVENTS = [
         const matCount = ev.materials ? ev.materials.length : 0;
         const recCount = ev.recordings ? ev.recordings.length : 0;
         const released = isCertificateReleased(ev);
-        const jpLabel = ev.certificate && ev.certificate.jp ? ev.certificate.jp : '8 JP';
-        const certLabel = released ? `Sertifikat Rilis (${jpLabel})` : `Sertifikat (${jpLabel})`;
+        const safeId = escapeHtml(ev.id);
 
         return `
           <article class="bg-white rounded-2xl border border-blue-100 hover:border-blue-300 shadow-xs hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-200 flex flex-col overflow-hidden group">
             <div class="p-5 pb-3 flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 to-sky-50/40">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white">
                 <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-                ${ev.category}
+                ${escapeHtml(ev.category)}
               </span>
               <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border ${getStatusBadgeStyle(ev.status)}">
-                ${ev.status}
+                ${escapeHtml(ev.status)}
               </span>
             </div>
 
             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div class="space-y-2.5">
-                <h3 onclick="openEventRoom('${ev.id}', 'info')" class="font-display font-bold text-base sm:text-lg text-navy-900 group-hover:text-blue-700 transition cursor-pointer line-clamp-2 leading-snug">
-                  ${ev.title}
+                <h3 onclick="openEventRoom('${safeId}', 'info')" class="font-display font-bold text-base sm:text-lg text-navy-900 group-hover:text-blue-700 transition cursor-pointer line-clamp-2 leading-snug">
+                  ${escapeHtml(ev.title)}
                 </h3>
-                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">${ev.description || ''}</p>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">${escapeHtml(ev.description || '')}</p>
               </div>
 
               <div class="space-y-2 text-xs text-slate-600 pt-1">
                 <div class="flex items-center gap-2">
                   <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
-                  <span class="font-medium">${formatDateIndo(ev.dateStart, ev.dateEnd)}</span>
+                  <span class="font-medium">${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</span>
                 </div>
                 <div class="flex items-center gap-2">
                   <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-600 shrink-0"></i>
-                  <span>${ev.time || '-'}</span>
+                  <span>${escapeHtml(ev.time || '-')}</span>
                 </div>
                 <div class="flex items-start gap-2">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5"></i>
-                  <span class="line-clamp-1">${ev.location || '-'}</span>
+                  <span class="line-clamp-1">${escapeHtml(ev.location || '-')}</span>
                 </div>
               </div>
 
@@ -1386,23 +1482,23 @@ const DEFAULT_EVENTS = [
             </div>
 
             <div class="p-4 pt-0 grid grid-cols-2 gap-2">
-              <button onclick="openEventRoom('${ev.id}', 'absensi')" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+              <button onclick="openEventRoom('${safeId}', 'absensi')" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                 <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
                 <span>Daftar Hadir</span>
               </button>
-              <button onclick="openEventRoom('${ev.id}', 'info')" class="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+              <button onclick="openEventRoom('${safeId}', 'info')" class="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
                 <span>Ruang Kegiatan</span>
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
               </button>
             </div>
             <div class="px-4 pb-4 grid grid-cols-3 gap-1.5 text-[11px]">
-              <button onclick="openEventRoom('${ev.id}', 'materi')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
+              <button onclick="openEventRoom('${safeId}', 'materi')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
                 <i data-lucide="folder-down" class="w-3 h-3 text-blue-600"></i> Materi
               </button>
-              <button onclick="openEventRoom('${ev.id}', 'rekaman')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
+              <button onclick="openEventRoom('${safeId}', 'rekaman')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
                 <i data-lucide="video" class="w-3 h-3 text-sky-600"></i> Rekaman
               </button>
-              <button onclick="openEventRoom('${ev.id}', 'sertifikat')" class="py-1.5 px-2 rounded-lg border ${released ? 'border-emerald-200 bg-emerald-50/60 text-emerald-800' : 'border-slate-200 text-slate-700'} hover:border-blue-300 font-semibold flex items-center justify-center gap-1 transition">
+              <button onclick="openEventRoom('${safeId}', 'sertifikat')" class="py-1.5 px-2 rounded-lg border ${released ? 'border-emerald-200 bg-emerald-50/60 text-emerald-800' : 'border-slate-200 text-slate-700'} hover:border-blue-300 font-semibold flex items-center justify-center gap-1 transition">
                 <i data-lucide="award" class="w-3 h-3 ${released ? 'text-emerald-600' : 'text-amber-600'}"></i> Sertifikat
               </button>
             </div>
@@ -1443,10 +1539,48 @@ const DEFAULT_EVENTS = [
 
     function backToCatalog() {
       currentEventId = null;
+      if ((window.location.hash || '').startsWith('#kegiatan/')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
       document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('verification-page').classList.add('hidden');
       document.getElementById('portal-home-view').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function shareCurrentEventLink() {
+      if (!currentEventId) return;
+      const baseUrl = window.location.href.split('#')[0].split('?')[0];
+      const shareUrl = `${baseUrl}#kegiatan/${encodeURIComponent(currentEventId)}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => showToast('Tautan ruang kegiatan berhasil disalin!')).catch(() => {
+          prompt('Salin tautan kegiatan di bawah ini:', shareUrl);
+        });
+      } else {
+        prompt('Salin tautan kegiatan di bawah ini:', shareUrl);
+      }
+    }
+
+    function openFlyerLightbox() {
+      const ev = eventsData.find(item => item.id === currentEventId);
+      if (!ev || !ev.flyerImg) return;
+      document.getElementById('lightbox-flyer-title').textContent = `Flyer: ${ev.title}`;
+      document.getElementById('lightbox-flyer-img').src = ev.flyerImg;
+      document.getElementById('flyer-lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeFlyerLightbox() {
+      document.getElementById('flyer-lightbox-modal').classList.add('hidden');
+    }
+
+    function downloadCurrentFlyer() {
+      const ev = eventsData.find(item => item.id === currentEventId);
+      if (!ev || !ev.flyerImg) return;
+      const link = document.createElement('a');
+      link.href = ev.flyerImg;
+      link.download = `Flyer-${(ev.title || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
+      link.target = '_blank';
+      link.click();
     }
 
     function refreshOpenRoomState() {
@@ -1485,11 +1619,9 @@ const DEFAULT_EVENTS = [
       // Flyer Kegiatan di Kolom Narasumber & Fasilitator
       const flyerWrap = document.getElementById('room-flyer-wrapper');
       const flyerImgEl = document.getElementById('room-flyer-img');
-      const flyerOpenLink = document.getElementById('room-flyer-open-link');
       if (ev.flyerImg && ev.flyerImg.trim() !== '') {
         flyerWrap.classList.remove('hidden');
         flyerImgEl.src = ev.flyerImg.trim();
-        flyerOpenLink.href = ev.flyerImg.trim();
       } else {
         flyerWrap.classList.add('hidden');
         flyerImgEl.src = '';
@@ -1504,11 +1636,11 @@ const DEFAULT_EVENTS = [
         ? ev.speakers.map(sp => `
             <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
               <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center shrink-0">
-                ${sp.name.charAt(0)}
+                ${escapeHtml((sp.name || 'N').charAt(0))}
               </div>
               <div>
-                <div class="font-bold text-sm text-navy-900">${sp.name}</div>
-                <div class="text-xs text-slate-500">${sp.role}</div>
+                <div class="font-bold text-sm text-navy-900">${escapeHtml(sp.name)}</div>
+                <div class="text-xs text-slate-500">${escapeHtml(sp.role || '')}</div>
               </div>
             </div>
           `).join('')
@@ -1539,6 +1671,36 @@ const DEFAULT_EVENTS = [
       } else {
         lockedBanner.classList.add('hidden');
         unlockedArea.classList.remove('hidden');
+        // Jika sertifikat sedang ditampilkan, sinkronkan pembaruan live dari admin
+        if (activeCertPayload && !document.getElementById('cert-preview-wrapper').classList.contains('hidden')) {
+          const certCfg = ev.certificate || {};
+          activeCertPayload = {
+            ...activeCertPayload,
+            jp: certCfg.jp || activeCertPayload.jp,
+            roleLabel: certCfg.roleLabel || activeCertPayload.roleLabel,
+            signerName: certCfg.signerName || settingsData.signerName,
+            signerTitle: certCfg.signerTitle || settingsData.signerTitle,
+            themeColor: certCfg.themeColor || '#1E3A8A',
+            customTemplateImg: certCfg.customTemplateImg || '',
+            hideDefaultChrome: certCfg.hideDefaultChrome !== false,
+            showCertHeading: certCfg.showCertHeading === true,
+            textColor: certCfg.textColor || '#0B1F3A',
+            offsetY: certCfg.offsetY || 0,
+            qrOffsetX: certCfg.qrOffsetX || 0,
+            qrOffsetY: certCfg.qrOffsetY || 0,
+            qrScale: certCfg.qrScale || 100,
+            showScanBg: certCfg.showScanBg !== false,
+            signerOffsetX: certCfg.signerOffsetX || 0,
+            signerOffsetY: certCfg.signerOffsetY || 0,
+            signerScale: certCfg.signerScale || 100,
+            showIssuedDate: certCfg.showIssuedDate !== false
+          };
+          document.getElementById('cert-view-role').textContent = activeCertPayload.roleLabel;
+          document.getElementById('cert-view-jp').textContent = activeCertPayload.jp;
+          document.getElementById('cert-view-signer-title').textContent = activeCertPayload.signerTitle;
+          document.getElementById('cert-view-signer-name').textContent = activeCertPayload.signerName;
+          applyCertificateLayoutStyles(activeCertPayload);
+        }
       }
 
       renderRoomAttendees();
@@ -1554,7 +1716,9 @@ const DEFAULT_EVENTS = [
       activeCertPayload = null;
       document.getElementById('cert-preview-wrapper').classList.add('hidden');
       document.getElementById('cert-feedback-msg').classList.add('hidden');
+      document.getElementById('att-success-banner').classList.add('hidden');
       document.getElementById('cert-search-query').value = '';
+      restoreSavedParticipantProfile();
 
       refreshOpenRoomState();
 
@@ -1569,9 +1733,9 @@ const DEFAULT_EVENTS = [
     function switchRoomTab(tabName) {
       document.querySelectorAll('.room-tab-btn').forEach(btn => {
         if (btn.dataset.tab === tabName) {
-          btn.className = 'room-tab-btn active flex items-center gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs transition shrink-0';
+          btn.className = 'room-tab-btn active flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs transition shrink-0';
         } else {
-          btn.className = 'room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0';
+          btn.className = 'room-tab-btn flex items-center gap-2.5 md:gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0';
         }
       });
 
@@ -1581,7 +1745,7 @@ const DEFAULT_EVENTS = [
     }
 
     // =========================================================================
-    // DAFTAR HADIR (SUBMIT KE FIREBASE SUBCOLLECTION)
+    // DAFTAR HADIR (SUBMIT KE FIREBASE SUBCOLLECTION + ANTI DUPLIKASI)
     // =========================================================================
     async function submitAttendance(e) {
       e.preventDefault();
@@ -1603,6 +1767,26 @@ const DEFAULT_EVENTS = [
       const role = document.getElementById('att-role').value;
       const phone = document.getElementById('att-phone').value.trim();
       const email = document.getElementById('att-email').value.trim();
+
+      // Cek duplikasi daftar hadir berdasarkan No. WA atau Nama Lengkap yang sama persis
+      const normPhone = normalizePhone(phone);
+      const normName = name.toLowerCase();
+      const existingAtt = (ev.attendees || []).find(a => {
+        const samePhone = normPhone.length >= 8 && normalizePhone(a.phone) === normPhone;
+        const sameName = (a.name || '').trim().toLowerCase() === normName;
+        return samePhone || sameName;
+      });
+
+      if (existingAtt) {
+        lastSubmittedQuery = existingAtt.name;
+        const banner = document.getElementById('att-success-banner');
+        document.getElementById('att-success-title').textContent = `Anda Sudah Tercatat Hadir (${existingAtt.name})`;
+        document.getElementById('att-success-desc').textContent = `Kehadiran Anda sebelumnya sudah tersimpan pada ${existingAtt.timestamp || 'sistem'}. Klik tombol di samping untuk mengecek E-Sertifikat Anda.`;
+        banner.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+        showToast('Data kehadiran Anda sudah tercatat sebelumnya.');
+        return;
+      }
 
       const now = new Date();
       const timestamp = `${now.toISOString().slice(0, 10)} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -1637,6 +1821,11 @@ const DEFAULT_EVENTS = [
           renderRoomAttendees();
         }
 
+        // Simpan profil peserta di perangkat agar pengisian kegiatan berikutnya lebih cepat
+        try {
+          localStorage.setItem(PARTICIPANT_PROFILE_KEY, JSON.stringify({ name, school, region, role, phone, email }));
+        } catch (_) {}
+
         if (settingsData.webhookUrl && settingsData.webhookUrl.startsWith('http')) {
           fetch(settingsData.webhookUrl, {
             method: 'POST',
@@ -1646,11 +1835,13 @@ const DEFAULT_EVENTS = [
           }).catch(() => {});
         }
 
-        document.getElementById('att-name').value = '';
-        document.getElementById('att-school').value = '';
-        document.getElementById('att-phone').value = '';
-        document.getElementById('att-email').value = '';
+        lastSubmittedQuery = name;
         if (document.getElementById('att-pin')) document.getElementById('att-pin').value = '';
+
+        const banner = document.getElementById('att-success-banner');
+        document.getElementById('att-success-title').textContent = `Kehadiran ${name} Berhasil Tercatat!`;
+        document.getElementById('att-success-desc').textContent = 'Nama & gelar Anda telah terdaftar untuk penerbitan E-Sertifikat kegiatan ini.';
+        banner.classList.remove('hidden');
 
         showToast('Kehadiran berhasil dicatat secara real-time!');
       } catch (err) {
@@ -1663,13 +1854,25 @@ const DEFAULT_EVENTS = [
       }
     }
 
+    function goToMyCertificateAfterAttend() {
+      switchRoomTab('sertifikat');
+      const ev = eventsData.find(item => item.id === currentEventId);
+      if (ev && isCertificateReleased(ev) && lastSubmittedQuery) {
+        document.getElementById('cert-search-query').value = lastSubmittedQuery;
+        verifyAndGenerateCert(new Event('submit'));
+      }
+    }
+
     function renderRoomAttendees() {
       const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
       const tbody = document.getElementById('room-attendees-tbody');
       const query = (document.getElementById('att-list-search').value || '').toLowerCase().trim();
       const list = (ev.attendees || []).filter(a =>
-        !query || a.name.toLowerCase().includes(query) || a.school.toLowerCase().includes(query) || (a.region || '').toLowerCase().includes(query)
+        !query ||
+        (a.name || '').toLowerCase().includes(query) ||
+        (a.school || '').toLowerCase().includes(query) ||
+        (a.region || '').toLowerCase().includes(query)
       );
 
       if (list.length === 0) {
@@ -1681,14 +1884,14 @@ const DEFAULT_EVENTS = [
         <tr class="hover:bg-blue-50/40 transition">
           <td class="py-3 px-4 font-bold text-slate-500">${idx + 1}</td>
           <td class="py-3 px-4">
-            <div class="font-bold text-navy-900">${a.name}</div>
-            <div class="text-[11px] text-blue-700 font-medium">${a.role || 'Peserta'}</div>
+            <div class="font-bold text-navy-900">${escapeHtml(a.name)}</div>
+            <div class="text-[11px] text-blue-700 font-medium">${escapeHtml(a.role || 'Peserta')}</div>
           </td>
           <td class="py-3 px-4">
-            <div class="font-medium text-slate-700">${a.school}</div>
-            <div class="text-[11px] text-slate-400">${a.region || '-'}</div>
+            <div class="font-medium text-slate-700">${escapeHtml(a.school)}</div>
+            <div class="text-[11px] text-slate-400">${escapeHtml(a.region || '-')}</div>
           </td>
-          <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${a.timestamp || '-'}</td>
+          <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${escapeHtml(a.timestamp || '-')}</td>
         </tr>
       `).join('');
     }
@@ -1710,11 +1913,11 @@ const DEFAULT_EVENTS = [
       grid.innerHTML = mats.map(m => `
         <div class="bg-white rounded-2xl p-5 border border-blue-100 hover:border-blue-300 shadow-xs flex flex-col justify-between space-y-4">
           <div class="space-y-2">
-            <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-extrabold bg-blue-100 text-blue-800">${m.type || 'DOKUMEN'}</span>
-            <h5 class="font-bold text-navy-900 text-sm leading-snug">${m.title}</h5>
-            <p class="text-xs text-slate-500 leading-relaxed">${m.desc || 'Dokumen materi resmi kegiatan.'}</p>
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-extrabold bg-blue-100 text-blue-800">${escapeHtml(m.type || 'DOKUMEN')}</span>
+            <h5 class="font-bold text-navy-900 text-sm leading-snug">${escapeHtml(m.title)}</h5>
+            <p class="text-xs text-slate-500 leading-relaxed">${escapeHtml(m.desc || 'Dokumen materi resmi kegiatan.')}</p>
           </div>
-          <a href="${m.url}" target="_blank" rel="noopener" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+          <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             <span>Buka / Unduh Materi</span>
           </a>
@@ -1746,18 +1949,18 @@ const DEFAULT_EVENTS = [
           <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-100 text-sky-800">${r.platform || 'Video'}</span>
-                <h5 class="font-bold text-navy-900 text-base mt-1">${r.title}</h5>
-                <p class="text-xs text-slate-500">${r.notes || ''}</p>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-100 text-sky-800">${escapeHtml(r.platform || 'Video')}</span>
+                <h5 class="font-bold text-navy-900 text-base mt-1">${escapeHtml(r.title)}</h5>
+                <p class="text-xs text-slate-500">${escapeHtml(r.notes || '')}</p>
               </div>
-              <a href="${r.url}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shrink-0 transition">
+              <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shrink-0 transition">
                 <i data-lucide="play-circle" class="w-4 h-4"></i>
-                <span>Tonton di ${r.platform || 'Tautan'}</span>
+                <span>Tonton di ${escapeHtml(r.platform || 'Tautan')}</span>
               </a>
             </div>
             ${ytEmbed ? `
               <div class="aspect-video w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-200">
-                <iframe class="w-full h-full" src="${ytEmbed}" title="${r.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="${ytEmbed}" title="${escapeHtml(r.title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
             ` : ''}
           </div>
@@ -1798,6 +2001,9 @@ const DEFAULT_EVENTS = [
       const watermark = document.getElementById('cert-watermark-icon');
       const themeColor = p.themeColor || '#1E3A8A';
 
+      const areaW = (printArea && printArea.clientWidth) ? printArea.clientWidth : 896;
+      const unitPx = areaW / 1000;
+
       if (p.customTemplateImg) {
         printArea.style.backgroundImage = `url('${p.customTemplateImg}')`;
         watermark.classList.add('hidden');
@@ -1811,7 +2017,7 @@ const DEFAULT_EVENTS = [
           innerFrame.classList.add('border-2', 'border-amber-400/70');
           defaultHeader.classList.remove('invisible');
         }
-        dynamicBody.style.transform = `translateY(${p.offsetY || 0}px)`;
+        dynamicBody.style.transform = `translateY(${Math.round((p.offsetY || 0) * (areaW / 835))}px)`;
       } else {
         printArea.style.backgroundImage = 'none';
         watermark.classList.remove('hidden');
@@ -1837,9 +2043,6 @@ const DEFAULT_EVENTS = [
       document.getElementById('cert-view-signer-name').style.color = txtCol;
 
       // Apply custom QR & Signer positions (proportional to container width)
-      const areaW = (printArea && printArea.clientWidth) ? printArea.clientWidth : 896;
-      const unitPx = areaW / 1000;
-
       const qrBlock = document.getElementById('cert-view-qr-block');
       const qrText = document.getElementById('cert-view-qr-text');
       const qrX = Number(p.qrOffsetX || 0);
@@ -1884,7 +2087,7 @@ const DEFAULT_EVENTS = [
 
       const attendees = ev.attendees || [];
       const foundIndex = attendees.findIndex(a => {
-        const nameMatch = a.name.toLowerCase().includes(query);
+        const nameMatch = (a.name || '').toLowerCase().includes(query);
         const aDigits = normalizePhone(a.phone);
         const phoneMatch = qDigits.length >= 6 && aDigits.includes(qDigits);
         return nameMatch || phoneMatch;
@@ -1993,7 +2196,7 @@ const DEFAULT_EVENTS = [
         const themeColor = p.themeColor || '#1E3A8A';
         const txtCol = p.customTemplateImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
         const subTxtCol = p.customTemplateImg ? txtCol : '#334155';
-        const yShift = p.customTemplateImg ? Math.round((p.offsetY || 0) * 1.6) : 0;
+        const yShift = p.customTemplateImg ? Math.round((p.offsetY || 0) * (W / 835)) : 0;
 
         if (!p.customTemplateImg || p.hideDefaultChrome === false) {
           ctx.strokeStyle = themeColor;
@@ -2062,12 +2265,13 @@ const DEFAULT_EVENTS = [
         ctx.font = '24px sans-serif';
         ctx.fillText(`Diselenggarakan oleh JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung pada ${p.dateRange} (${p.jp})`, W / 2, afterTitleY);
 
-        // QR Code & Verification Text (mengikuti posisi & skala dari Studio)
+        // QR Code & Verification Text (anchored bottom-left seperti origin-bottom-left)
         const qrScaleRatio = (Number(p.qrScale || 100)) / 100;
+        const qrBottomY = 1105 + Math.round((Number(p.qrOffsetY || 0)) * (W / 1000));
         const qrBaseX = 135 + Math.round((Number(p.qrOffsetX || 0)) * (W / 1000));
-        const qrBaseY = 930 + Math.round((Number(p.qrOffsetY || 0)) * (W / 1000));
         const qrSize = Math.round(165 * qrScaleRatio);
         const qrPad = Math.round(10 * qrScaleRatio);
+        const qrBaseY = qrBottomY - qrSize;
 
         if (p.qrDataUrl) {
           const qrImg = new Image();
@@ -2107,7 +2311,9 @@ const DEFAULT_EVENTS = [
         function finishSignerAndDownload() {
           const sScaleRatio = (Number(p.signerScale || 100)) / 100;
           const signerX = (W - 380) + Math.round((Number(p.signerOffsetX || 0)) * (W / 1000));
-          const signerTopY = 945 + Math.round((Number(p.signerOffsetY || 0)) * (W / 1000));
+          const signerBottomY = 1095 + Math.round((Number(p.signerOffsetY || 0)) * (W / 1000));
+          const blockHeight = Math.round(145 * sScaleRatio);
+          const signerTopY = signerBottomY - blockHeight;
 
           ctx.textAlign = 'center';
           if (p.showIssuedDate !== false) {
@@ -2126,7 +2332,7 @@ const DEFAULT_EVENTS = [
 
           ctx.fillStyle = txtCol;
           ctx.font = `bold ${Math.round(26 * sScaleRatio)}px sans-serif`;
-          ctx.fillText(p.signerName, signerX, signerTopY + Math.round(130 * sScaleRatio));
+          ctx.fillText(p.signerName, signerX, signerTopY + Math.round(132 * sScaleRatio));
 
           const link = document.createElement('a');
           link.download = `E-Sertifikat-A4-${p.ownerName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
@@ -2190,7 +2396,7 @@ const DEFAULT_EVENTS = [
 
       eventsData.forEach(ev => {
         (ev.attendees || []).forEach((att, idx) => {
-          const nameMatch = att.name.toLowerCase().includes(q);
+          const nameMatch = (att.name || '').toLowerCase().includes(q);
           const aDigits = normalizePhone(att.phone);
           const phoneMatch = qDigits.length >= 6 && aDigits.includes(qDigits);
           if (nameMatch || phoneMatch) {
@@ -2217,11 +2423,11 @@ const DEFAULT_EVENTS = [
       resBox.innerHTML = matches.map(m => `
         <div class="p-4 rounded-2xl border border-blue-100 bg-blue-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span class="text-[11px] font-bold ${m.released ? 'text-emerald-700' : 'text-amber-700'}">${m.released ? m.certNumber : 'Rilis: ' + m.releaseLabel}</span>
-            <h5 class="font-bold text-sm text-navy-900">${m.ownerName}</h5>
-            <p class="text-xs text-slate-600 line-clamp-1">${m.eventTitle}</p>
+            <span class="text-[11px] font-bold ${m.released ? 'text-emerald-700' : 'text-amber-700'}">${escapeHtml(m.released ? m.certNumber : 'Rilis: ' + m.releaseLabel)}</span>
+            <h5 class="font-bold text-sm text-navy-900">${escapeHtml(m.ownerName)}</h5>
+            <p class="text-xs text-slate-600 line-clamp-1">${escapeHtml(m.eventTitle)}</p>
           </div>
-          <button onclick="openCertFromGlobal('${m.eventId}', '${m.ownerName.replace(/'/g, "\\'")}')" class="px-3.5 py-2 rounded-xl ${m.released ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-amber-100 text-amber-900'} text-xs font-bold shrink-0">
+          <button type="button" data-evid="${escapeHtml(m.eventId)}" data-owner="${escapeHtml(m.ownerName)}" onclick="openCertFromGlobal(this.dataset.evid, this.dataset.owner)" class="px-3.5 py-2 rounded-xl ${m.released ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-amber-100 text-amber-900'} text-xs font-bold shrink-0">
             ${m.released ? 'Buka & Unduh' : 'Lihat Jadwal Rilis'}
           </button>
         </div>
@@ -2382,7 +2588,7 @@ const DEFAULT_EVENTS = [
             <i data-lucide="clock" class="w-6 h-6 text-amber-600 shrink-0 mt-0.5"></i>
             <div class="text-xs sm:text-sm text-amber-900">
               <strong class="block text-amber-800 text-sm sm:text-base">TERDAFTAR SEBAGAI CALON PEMILIK SERTIFIKAT (MENUNGGU RILIS)</strong>
-              <span>Peserta tercatat hadir pada kegiatan ini, namun E-Sertifikat baru dapat diunduh setelah jadwal rilis: <strong>${releaseScheduleLabel}</strong>.</span>
+              <span>Peserta tercatat hadir pada kegiatan ini, namun E-Sertifikat baru dapat diunduh setelah jadwal rilis: <strong>${escapeHtml(releaseScheduleLabel)}</strong>.</span>
             </div>
           </div>
         `;
@@ -2393,43 +2599,43 @@ const DEFAULT_EVENTS = [
         <div class="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100 text-xs sm:text-sm">
           <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
             <span class="font-semibold text-slate-500">Nomor Sertifikat</span>
-            <span class="sm:col-span-2 font-extrabold text-navy-900 font-mono">${liveCertNo}</span>
+            <span class="sm:col-span-2 font-extrabold text-navy-900 font-mono">${escapeHtml(liveCertNo)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4">
             <span class="font-semibold text-slate-500">Kode Validasi</span>
-            <span class="sm:col-span-2 font-bold text-blue-700 font-mono">${payload.code || '-'}</span>
+            <span class="sm:col-span-2 font-bold text-blue-700 font-mono">${escapeHtml(payload.code || '-')}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
             <span class="font-semibold text-slate-500">Pemilik Sertifikat</span>
-            <span class="sm:col-span-2 font-extrabold text-navy-900 text-base">${liveOwner}</span>
+            <span class="sm:col-span-2 font-extrabold text-navy-900 text-base">${escapeHtml(liveOwner)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4">
             <span class="font-semibold text-slate-500">Asal Sekolah / Lembaga</span>
-            <span class="sm:col-span-2 font-semibold text-slate-800">${liveSchool}</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${escapeHtml(liveSchool)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
             <span class="font-semibold text-slate-500">Kabupaten / Kota</span>
-            <span class="sm:col-span-2 font-semibold text-slate-800">${liveKab}</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${escapeHtml(liveKab)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4">
             <span class="font-semibold text-slate-500">Perihal Kegiatan</span>
-            <span class="sm:col-span-2 font-bold text-navy-900">${liveEventTitle}</span>
+            <span class="sm:col-span-2 font-bold text-navy-900">${escapeHtml(liveEventTitle)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
             <span class="font-semibold text-slate-500">Tanggal Pelaksanaan</span>
-            <span class="sm:col-span-2 font-semibold text-slate-800">${liveDateRange}</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${escapeHtml(liveDateRange)}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4">
             <span class="font-semibold text-slate-500">Status Kepesertaan & JP</span>
-            <span class="sm:col-span-2 font-bold text-blue-700">${liveRole} (${liveJp})</span>
+            <span class="sm:col-span-2 font-bold text-blue-700">${escapeHtml(liveRole)} (${escapeHtml(liveJp)})</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
             <span class="font-semibold text-slate-500">Instansi Penyelenggara</span>
-            <span class="sm:col-span-2 font-semibold text-slate-800">${payload.ins || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung'}</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${escapeHtml(payload.ins || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung')}</span>
           </div>
           <div class="grid sm:grid-cols-3 p-4">
             <span class="font-semibold text-slate-500">Penandatangan Sah</span>
-            <span class="sm:col-span-2 font-bold text-navy-900">${liveSignerFull}</span>
+            <span class="sm:col-span-2 font-bold text-navy-900">${escapeHtml(liveSignerFull)}</span>
           </div>
         </div>
       `;
@@ -2499,7 +2705,7 @@ const DEFAULT_EVENTS = [
       }, 3500);
     }
 
-    window.addEventListener('hashchange', checkVerificationHash);
+    window.addEventListener('hashchange', handleInitialRouteHash);
     window.addEventListener('resize', () => {
       if (activeCertPayload && !document.getElementById('cert-preview-wrapper').classList.contains('hidden')) {
         applyCertificateLayoutStyles(activeCertPayload);

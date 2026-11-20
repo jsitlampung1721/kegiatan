@@ -694,16 +694,16 @@
                         </p>
                       </div>
 
-                      <div class="pt-2 grid grid-cols-2 items-end max-w-2xl w-full mx-auto text-left">
-                        <div class="flex items-center gap-2.5">
+                      <div class="pt-2 grid grid-cols-2 items-end max-w-2xl w-full mx-auto text-left relative z-20">
+                        <div id="cert-qr-block" class="flex items-center gap-2.5 origin-bottom-left">
                           <img id="cert-qr-img" src="" alt="Barcode Verifikasi Sertifikat" class="w-16 h-16 border border-slate-200 rounded p-0.5 bg-white shadow-2xs" />
-                          <div class="text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1 rounded">
-                            <strong class="text-navy-900 block">Verifikasi Kepemilikan</strong>
-                            Scan Barcode / QR Code<br/>
-                            <span id="cert-view-code" class="font-mono text-blue-800 font-bold">ID: VERIFIED</span>
+                          <div id="cert-qr-text-box" class="text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1 rounded">
+                            <strong class="text-navy-900 block">Scan Verifikasi</strong>
+                            JSIT Wilayah Lampung<br/>
+                            <span id="cert-view-code" class="font-mono text-blue-800 font-bold">Kode: VERIFIED</span>
                           </div>
                         </div>
-                        <div class="text-center">
+                        <div id="cert-signer-block" class="text-center origin-bottom">
                           <p class="text-[11px] text-slate-500" id="cert-view-issued-wrap">Bandar Lampung, <span id="cert-view-issued-date">-</span></p>
                           <p class="text-[11px] font-semibold text-slate-700" id="cert-view-signer-title">Ketua JSIT Indonesia Wilayah Lampung</p>
                           <div class="h-9 flex items-center justify-center">
@@ -922,85 +922,249 @@
   <!-- Hidden High-Res A4 Landscape Canvas (297mm x 210mm @ 150 DPI = 1754 x 1240 px) -->
   <canvas id="hd-cert-canvas" width="1754" height="1240" class="hidden"></canvas>
 
+  <!-- Main Application Logic (Firebase Firestore Real-Time + Local Fallback) -->
   <script>
-    const STORAGE_KEY = 'jsit_lampung_events_v3';
-    const SETTINGS_KEY = 'jsit_lampung_settings_v3';
+const STORAGE_KEY = 'jsit_lampung_events_v3';
+const SETTINGS_KEY = 'jsit_lampung_settings_v3';
 
-    const DEFAULT_SETTINGS = {
-      orgName: 'JSIT Wilayah Lampung',
-      orgSub: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+const DEFAULT_SETTINGS = {
+  orgName: 'JSIT Wilayah Lampung',
+  orgSub: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+  adminPass: 'jsitlampung2026',
+  signerName: 'Muslimin, M.Pd.I.,Gr.',
+  signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
+  webhookUrl: ''
+};
+
+const LAMPUNG_REGIONS = [
+  'Kota Bandar Lampung',
+  'Kota Metro',
+  'Kab. Lampung Selatan',
+  'Kab. Lampung Tengah',
+  'Kab. Lampung Utara',
+  'Kab. Lampung Timur',
+  'Kab. Lampung Barat',
+  'Kab. Pesawaran',
+  'Kab. Pringsewu',
+  'Kab. Tanggamus',
+  'Kab. Tulang Bawang',
+  'Kab. Tulang Bawang Barat',
+  'Kab. Mesuji',
+  'Kab. Way Kanan',
+  'Kab. Pesisir Barat',
+  'Luar Provinsi Lampung'
+];
+
+const DEFAULT_EVENTS = [
+  {
+    id: 'evt-jsit-001',
+    title: 'Bimtek Implementasi Kurikulum Khas JSIT & Pembelajaran Mendalam (Deep Learning)',
+    category: 'Bimtek',
+    status: 'Buka Pendaftaran',
+    dateStart: '2026-11-28',
+    dateEnd: '2026-11-29',
+    time: '08.00 - 16.00 WIB',
+    timeEnd: '16:00',
+    mode: 'Offline / Tatap Muka',
+    location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
+    zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
+    quota: 250,
+    pin: '',
+    speakers: [
+      { name: 'Muslimin, M.Pd.I.,Gr.', role: 'Ketua JSIT Indonesia Wilayah Lampung' },
+      { name: 'Ust. Rahmat Hidayat, M.Pd.I.', role: 'Tim Pengembang Kurikulum JSIT Pusat' }
+    ],
+    description: 'Bimbingan teknis intensif bagi Wakil Kepala Sekolah Bidang Kurikulum dan Guru Inti SIT se-Provinsi Lampung dalam merancang modul ajar terpadu berbasis pendekatan Deep Learning dan Standar Mutu Kekhasan JSIT Edisi Terbaru.',
+    materials: [
+      { id: 'm-101', title: 'Panduan Umum Kekhasan Kurikulum JSIT 2026', type: 'PDF', url: 'https://drive.google.com', desc: 'Dokumen acuan resmi standar mutu pendidikan SIT.' },
+      { id: 'm-102', title: 'Slide Materi: Desain Pembelajaran Mendalam (Deep Learning)', type: 'PPTX', url: 'https://drive.google.com', desc: 'Paparan narasumber sesi 1 dan sesi 2.' },
+      { id: 'm-103', title: 'Template Modul Ajar & Rubrik Asesmen Terpadu', type: 'DOCX', url: 'https://drive.google.com', desc: 'Format siap edit untuk praktik penyusunan perangkat ajar.' }
+    ],
+    recordings: [
+      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' }
+    ],
+    certificate: {
+      enabled: true,
+      releaseMode: 'after_end',
+      customEndDate: '2026-11-29',
+      customEndTime: '16:00',
+      jp: '16 JP',
+      prefix: 'SERT-BIMTEK/JSIT-LPG/XI/2026',
+      roleLabel: 'Peserta',
       signerName: 'Muslimin, M.Pd.I.,Gr.',
       signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
-      webhookUrl: ''
-    };
-
-    const LAMPUNG_REGIONS = [
-      'Kota Bandar Lampung',
-      'Kota Metro',
-      'Kab. Lampung Selatan',
-      'Kab. Lampung Tengah',
-      'Kab. Lampung Utara',
-      'Kab. Lampung Timur',
-      'Kab. Lampung Barat',
-      'Kab. Pesawaran',
-      'Kab. Pringsewu',
-      'Kab. Tanggamus',
-      'Kab. Tulang Bawang',
-      'Kab. Tulang Bawang Barat',
-      'Kab. Mesuji',
-      'Kab. Way Kanan',
-      'Kab. Pesisir Barat',
-      'Luar Provinsi Lampung'
-    ];
-
-    const DEFAULT_EVENTS = [
-      {
-        id: 'evt-jsit-001',
-        title: 'Bimtek Implementasi Kurikulum Khas JSIT & Pembelajaran Mendalam (Deep Learning)',
-        category: 'Bimtek',
-        status: 'Buka Pendaftaran',
-        dateStart: '2026-11-28',
-        dateEnd: '2026-11-29',
-        time: '08.00 - 16.00 WIB',
-        timeEnd: '16:00',
-        mode: 'Offline / Tatap Muka',
-        location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
-        zoomUrl: 'https://zoom.us/join',
-        flyerImg: '',
-        quota: 250,
-        pin: '',
-        speakers: [
-          { name: 'Muslimin, M.Pd.I.,Gr.', role: 'Ketua JSIT Indonesia Wilayah Lampung' },
-          { name: 'Ust. Rahmat Hidayat, M.Pd.I.', role: 'Tim Pengembang Kurikulum JSIT Pusat' }
-        ],
-        description: 'Bimbingan teknis intensif bagi Wakil Kepala Sekolah Bidang Kurikulum dan Guru Inti SIT se-Provinsi Lampung dalam merancang modul ajar terpadu berbasis pendekatan Deep Learning dan Standar Mutu Kekhasan JSIT Edisi Terbaru.',
-        materials: [
-          { id: 'm-101', title: 'Panduan Umum Kekhasan Kurikulum JSIT 2026', type: 'PDF', url: 'https://drive.google.com', desc: 'Dokumen acuan resmi standar mutu pendidikan SIT.' },
-          { id: 'm-102', title: 'Slide Materi: Desain Pembelajaran Mendalam (Deep Learning)', type: 'PPTX', url: 'https://drive.google.com', desc: 'Paparan narasumber sesi 1 dan sesi 2.' },
-          { id: 'm-103', title: 'Template Modul Ajar & Rubrik Asesmen Terpadu', type: 'DOCX', url: 'https://drive.google.com', desc: 'Format siap edit untuk praktik penyusunan perangkat ajar.' }
-        ],
-        recordings: [
-          { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' }
-        ],
-        certificate: {
-          enabled: true,
-          releaseMode: 'after_end',
-          customEndDate: '2026-11-29',
-          customEndTime: '16:00',
-          jp: '16 JP',
-          prefix: 'SERT-BIMTEK/JSIT-LPG/XI/2026',
-          roleLabel: 'Peserta',
-          signerName: 'Muslimin, M.Pd.I.,Gr.',
-          signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
-          themeColor: '#1E3A8A',
-          customTemplateImg: '',
-          hideDefaultChrome: true,
-          textColor: '#0B1F3A',
-          offsetY: 0
-        },
-        attendees: []
-      }
-    ];
+      themeColor: '#1E3A8A',
+      customTemplateImg: '',
+      hideDefaultChrome: true,
+      textColor: '#0B1F3A',
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
+    },
+    attendees: []
+  },
+  {
+    id: 'evt-jsit-002',
+    title: 'Workshop Kepemimpinan Transformasional Kepala Sekolah & Manajemen Mutu SIT',
+    category: 'Workshop',
+    status: 'Berlangsung',
+    dateStart: '2026-11-19',
+    dateEnd: '2026-11-20',
+    time: '08.30 - 15.30 WIB',
+    timeEnd: '15:30',
+    mode: 'Hybrid (Offline & Zoom)',
+    location: 'Hotel Emersia Bandar Lampung & Zoom Cloud Meeting',
+    zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
+    quota: 150,
+    pin: '',
+    speakers: [
+      { name: 'Prof. Dr. Irwan Syahputra, M.Si.', role: 'Pakar Manajemen Pendidikan Nasional' },
+      { name: 'Ust. Hendra Wijaya, S.T., M.M.', role: 'Bidang Pembinaan Sekolah JSIT Lampung' }
+    ],
+    description: 'Workshop strategis untuk memperkuat tata kelola sekolah Islam terpadu, penyusunan Rencana Kerja Jangka Menengah (RKJM), supervisi akademik efektif, serta penguatan budaya mutu sekolah.',
+    materials: [
+      { id: 'm-201', title: 'Instrumen Audit Mutu Internal Sekolah Islam Terpadu', type: 'PDF', url: 'https://drive.google.com', desc: 'Checklist evaluasi diri sekolah berbasis standar JSIT.' }
+    ],
+    recordings: [
+      { id: 'r-201', title: 'Rekaman Hari 1: Kepemimpinan Visioner Kepala Sekolah SIT', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Sesi pemaparan & studi kasus manajemen mutu.' }
+    ],
+    certificate: {
+      enabled: true,
+      releaseMode: 'after_end',
+      customEndDate: '2026-11-20',
+      customEndTime: '15:30',
+      jp: '12 JP',
+      prefix: 'SERT-WS/JSIT-LPG/XI/2026',
+      roleLabel: 'Peserta',
+      signerName: 'Muslimin, M.Pd.I.,Gr.',
+      signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
+      themeColor: '#0369A1',
+      customTemplateImg: '',
+      hideDefaultChrome: true,
+      textColor: '#0B1F3A',
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
+    },
+    attendees: []
+  },
+  {
+    id: 'evt-jsit-003',
+    title: 'Webinar Nasional Parenting Islami: Sinergi Orang Tua & Sekolah di Era Kecerdasan Artifisial',
+    category: 'Webinar',
+    status: 'Selesai',
+    dateStart: '2026-11-10',
+    dateEnd: '2026-11-10',
+    time: '19.30 - 21.30 WIB',
+    timeEnd: '21:30',
+    mode: 'Online (Zoom & YouTube Live)',
+    location: 'Zoom Meeting & Channel YouTube JSIT Lampung Official',
+    zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
+    quota: 1000,
+    pin: '',
+    speakers: [
+      { name: 'Ustadzah Dr. Aisyah Humaira, M.Psi.', role: 'Psikolog Pendidikan & Keluarga' },
+      { name: 'Fajar Nugroho, M.Kom.', role: 'Praktisi Literasi Digital & AI Pendidikan' }
+    ],
+    description: 'Webinar terbuka bagi guru, pengurus komite, dan orang tua siswa SIT se-Lampung untuk membangun ketahanan karakter anak, adab bermedia digital, serta pendampingan bijak pemanfaatan AI.',
+    materials: [
+      { id: 'm-301', title: 'E-Booklet Panduan Orang Tua Mendampingi Anak di Era AI', type: 'PDF', url: 'https://drive.google.com', desc: 'Ringkasan praktis pengasuhan digital Islami.' }
+    ],
+    recordings: [
+      { id: 'r-301', title: 'Full Replay Webinar Parenting Islami JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=LXb3EKWsInQ', notes: 'Rekaman lengkap beserta sesi tanya jawab interaktif.' }
+    ],
+    certificate: {
+      enabled: true,
+      releaseMode: 'after_end',
+      customEndDate: '2026-11-10',
+      customEndTime: '21:30',
+      jp: '4 JP',
+      prefix: 'SERT-WEB/JSIT-LPG/XI/2026',
+      roleLabel: 'Peserta',
+      signerName: 'Muslimin, M.Pd.I.,Gr.',
+      signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
+      themeColor: '#1D4ED8',
+      customTemplateImg: '',
+      hideDefaultChrome: true,
+      textColor: '#0B1F3A',
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
+    },
+    attendees: []
+  },
+  {
+    id: 'evt-jsit-004',
+    title: 'Pelatihan Publikasi Ilmiah & Pemanfaatan AI Produktif untuk Guru Kreatif',
+    category: 'Pelatihan',
+    status: 'Buka Pendaftaran',
+    dateStart: '2026-12-05',
+    dateEnd: '2026-12-06',
+    time: '08.00 - 15.00 WIB',
+    timeEnd: '15:00',
+    mode: 'Offline / Lab Praktik',
+    location: 'Gedung Diklat LPMP / Balai Guru Penggerak Lampung',
+    zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
+    quota: 120,
+    pin: '',
+    speakers: [
+      { name: 'Dr. Kurniawan Adi, M.Pd.', role: 'Dosen & Reviewer Jurnal Pendidikan' },
+      { name: 'Tim Digitalisasi JSIT Lampung', role: 'Instruktur EdTech & AI' }
+    ],
+    description: 'Pelatihan berbasis praktik langsung (hands-on) penyusunan Penelitian Tindakan Kelas (PTK), penulisan artikel ilmiah terpublikasi, serta pembuatan media ajar interaktif berbasis AI.',
+    materials: [
+      { id: 'm-401', title: 'Silabus & Panduan Instalasi Tools Pelatihan', type: 'PDF', url: 'https://drive.google.com', desc: 'Persiapan perangkat laptop sebelum hari pelaksanaan.' }
+    ],
+    recordings: [],
+    certificate: {
+      enabled: true,
+      releaseMode: 'after_end',
+      customEndDate: '2026-12-06',
+      customEndTime: '15:00',
+      jp: '16 JP',
+      prefix: 'SERT-PEL/JSIT-LPG/XII/2026',
+      roleLabel: 'Peserta',
+      signerName: 'Muslimin, M.Pd.I.,Gr.',
+      signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
+      themeColor: '#1E3A8A',
+      customTemplateImg: '',
+      hideDefaultChrome: true,
+      textColor: '#0B1F3A',
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
+    },
+    attendees: []
+  }
+];
 
     let db = null;
     let isFirebaseReady = false;
@@ -1010,78 +1174,27 @@
     let appSettings = { ...DEFAULT_SETTINGS };
     let currentCategory = 'ALL';
     let activeEventId = null;
-    let activeCertPayload = null;
-    let activeVerificationUrl = '';
-    let isDrawing = false;
-    let hasSignatureDrawn = false;
     let isRoomSidebarExpanded = false;
-    let releaseCountdownInterval = null;
-    let initialRouteHandled = false;
-
-    function escapeHtml(str) {
-      return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function normalizePhone(phone) {
-      let digits = String(phone || '').replace(/\D/g, '');
-      if (digits.startsWith('62')) digits = '0' + digits.slice(2);
-      return digits;
-    }
-
-    function applySettingsToUI() {
-      const navOrgName = document.getElementById('nav-org-name');
-      const navOrgSub = document.getElementById('nav-org-sub');
-      const footerOrgName = document.getElementById('footer-org-name');
-      if (navOrgName && appSettings.orgName) {
-        navOrgName.textContent = appSettings.orgName.toUpperCase();
-      }
-      if (navOrgSub && appSettings.orgSub) {
-        navOrgSub.textContent = appSettings.orgSub;
-      }
-      if (footerOrgName && appSettings.orgSub) {
-        footerOrgName.textContent = appSettings.orgSub;
-      }
-    }
+    let sigCanvas, sigCtx, isDrawing = false, hasSigned = false;
+    let activeCertPayload = null;
+    let countdownInterval = null;
+    let pendingHashCertData = null;
 
     function isFirebaseConfigured() {
       const cfg = window.FIREBASE_CONFIG;
       return cfg && cfg.apiKey && !cfg.apiKey.includes('GANTI_DENGAN') && cfg.projectId && !cfg.projectId.includes('GANTI_DENGAN');
     }
 
-    function updateCloudPill(connected, label) {
+    function setCloudBadge(status, text) {
       const pill = document.getElementById('firebase-status-pill');
       if (!pill) return;
-      pill.classList.remove('hidden');
-      if (connected) {
+      if (status === 'online') {
         pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${escapeHtml(label || 'Firebase Cloud Aktif')}`;
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${text}`;
       } else {
         pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${escapeHtml(label || 'Mode Lokal (Offline)')}`;
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${text}`;
       }
-    }
-
-    function normalizeEventItem(item) {
-      const c = item.certificate || {};
-      if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
-      if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
-      if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
-      item.certificate = c;
-      if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
-      if (!Array.isArray(item.materials)) item.materials = [];
-      if (!Array.isArray(item.recordings)) item.recordings = [];
-      if (!Array.isArray(item.speakers)) item.speakers = [];
-      if (attendeesMap[item.id]) {
-        item.attendees = attendeesMap[item.id];
-      } else if (!Array.isArray(item.attendees)) {
-        item.attendees = [];
-      }
-      return item;
     }
 
     function parseEndTimeFromText(timeStr) {
@@ -1104,13 +1217,6 @@
       return new Date(y, (mo || 1) - 1, d || 1, hh || 0, mm || 0, 0);
     }
 
-    function formatReleaseScheduleIndo(ev) {
-      const rel = getCertificateReleaseDate(ev);
-      const datePart = rel.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const timePart = `${String(rel.getHours()).padStart(2, '0')}.${String(rel.getMinutes()).padStart(2, '0')}`;
-      return `${datePart} pukul ${timePart} WIB`;
-    }
-
     function isCertificateReleased(ev) {
       const cert = ev.certificate || {};
       if (cert.releaseMode === 'disabled' || cert.enabled === false) return false;
@@ -1118,130 +1224,56 @@
       return new Date() >= getCertificateReleaseDate(ev);
     }
 
-    function encodePayloadBase64(obj) {
-      const jsonStr = JSON.stringify(obj);
-      return btoa(unescape(encodeURIComponent(jsonStr)));
-    }
-
-    function decodePayloadBase64(b64Str) {
-      const jsonStr = decodeURIComponent(escape(atob(b64Str)));
-      return JSON.parse(jsonStr);
-    }
-
-    function buildVerificationUrl(payload) {
-      const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const compact = {
-        no: payload.certNumber,
-        kab: payload.region || '-',
-        tgl: payload.dateRange,
-        ins: appSettings.orgSub || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
-        ttd: `${payload.signerName} - ${payload.signerTitle}`,
-        hal: payload.eventTitle,
-        nama: payload.name,
-        sek: payload.rawSchool || payload.school,
-        sts: payload.roleLabel || 'Peserta',
-        jp: payload.jp || '8 JP',
-        iss: payload.issuedDate,
-        evId: payload.eventId || '',
-        attId: payload.attendeeId || '',
-        code: payload.verCode
-      };
-      const encoded = encodePayloadBase64(compact);
-      return `${baseUrl}#verifikasi?cert=${encodeURIComponent(payload.verCode)}&v=${encodeURIComponent(encoded)}`;
-    }
-
-    function generateQRDataURL(text) {
-      return new Promise((resolve) => {
-        if (window.QRCode && typeof QRCode.toDataURL === 'function') {
-          QRCode.toDataURL(text, {
-            width: 260,
-            margin: 1,
-            color: { dark: '#0B1F3A', light: '#FFFFFF' }
-          }, (err, url) => {
-            if (!err && url) resolve(url);
-            else resolve(fallbackQRDataURL(text));
-          });
-        } else {
-          resolve(fallbackQRDataURL(text));
-        }
-      });
-    }
-
-    function fallbackQRDataURL(seedText) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 200;
-      canvas.height = 200;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, 200, 200);
-      ctx.fillStyle = '#0B1F3A';
-      const cells = 21;
-      const cellSize = 8;
-      const offset = 16;
-      let hash = 0;
-      for (let i = 0; i < seedText.length; i++) {
-        hash = ((hash << 5) - hash) + seedText.charCodeAt(i);
-        hash |= 0;
+    function normalizeEventItem(item) {
+      const c = item.certificate || {};
+      if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
+      if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
+      if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
+      if (typeof c.qrOffsetX !== 'number') c.qrOffsetX = 0;
+      if (typeof c.qrOffsetY !== 'number') c.qrOffsetY = 0;
+      if (typeof c.qrScale !== 'number') c.qrScale = 100;
+      if (typeof c.showScanBg !== 'boolean') c.showScanBg = true;
+      if (typeof c.signerOffsetX !== 'number') c.signerOffsetX = 0;
+      if (typeof c.signerOffsetY !== 'number') c.signerOffsetY = 0;
+      if (typeof c.signerScale !== 'number') c.signerScale = 100;
+      if (typeof c.showIssuedDate !== 'boolean') c.showIssuedDate = true;
+      item.certificate = c;
+      if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
+      if (!Array.isArray(item.materials)) item.materials = [];
+      if (!Array.isArray(item.recordings)) item.recordings = [];
+      if (!Array.isArray(item.speakers)) item.speakers = [];
+      if (attendeesMap[item.id]) {
+        item.attendees = attendeesMap[item.id];
+      } else if (!Array.isArray(item.attendees)) {
+        item.attendees = [];
       }
-      for (let r = 0; r < cells; r++) {
-        for (let c = 0; c < cells; c++) {
-          const isCorner = (r < 5 && c < 5) || (r < 5 && c >= cells - 5) || (r >= cells - 5 && c < 5);
-          const bit = Math.abs(Math.sin(hash + r * 17 + c * 31)) > 0.48;
-          if (isCorner || bit) {
-            ctx.fillRect(offset + c * cellSize, offset + r * cellSize, cellSize - 1, cellSize - 1);
-          }
-        }
-      }
-      return canvas.toDataURL('image/png');
+      return item;
     }
 
-    function attachAttendeeListener(eventId) {
+    function attachEventAttendeeListener(eventId) {
       if (!db || attendeeUnsubs[eventId]) return;
       attendeeUnsubs[eventId] = db.collection('events').doc(eventId).collection('attendees')
         .onSnapshot((snap) => {
           const list = [];
-          snap.forEach((doc) => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
+          snap.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
           list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           attendeesMap[eventId] = list;
           const ev = eventsData.find(item => item.id === eventId);
           if (ev) ev.attendees = list;
-          updateHeroStats();
+          updateStats();
           renderEvents();
           if (activeEventId === eventId) {
-            document.getElementById('tab-count-absensi').textContent = list.length;
-            document.getElementById('room-quota-text').textContent = `${list.length} / ${ev ? (ev.quota || 100) : 100} Peserta`;
-            renderRoomAttendees();
+            refreshOpenRoomCountsAndLists();
+          }
+          if (pendingHashCertData) {
+            refreshVerificationPageFromLiveEvents();
           }
         }, (err) => {
-          console.warn('Gagal membaca subkoleksi attendees:', err);
+          console.warn('Attendee listener error:', err);
         });
     }
 
-    function refreshAllUI() {
-      const loader = document.getElementById('loading-events-state');
-      if (loader) loader.classList.add('hidden');
-      applySettingsToUI();
-      updateHeroStats();
-      renderEvents();
-      if (activeEventId) {
-        const stillExists = eventsData.some(e => e.id === activeEventId);
-        if (stillExists) openEventPage(activeEventId, false, 'info', false);
-      }
-      if (!initialRouteHandled) {
-        initialRouteHandled = true;
-        handleInitialRoute();
-      } else if ((window.location.hash || '').startsWith('#verifikasi')) {
-        openVerificationPageFromHash(window.location.hash);
-      }
-    }
-
-    async function initApp() {
-      populateRegionSelect();
-      setupSignaturePad();
-      lucide.createIcons();
-
+    function loadPortalData() {
       if (window.firebase && isFirebaseConfigured()) {
         try {
           if (!firebase.apps.length) {
@@ -1249,29 +1281,27 @@
           }
           db = firebase.firestore();
           isFirebaseReady = true;
-          updateCloudPill(true, 'Firebase Cloud Aktif');
+          setCloudBadge('online', 'Cloud Real-Time');
 
-          // Listener Pengaturan Global
           db.collection('settings').doc('global').onSnapshot((doc) => {
             if (doc.exists) {
               appSettings = { ...DEFAULT_SETTINGS, ...doc.data() };
-              localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
-              applySettingsToUI();
+              applyOrgBranding();
             }
           });
 
-          // Listener Real-time Koleksi Kegiatan
           db.collection('events').onSnapshot((snapshot) => {
-            const freshList = [];
+            document.getElementById('loading-events-state').classList.add('hidden');
+            const freshEvents = [];
             const activeIds = new Set();
+
             snapshot.forEach((doc) => {
               activeIds.add(doc.id);
               const item = normalizeEventItem({ id: doc.id, ...doc.data() });
-              freshList.push(item);
-              attachAttendeeListener(doc.id);
+              freshEvents.push(item);
+              attachEventAttendeeListener(doc.id);
             });
 
-            // Bersihkan listener kegiatan yang dihapus
             Object.keys(attendeeUnsubs).forEach((oldId) => {
               if (!activeIds.has(oldId)) {
                 attendeeUnsubs[oldId]();
@@ -1280,124 +1310,99 @@
               }
             });
 
-            freshList.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
-            eventsData = freshList;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
-            refreshAllUI();
-          }, (err) => {
-            console.error('Firestore events listener error:', err);
-            updateCloudPill(false, 'Koneksi Firestore Terkendala');
-            loadFallbackLocalData();
+            freshEvents.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
+            eventsData = freshEvents;
+            updateStats();
+            renderEvents();
+
+            if (activeEventId) {
+              refreshOpenRoomCountsAndLists();
+            }
+            if (pendingHashCertData) {
+              refreshVerificationPageFromLiveEvents();
+            }
+          }, (error) => {
+            console.error('Firestore events error:', error);
+            setCloudBadge('local', 'Mode Offline');
+            loadLocalFallbackData();
           });
           return;
         } catch (err) {
-          console.error('Firebase init error:', err);
+          console.error('Firebase init failed:', err);
         }
       }
 
-      updateCloudPill(false, 'Mode Lokal (Belum Setup Firebase)');
-      await loadFallbackLocalData();
+      setCloudBadge('local', 'Mode Lokal');
+      loadLocalFallbackData();
     }
 
-    async function loadFallbackLocalData() {
+    function loadLocalFallbackData() {
+      document.getElementById('loading-events-state').classList.add('hidden');
       const savedSettings = localStorage.getItem(SETTINGS_KEY);
       if (savedSettings) {
         try { appSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch (e) {}
       }
+      applyOrgBranding();
 
-      const savedEvents = localStorage.getItem(STORAGE_KEY);
-      if (savedEvents) {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
         try {
-          eventsData = JSON.parse(savedEvents).map(normalizeEventItem);
+          eventsData = JSON.parse(saved).map(normalizeEventItem);
         } catch (e) {
           eventsData = DEFAULT_EVENTS.map(normalizeEventItem);
         }
       } else {
-        try {
-          const res = await fetch('./data-kegiatan.json', { cache: 'no-store' });
-          if (res.ok) {
-            const remoteData = await res.json();
-            eventsData = Array.isArray(remoteData) && remoteData.length > 0
-              ? remoteData.map(normalizeEventItem)
-              : DEFAULT_EVENTS.map(normalizeEventItem);
-          } else {
-            eventsData = DEFAULT_EVENTS.map(normalizeEventItem);
-          }
-        } catch (err) {
-          eventsData = DEFAULT_EVENTS.map(normalizeEventItem);
-        }
+        eventsData = DEFAULT_EVENTS.map(normalizeEventItem);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
       }
-      refreshAllUI();
+      updateStats();
+      renderEvents();
     }
 
-    window.addEventListener('hashchange', handleInitialRoute);
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeFlyerLightbox();
-        closeGlobalCertModal();
-      }
-    });
-
-    function handleInitialRoute() {
-      const hash = window.location.hash || '';
-      if (hash.startsWith('#verifikasi')) {
-        openVerificationPageFromHash(hash);
-        return;
-      }
-      if (hash.startsWith('#kegiatan/')) {
-        const id = decodeURIComponent(hash.replace('#kegiatan/', ''));
-        if (eventsData.some(e => e.id === id)) {
-          openEventPage(id, true, 'info', false);
-          return;
-        }
-      }
+    function applyOrgBranding() {
+      document.getElementById('nav-org-sub').textContent = appSettings.orgSub || DEFAULT_SETTINGS.orgSub;
     }
 
-    function populateRegionSelect() {
-      const sel = document.getElementById('att-region');
-      sel.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
-    }
-
-    function updateHeroStats() {
-      const totalEvents = eventsData.length;
-      const totalAttendees = eventsData.reduce((sum, ev) => sum + (ev.attendees ? ev.attendees.length : 0), 0);
-      const totalMaterials = eventsData.reduce((sum, ev) => sum + (ev.materials ? ev.materials.length : 0), 0);
-      const totalCerts = eventsData.filter(ev => isCertificateReleased(ev)).length;
-
-      document.getElementById('stat-total-events').textContent = totalEvents;
-      document.getElementById('stat-total-attendees').textContent = totalAttendees;
-      document.getElementById('stat-total-materials').textContent = totalMaterials;
-      document.getElementById('stat-total-certs').textContent = totalCerts + ' Kegiatan';
-    }
-
-    function getCategoryMeta(category) {
-      const map = {
-        'Seminar': { gradient: 'from-blue-800 to-blue-600', icon: 'presentation' },
-        'Webinar': { gradient: 'from-sky-700 to-cyan-600', icon: 'monitor-play' },
-        'Pelatihan': { gradient: 'from-indigo-800 to-blue-700', icon: 'graduation-cap' },
-        'Workshop': { gradient: 'from-blue-900 to-sky-700', icon: 'wrench' },
-        'Bimtek': { gradient: 'from-navy-900 to-blue-700', icon: 'book-open-check' }
-      };
-      return map[category] || { gradient: 'from-slate-800 to-blue-800', icon: 'layers' };
-    }
-
-    function parseLocalDate(isoStr) {
-      if (!isoStr) return null;
-      const parts = isoStr.split('-').map(Number);
-      if (parts.length !== 3 || parts.some(isNaN)) return new Date(isoStr);
-      return new Date(parts[0], parts[1] - 1, parts[2]);
+    function initRegionDropdown() {
+      const select = document.getElementById('att-region');
+      select.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
     }
 
     function formatDateIndo(start, end) {
       if (!start) return '-';
       const opts = { day: 'numeric', month: 'short', year: 'numeric' };
-      const d1Obj = parseLocalDate(start);
-      const d1 = d1Obj ? d1Obj.toLocaleDateString('id-ID', opts) : start;
+      const d1 = new Date(start).toLocaleDateString('id-ID', opts);
       if (!end || start === end) return d1;
-      const d2Obj = parseLocalDate(end);
-      const d2 = d2Obj ? d2Obj.toLocaleDateString('id-ID', opts) : end;
+      const d2 = new Date(end).toLocaleDateString('id-ID', opts);
       return `${d1} – ${d2}`;
+    }
+
+    function getStatusBadgeClass(status) {
+      if (status === 'Buka Pendaftaran') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      if (status === 'Berlangsung') return 'bg-sky-100 text-sky-800 border-sky-200';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function getCategoryBadgeClass(cat) {
+      const map = {
+        'Seminar': 'bg-indigo-600 text-white',
+        'Webinar': 'bg-sky-600 text-white',
+        'Pelatihan': 'bg-blue-700 text-white',
+        'Workshop': 'bg-cyan-700 text-white',
+        'Bimtek': 'bg-navy-900 text-amber-300'
+      };
+      return map[cat] || 'bg-blue-600 text-white';
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total-events').textContent = eventsData.length;
+      const totalAtt = eventsData.reduce((sum, ev) => sum + (ev.attendees ? ev.attendees.length : 0), 0);
+      const totalMat = eventsData.reduce((sum, ev) => sum + (ev.materials ? ev.materials.length : 0) + (ev.recordings ? ev.recordings.length : 0), 0);
+      const totalCerts = eventsData.filter(ev => isCertificateReleased(ev)).length;
+
+      document.getElementById('stat-total-attendees').textContent = totalAtt;
+      document.getElementById('stat-total-materials').textContent = totalMat;
+      document.getElementById('stat-total-certs').textContent = totalCerts;
     }
 
     function setCategoryFilter(cat) {
@@ -1418,138 +1423,105 @@
       setCategoryFilter('ALL');
     }
 
-    function backToCatalog() {
-      if (releaseCountdownInterval) {
-        clearInterval(releaseCountdownInterval);
-        releaseCountdownInterval = null;
-      }
-      document.getElementById('event-room-page').classList.add('hidden');
-      document.getElementById('certificate-verification-page').classList.add('hidden');
-      document.getElementById('portal-home-view').classList.remove('hidden');
-      activeEventId = null;
-      if (window.location.hash) {
-        history.pushState('', document.title, window.location.pathname + window.location.search);
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      lucide.createIcons();
-    }
-
     function renderEvents() {
-      const query = document.getElementById('search-input').value.toLowerCase().trim();
-      const statusFilter = document.getElementById('status-filter').value;
-      const grid = document.getElementById('events-grid');
-      const empty = document.getElementById('empty-state');
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const statusVal = document.getElementById('status-filter').value;
+      const standardCats = ['Seminar', 'Webinar', 'Pelatihan', 'Workshop', 'Bimtek'];
 
       const filtered = eventsData.filter(ev => {
-        const matchCat = currentCategory === 'ALL' ||
-          (currentCategory === 'Lainnya' ? !['Seminar','Webinar','Pelatihan','Workshop','Bimtek'].includes(ev.category) : ev.category === currentCategory);
-        const matchStatus = statusFilter === 'ALL' || ev.status === statusFilter;
+        const matchCat = currentCategory === 'ALL'
+          ? true
+          : currentCategory === 'Lainnya'
+            ? !standardCats.includes(ev.category)
+            : ev.category === currentCategory;
+        const matchStatus = statusVal === 'ALL' || ev.status === statusVal;
         const speakerStr = (ev.speakers || []).map(s => s.name).join(' ').toLowerCase();
         const matchQuery = !query ||
           ev.title.toLowerCase().includes(query) ||
-          ev.category.toLowerCase().includes(query) ||
+          (ev.description || '').toLowerCase().includes(query) ||
           (ev.location || '').toLowerCase().includes(query) ||
+          ev.category.toLowerCase().includes(query) ||
           speakerStr.includes(query);
         return matchCat && matchStatus && matchQuery;
       });
 
       document.getElementById('showing-count').textContent = `Menampilkan ${filtered.length} kegiatan`;
+      const grid = document.getElementById('events-grid');
+      const empty = document.getElementById('empty-state');
 
       if (filtered.length === 0) {
         grid.innerHTML = '';
         empty.classList.remove('hidden');
-        lucide.createIcons();
         return;
       }
-
       empty.classList.add('hidden');
+
       grid.innerHTML = filtered.map(ev => {
-        const meta = getCategoryMeta(ev.category);
-        const attCount = (ev.attendees || []).length;
-        const quota = ev.quota || 100;
-        const pct = Math.min(100, Math.round((attCount / quota) * 100));
-        const matCount = (ev.materials || []).length;
-        const recCount = (ev.recordings || []).length;
+        const attCount = ev.attendees ? ev.attendees.length : 0;
+        const matCount = ev.materials ? ev.materials.length : 0;
+        const recCount = ev.recordings ? ev.recordings.length : 0;
+        const jpLabel = ev.certificate && ev.certificate.jp ? ev.certificate.jp : '8 JP';
         const certReleased = isCertificateReleased(ev);
-        const certDisabled = ev.certificate && (ev.certificate.releaseMode === 'disabled' || ev.certificate.enabled === false);
-        const relDate = getCertificateReleaseDate(ev);
-        const relTimeStr = `${String(relDate.getHours()).padStart(2, '0')}.${String(relDate.getMinutes()).padStart(2, '0')}`;
-
-        let statusClass = 'bg-emerald-500/20 text-emerald-100 border-emerald-300/30';
-        if (ev.status === 'Berlangsung') statusClass = 'bg-amber-400/25 text-amber-100 border-amber-300/40';
-        if (ev.status === 'Selesai') statusClass = 'bg-white/15 text-blue-100 border-white/20';
-
-        let certBadgeHTML = '';
-        if (certReleased) {
-          certBadgeHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-semibold"><i data-lucide="award" class="w-3 h-3"></i> Sertifikat Siap</span>`;
-        } else if (certDisabled) {
-          certBadgeHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-500"><i data-lucide="award" class="w-3 h-3"></i> Sertifikat Proses</span>`;
-        } else {
-          certBadgeHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-semibold"><i data-lucide="clock" class="w-3 h-3"></i> Rilis ${relTimeStr} WIB</span>`;
-        }
-
-        const primarySpeaker = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].name : 'Tim Pemateri JSIT Lampung';
 
         return `
-          <article class="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden group">
-            <div class="bg-gradient-to-r ${meta.gradient} p-5 text-white relative">
-              <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 backdrop-blur-sm text-xs font-bold">
-                  <i data-lucide="${meta.icon}" class="w-3.5 h-3.5"></i>
-                  ${escapeHtml(ev.category)}
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${statusClass}">
-                  ${escapeHtml(ev.status)}
-                </span>
-              </div>
-              <h3 class="font-display font-bold text-base sm:text-lg leading-snug line-clamp-2 group-hover:text-sky-200 transition">
-                ${escapeHtml(ev.title)}
-              </h3>
+          <article class="bg-white rounded-2xl border border-blue-100/90 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group">
+            <div class="p-5 pb-3 flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 to-sky-50/40">
+              <span class="px-3 py-1 rounded-lg text-xs font-extrabold tracking-wide ${getCategoryBadgeClass(ev.category)}">
+                ${ev.category}
+              </span>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border ${getStatusBadgeClass(ev.status)}">
+                ${ev.status}
+              </span>
             </div>
 
             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-              <div class="space-y-2.5 text-xs text-slate-600">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="calendar" class="w-4 h-4 text-blue-600 shrink-0"></i>
-                  <span class="font-medium text-slate-800">${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))} • ${escapeHtml(ev.time || '-')}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <i data-lucide="map-pin" class="w-4 h-4 text-sky-600 shrink-0"></i>
-                  <span class="line-clamp-1">${escapeHtml(ev.location || '-')}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <i data-lucide="user-check" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-                  <span class="line-clamp-1">${escapeHtml(primarySpeaker)}</span>
-                </div>
+              <div class="space-y-2.5">
+                <h3 onclick="openEventRoom('${ev.id}', 'info')" class="font-display font-bold text-lg text-navy-900 group-hover:text-blue-700 transition leading-snug line-clamp-2 cursor-pointer">
+                  ${ev.title}
+                </h3>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                  ${ev.description || ''}
+                </p>
 
-                <div class="pt-1">
-                  <div class="flex justify-between text-[11px] mb-1">
-                    <span class="text-slate-500">Kehadiran / Kuota</span>
-                    <span class="font-bold text-blue-700">${attCount} / ${quota} Peserta</span>
+                <div class="pt-2 space-y-1.5 text-xs text-slate-600">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
+                    <span class="font-medium">${formatDateIndo(ev.dateStart, ev.dateEnd)} • ${ev.time || ''}</span>
                   </div>
-                  <div class="w-full h-1.5 bg-blue-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-blue-600 to-sky-500 rounded-full" style="width: ${pct}%"></div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-600 shrink-0"></i>
+                    <span class="truncate">${ev.location}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600 shrink-0"></i>
+                    <span><strong>${attCount}</strong> / ${ev.quota || 200} Peserta Hadir • <span class="text-blue-700 font-semibold">${jpLabel}</span></span>
                   </div>
                 </div>
               </div>
 
-              <div class="space-y-3 pt-2 border-t border-slate-100">
-                <div class="flex flex-wrap gap-1.5 text-[11px]">
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">
-                    <i data-lucide="clipboard-check" class="w-3 h-3"></i> Absensi
-                  </span>
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-medium">
-                    <i data-lucide="folder-down" class="w-3 h-3"></i> ${matCount} Materi
-                  </span>
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium">
-                    <i data-lucide="video" class="w-3 h-3"></i> ${recCount} Rekaman
-                  </span>
-                  ${certBadgeHTML}
+              <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                <div class="grid grid-cols-4 gap-1.5 text-[11px] font-semibold">
+                  <button onclick="openEventRoom('${ev.id}', 'absensi')" class="py-1.5 px-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 flex flex-col items-center gap-0.5 transition">
+                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+                    <span>Absensi</span>
+                  </button>
+                  <button onclick="openEventRoom('${ev.id}', 'materi')" class="py-1.5 px-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 flex flex-col items-center gap-0.5 transition">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    <span>Materi (${matCount})</span>
+                  </button>
+                  <button onclick="openEventRoom('${ev.id}', 'rekaman')" class="py-1.5 px-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex flex-col items-center gap-0.5 transition">
+                    <i data-lucide="video" class="w-3.5 h-3.5"></i>
+                    <span>Rekam (${recCount})</span>
+                  </button>
+                  <button onclick="openEventRoom('${ev.id}', 'sertifikat')" class="py-1.5 px-1 rounded-lg ${certReleased ? 'bg-amber-50 hover:bg-amber-100 text-amber-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'} flex flex-col items-center gap-0.5 transition">
+                    <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                    <span>Sertifikat</span>
+                  </button>
                 </div>
 
-                <button onclick="openEventPage('${escapeHtml(ev.id)}')" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition">
+                <button onclick="openEventRoom('${ev.id}', 'info')" class="w-full py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
                   <span>Masuk Ruang Kegiatan</span>
-                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
@@ -1557,300 +1529,316 @@
         `;
       }).join('');
 
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    function toggleRoomSidebar(forceState = null) {
-      isRoomSidebarExpanded = forceState !== null ? forceState : !isRoomSidebarExpanded;
+    // COLLAPSIBLE SIDEBAR TOGGLE
+    function toggleRoomSidebar() {
+      isRoomSidebarExpanded = !isRoomSidebarExpanded;
       const sidebar = document.getElementById('room-sidebar');
-      const iconBars = document.getElementById('icon-hamburger-bars');
-      const iconClose = document.getElementById('icon-hamburger-close');
+      const barsIcon = document.getElementById('icon-hamburger-bars');
+      const closeIcon = document.getElementById('icon-hamburger-close');
       const brandLabel = document.getElementById('sidebar-brand-label');
       const navLabels = document.querySelectorAll('.room-nav-label');
 
       if (isRoomSidebarExpanded) {
         sidebar.classList.remove('md:w-16');
         sidebar.classList.add('md:w-64');
-        iconBars.classList.add('hidden');
-        iconClose.classList.remove('hidden');
+        barsIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
         brandLabel.classList.remove('hidden');
         navLabels.forEach(el => el.classList.remove('hidden'));
       } else {
         sidebar.classList.remove('md:w-64');
         sidebar.classList.add('md:w-16');
-        iconClose.classList.add('hidden');
-        iconBars.classList.remove('hidden');
+        barsIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
         brandLabel.classList.add('hidden');
         navLabels.forEach(el => el.classList.add('hidden'));
       }
     }
 
-    function setupCertificateTabLockState(ev) {
-      if (releaseCountdownInterval) {
-        clearInterval(releaseCountdownInterval);
-        releaseCountdownInterval = null;
-      }
+    // NAVIGATION BETWEEN CATALOG & EVENT ROOM
+    function openEventRoom(eventId, defaultTab = 'info') {
+      const ev = eventsData.find(e => e.id === eventId);
+      if (!ev) return;
+      activeEventId = eventId;
+      pendingHashCertData = null;
 
-      const cert = ev.certificate || {};
-      const disabledByAdmin = cert.releaseMode === 'disabled' || cert.enabled === false;
-      const released = isCertificateReleased(ev);
+      document.getElementById('portal-home-view').classList.add('hidden');
+      document.getElementById('certificate-verification-page').classList.add('hidden');
+      document.getElementById('event-room-page').classList.remove('hidden');
+      document.getElementById('attendance-success-banner').classList.add('hidden');
 
-      const banner = document.getElementById('cert-disabled-banner');
-      const activeSection = document.getElementById('cert-active-section');
-      const heading = document.getElementById('cert-lock-heading');
-      const desc = document.getElementById('cert-lock-desc');
-      const schedBox = document.getElementById('cert-release-schedule-box');
-      const schedText = document.getElementById('cert-release-datetime-text');
-      const cdWrapper = document.getElementById('cert-countdown-wrapper');
-      const cdTimer = document.getElementById('cert-countdown-timer');
+      refreshOpenRoomCountsAndLists();
+      document.getElementById('cert-result-box').classList.add('hidden');
+      document.getElementById('cert-lookup-msg').classList.add('hidden');
 
-      if (released) {
-        banner.classList.add('hidden');
-        activeSection.classList.remove('hidden');
-        return;
-      }
-
-      activeSection.classList.add('hidden');
-      banner.classList.remove('hidden');
-
-      if (disabledByAdmin) {
-        heading.textContent = 'E-Sertifikat Belum Dirilis Panitia';
-        desc.textContent = 'Sertifikat untuk kegiatan ini sedang dalam proses verifikasi panitia JSIT Wilayah Lampung. Silakan pastikan Anda sudah mengisi Daftar Hadir.';
-        schedBox.classList.add('hidden');
-        cdWrapper.classList.add('hidden');
-        return;
-      }
-
-      heading.textContent = 'E-Sertifikat Akan Rilis Setelah Jam Kegiatan Berakhir';
-      desc.textContent = 'Anda sudah dapat mengisi Daftar Hadir sekarang. Pengecekan dan pengunduhan E-Sertifikat akan otomatis dibuka ketika jam kegiatan berakhir pada:';
-      schedBox.classList.remove('hidden');
-      cdWrapper.classList.remove('hidden');
-      schedText.textContent = formatReleaseScheduleIndo(ev);
-
-      const targetTime = getCertificateReleaseDate(ev).getTime();
-      const tick = () => {
-        const diff = targetTime - Date.now();
-        if (diff <= 0) {
-          clearInterval(releaseCountdownInterval);
-          releaseCountdownInterval = null;
-          setupCertificateTabLockState(ev);
-          updateHeroStats();
-          renderEvents();
-          return;
-        }
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const mins = Math.floor((diff / (1000 * 60)) % 60);
-        const secs = Math.floor((diff / 1000) % 60);
-        const parts = [];
-        if (days > 0) parts.push(`${days} Hari`);
-        parts.push(`${String(hours).padStart(2, '0')} Jam`);
-        parts.push(`${String(mins).padStart(2, '0')} Menit`);
-        parts.push(`${String(secs).padStart(2, '0')} Detik`);
-        cdTimer.textContent = `Hitung Mundur Rilis: ${parts.join(' ')}`;
-      };
-      tick();
-      releaseCountdownInterval = setInterval(tick, 1000);
+      switchRoomTab(defaultTab);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.lucide) lucide.createIcons();
     }
 
-    function renderRoomFlyer(ev) {
-      const flyerUrl = (ev.flyerImg || '').trim();
-      const filledWrap = document.getElementById('room-flyer-filled');
-      const emptyWrap = document.getElementById('room-flyer-empty');
+    function renderRoomFlyerBox(ev) {
+      const flyerSrc = (ev.flyerImg || '').trim();
+      const filledBox = document.getElementById('room-flyer-filled');
+      const emptyBox = document.getElementById('room-flyer-empty');
       const imgEl = document.getElementById('room-flyer-image');
-      const dlBtn = document.getElementById('room-flyer-download');
+      const dlEl = document.getElementById('room-flyer-download');
       const expandBtn = document.getElementById('btn-expand-flyer');
 
-      if (flyerUrl) {
-        imgEl.src = flyerUrl;
-        dlBtn.href = flyerUrl;
-        const safeTitle = (ev.title || 'Kegiatan').replace(/[^a-z0-9]/gi, '_').slice(0, 40);
-        dlBtn.download = `Flyer_${safeTitle}.jpg`;
-        filledWrap.classList.remove('hidden');
+      if (flyerSrc) {
+        imgEl.src = flyerSrc;
+        dlEl.href = flyerSrc;
+        dlEl.download = `Flyer_${(ev.title || 'Kegiatan_JSIT_Lampung').replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
+        filledBox.classList.remove('hidden');
+        emptyBox.classList.add('hidden');
         expandBtn.classList.remove('hidden');
-        emptyWrap.classList.add('hidden');
       } else {
         imgEl.src = '';
-        filledWrap.classList.add('hidden');
+        filledBox.classList.add('hidden');
+        emptyBox.classList.remove('hidden');
         expandBtn.classList.add('hidden');
-        emptyWrap.classList.remove('hidden');
       }
     }
 
     function openFlyerLightbox() {
-      const ev = eventsData.find(item => item.id === activeEventId);
+      const ev = eventsData.find(e => e.id === activeEventId);
       if (!ev || !ev.flyerImg) return;
       document.getElementById('lightbox-flyer-title').textContent = `Flyer: ${ev.title}`;
       document.getElementById('lightbox-flyer-img').src = ev.flyerImg;
       const dl = document.getElementById('lightbox-flyer-download');
       dl.href = ev.flyerImg;
-      const safeTitle = (ev.title || 'Kegiatan').replace(/[^a-z0-9]/gi, '_').slice(0, 40);
-      dl.download = `Flyer_${safeTitle}.jpg`;
+      dl.download = `Flyer_${(ev.title || 'Kegiatan_JSIT_Lampung').replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
       document.getElementById('flyer-lightbox-modal').classList.remove('hidden');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeFlyerLightbox() {
       document.getElementById('flyer-lightbox-modal').classList.add('hidden');
     }
 
-    function openEventPage(eventId, resetTab = true, targetTab = 'info', updateHash = true) {
-      const ev = eventsData.find(item => item.id === eventId);
+    function refreshOpenRoomCountsAndLists() {
+      const ev = eventsData.find(e => e.id === activeEventId);
       if (!ev) return;
-      activeEventId = eventId;
 
       document.getElementById('room-category-badge').textContent = ev.category;
       document.getElementById('room-status-badge').textContent = ev.status;
-      document.getElementById('room-jp-badge').textContent = (ev.certificate && ev.certificate.jp) ? ev.certificate.jp : 'Sertifikat';
+      document.getElementById('room-jp-badge').textContent = (ev.certificate && ev.certificate.jp) ? ev.certificate.jp : '8 JP';
       document.getElementById('room-title').textContent = ev.title;
       document.getElementById('room-date').textContent = formatDateIndo(ev.dateStart, ev.dateEnd);
       document.getElementById('room-time').textContent = ev.time || '-';
-      document.getElementById('room-location').textContent = ev.location || '-';
+      document.getElementById('room-location').textContent = ev.location;
       document.getElementById('room-description').textContent = ev.description || '-';
-      document.getElementById('room-mode').textContent = ev.mode || 'Tatap Muka / Daring';
-      document.getElementById('room-quota-text').textContent = `${(ev.attendees || []).length} / ${ev.quota || 100} Peserta`;
-
-      const zoomBtn = document.getElementById('room-zoom-btn');
-      zoomBtn.href = (ev.zoomUrl && ev.zoomUrl.trim() !== '') ? ev.zoomUrl.trim() : 'https://zoom.us/join';
+      document.getElementById('room-mode').textContent = ev.mode || 'Offline / Online';
+      document.getElementById('room-quota-text').textContent = `${(ev.attendees || []).length} / ${ev.quota || 200} Peserta`;
 
       const released = isCertificateReleased(ev);
+      const relDate = getCertificateReleaseDate(ev);
+      const relDateStr = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + relDate.toTimeString().slice(0, 5) + ' WIB';
+
       const certStatusEl = document.getElementById('room-cert-status');
-      if (released) {
-        certStatusEl.textContent = 'Sudah Dirilis (Siap Unduh)';
-        certStatusEl.className = 'font-bold text-emerald-600 text-right';
+      if (ev.certificate && (ev.certificate.releaseMode === 'disabled' || ev.certificate.enabled === false)) {
+        certStatusEl.textContent = 'Belum Dibuka';
+        certStatusEl.className = 'font-bold text-rose-600 text-right';
+      } else if (released) {
+        certStatusEl.textContent = `Sudah Rilis (${ev.certificate.jp || '8 JP'})`;
+        certStatusEl.className = 'font-bold text-emerald-700 text-right';
       } else {
-        certStatusEl.textContent = `Rilis ${formatReleaseScheduleIndo(ev)}`;
-        certStatusEl.className = 'font-bold text-amber-600 text-right';
+        certStatusEl.textContent = `Rilis ${relDateStr}`;
+        certStatusEl.className = 'font-bold text-amber-700 text-right';
+      }
+
+      const zoomBtn = document.getElementById('room-zoom-btn');
+      if (zoomBtn) {
+        zoomBtn.href = (ev.zoomUrl && ev.zoomUrl.trim() !== '') ? ev.zoomUrl.trim() : 'https://zoom.us/join';
+      }
+
+      const spList = document.getElementById('room-speakers-list');
+      const speakers = ev.speakers && ev.speakers.length ? ev.speakers : [{ name: 'Tim Pengembang JSIT Lampung', role: 'Fasilitator Diklat' }];
+      spList.innerHTML = speakers.map(sp => `
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-50/70 border border-blue-100">
+          <div class="w-10 h-10 rounded-full bg-blue-700 text-white font-bold flex items-center justify-center text-sm shrink-0">
+            ${sp.name.charAt(0)}
+          </div>
+          <div class="min-w-0">
+            <p class="font-bold text-sm text-navy-900 truncate">${sp.name}</p>
+            <p class="text-xs text-slate-600 truncate">${sp.role}</p>
+          </div>
+        </div>
+      `).join('');
+
+      renderRoomFlyerBox(ev);
+
+      const pinWrap = document.getElementById('att-pin-wrapper');
+      if (ev.pin && ev.pin.trim() !== '') {
+        pinWrap.classList.remove('hidden');
+        document.getElementById('att-pin-input').required = true;
+      } else {
+        pinWrap.classList.add('hidden');
+        document.getElementById('att-pin-input').required = false;
       }
 
       document.getElementById('tab-count-absensi').textContent = (ev.attendees || []).length;
       document.getElementById('tab-count-materi').textContent = (ev.materials || []).length;
       document.getElementById('tab-count-rekaman').textContent = (ev.recordings || []).length;
 
-      const speakersList = document.getElementById('room-speakers-list');
-      const speakers = ev.speakers || [];
-      speakersList.innerHTML = speakers.length ? speakers.map(sp => `
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50 border border-blue-100">
-          <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center shrink-0">
-            <i data-lucide="user" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <p class="font-bold text-xs sm:text-sm text-navy-900">${escapeHtml(sp.name)}</p>
-            <p class="text-[11px] text-slate-500">${escapeHtml(sp.role)}</p>
-          </div>
-        </div>
-      `).join('') : '<p class="text-xs text-slate-500">Tim Narasumber JSIT Wilayah Lampung</p>';
-
-      renderRoomFlyer(ev);
-
-      const pinWrapper = document.getElementById('att-pin-wrapper');
-      if (ev.pin && ev.pin.trim() !== '') {
-        pinWrapper.classList.remove('hidden');
-        document.getElementById('att-pin-input').required = true;
-      } else {
-        pinWrapper.classList.add('hidden');
-        document.getElementById('att-pin-input').required = false;
-      }
-
-      if (resetTab) {
-        document.getElementById('attendance-success-banner').classList.add('hidden');
-        document.getElementById('cert-result-box').classList.add('hidden');
-        document.getElementById('cert-lookup-msg').classList.add('hidden');
-      }
       renderRoomAttendees();
       renderRoomMaterials();
       renderRoomRecordings();
-      setupCertificateTabLockState(ev);
+      updateCertTabReleaseState(ev);
+    }
 
-      document.getElementById('portal-home-view').classList.add('hidden');
+    function backToCatalog() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      activeEventId = null;
+      pendingHashCertData = null;
+      if (window.location.hash && window.location.hash.startsWith('#verifikasi')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+      document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('certificate-verification-page').classList.add('hidden');
-      document.getElementById('event-room-page').classList.remove('hidden');
+      document.getElementById('portal-home-view').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-      if (updateHash) {
-        history.pushState(null, '', `#kegiatan/${encodeURIComponent(eventId)}`);
+    function updateCertTabReleaseState(ev) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const certDisabledBanner = document.getElementById('cert-disabled-banner');
+      const certActiveSection = document.getElementById('cert-active-section');
+      const certCfg = ev.certificate || {};
+
+      if (certCfg.releaseMode === 'disabled' || certCfg.enabled === false) {
+        certDisabledBanner.classList.remove('hidden');
+        certActiveSection.classList.add('hidden');
+        document.getElementById('cert-lock-heading').textContent = 'E-Sertifikat Belum Diaktifkan Panitia';
+        document.getElementById('cert-lock-desc').textContent = 'Panitia sedang memverifikasi kelengkapan data peserta untuk kegiatan ini.';
+        document.getElementById('cert-release-schedule-box').classList.add('hidden');
+        document.getElementById('cert-countdown-wrapper').classList.add('hidden');
+        return;
       }
-      if (resetTab) {
-        toggleRoomSidebar(false);
-        switchRoomTab(targetTab);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const targetDate = getCertificateReleaseDate(ev);
+      if (isCertificateReleased(ev)) {
+        certDisabledBanner.classList.add('hidden');
+        certActiveSection.classList.remove('hidden');
+        return;
       }
-      lucide.createIcons();
+
+      certDisabledBanner.classList.remove('hidden');
+      certActiveSection.classList.add('hidden');
+      document.getElementById('cert-release-schedule-box').classList.remove('hidden');
+      document.getElementById('cert-countdown-wrapper').classList.remove('hidden');
+
+      const formattedRelease = targetDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
+        ` Pukul ${targetDate.toTimeString().slice(0, 5).replace(':', '.')} WIB`;
+      document.getElementById('cert-lock-heading').textContent = 'E-Sertifikat Akan Rilis Setelah Jam Kegiatan Berakhir';
+      document.getElementById('cert-lock-desc').textContent = 'Terima kasih atas partisipasi Anda. Anda tetap dapat mengisi Daftar Hadir sekarang, dan menu pencetakan E-Sertifikat akan terbuka otomatis sesuai jadwal berikut:';
+      document.getElementById('cert-release-datetime-text').textContent = formattedRelease;
+
+      const tick = () => {
+        const diff = targetDate.getTime() - Date.now();
+        if (diff <= 0) {
+          clearInterval(countdownInterval);
+          certDisabledBanner.classList.add('hidden');
+          certActiveSection.classList.remove('hidden');
+          refreshOpenRoomCountsAndLists();
+          return;
+        }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / (1000 * 60)) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+        document.getElementById('cert-countdown-timer').textContent =
+          `Tersisa: ${days > 0 ? days + ' Hari ' : ''}${String(hrs).padStart(2, '0')} Jam ${String(mins).padStart(2, '0')} Menit ${String(secs).padStart(2, '0')} Detik`;
+      };
+      tick();
+      countdownInterval = setInterval(tick, 1000);
     }
 
     function switchRoomTab(tabName) {
       document.querySelectorAll('.room-tab-btn').forEach(btn => {
         if (btn.dataset.tab === tabName) {
-          btn.className = 'room-tab-btn active flex items-center gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-sm transition shrink-0';
+          btn.classList.add('active', 'bg-blue-600', 'text-white', 'font-bold');
+          btn.classList.remove('text-blue-200', 'hover:bg-white/10', 'font-semibold');
         } else {
-          btn.className = 'room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0';
+          btn.classList.remove('active', 'bg-blue-600', 'text-white', 'font-bold');
+          btn.classList.add('text-blue-200', 'hover:bg-white/10', 'font-semibold');
         }
       });
-      document.querySelectorAll('.room-tab-panel').forEach(panel => panel.classList.add('hidden'));
+
+      document.querySelectorAll('.room-tab-panel').forEach(panel => {
+        panel.classList.add('hidden');
+      });
       document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
-      lucide.createIcons();
+
+      if (tabName === 'absensi') {
+        initSignaturePad();
+      }
+      if (window.lucide) lucide.createIcons();
     }
 
-    // Signature Pad Logic
-    function setupSignaturePad() {
-      const canvas = document.getElementById('signature-pad');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.strokeStyle = '#0B1F3A';
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
+    // SIGNATURE PAD
+    function initSignaturePad() {
+      sigCanvas = document.getElementById('signature-pad');
+      if (!sigCanvas) return;
+      sigCtx = sigCanvas.getContext('2d');
+      sigCtx.strokeStyle = '#0B1F3A';
+      sigCtx.lineWidth = 2.2;
+      sigCtx.lineCap = 'round';
+      hasSigned = false;
 
       const getPos = (e) => {
-        const rect = canvas.getBoundingClientRect();
+        const rect = sigCanvas.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         return {
-          x: (clientX - rect.left) * (canvas.width / rect.width),
-          y: (clientY - rect.top) * (canvas.height / rect.height)
+          x: (clientX - rect.left) * (sigCanvas.width / rect.width),
+          y: (clientY - rect.top) * (sigCanvas.height / rect.height)
         };
       };
 
-      const start = (e) => {
+      const startDraw = (e) => {
         isDrawing = true;
-        hasSignatureDrawn = true;
-        const p = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
+        hasSigned = true;
+        const pos = getPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(pos.x, pos.y);
       };
-      const move = (e) => {
+      const moveDraw = (e) => {
         if (!isDrawing) return;
         e.preventDefault();
-        const p = getPos(e);
-        ctx.lineTo(p.x, p.y);
-        ctx.stroke();
+        const pos = getPos(e);
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.stroke();
       };
-      const end = () => { isDrawing = false; };
+      const endDraw = () => { isDrawing = false; };
 
-      canvas.addEventListener('mousedown', start);
-      canvas.addEventListener('mousemove', move);
-      window.addEventListener('mouseup', end);
-      canvas.addEventListener('touchstart', start, { passive: false });
-      canvas.addEventListener('touchmove', move, { passive: false });
-      canvas.addEventListener('touchend', end);
+      sigCanvas.onmousedown = startDraw;
+      sigCanvas.onmousemove = moveDraw;
+      window.onmouseup = endDraw;
+      sigCanvas.ontouchstart = startDraw;
+      sigCanvas.ontouchmove = moveDraw;
+      sigCanvas.ontouchend = endDraw;
     }
 
     function clearSignaturePad() {
-      const canvas = document.getElementById('signature-pad');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      hasSignatureDrawn = false;
+      if (sigCtx && sigCanvas) {
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        hasSigned = false;
+      }
     }
 
+    // SUBMIT ATTENDANCE (ONLY RECORDS ATTENDANCE - CERTIFICATE WAITS FOR END TIME)
     async function submitAttendance(e) {
       e.preventDefault();
-      const evIndex = eventsData.findIndex(item => item.id === activeEventId);
-      if (evIndex === -1) return;
-      const ev = eventsData[evIndex];
+      const ev = eventsData.find(item => item.id === activeEventId);
+      if (!ev) return;
 
       if (ev.pin && ev.pin.trim() !== '') {
         const enteredPin = document.getElementById('att-pin-input').value.trim();
         if (enteredPin !== ev.pin.trim()) {
-          alert('Kode PIN Presensi tidak sesuai. Silakan cek kode yang dibagikan panitia.');
+          alert('Kode PIN Presensi salah! Silakan cek kembali kode dari panitia.');
           return;
         }
       }
@@ -1861,41 +1849,16 @@
       const role = document.getElementById('att-role').value;
       const phone = document.getElementById('att-phone').value.trim();
       const email = document.getElementById('att-email').value.trim();
-      const normPhone = normalizePhone(phone);
 
-      const releaseSchedule = formatReleaseScheduleIndo(ev);
-      const banner = document.getElementById('attendance-success-banner');
-      const bannerTitle = document.getElementById('attendance-success-title');
-      const bannerDesc = document.getElementById('attendance-success-desc');
-
-      const exists = (ev.attendees || []).some(a =>
-        (normPhone && normalizePhone(a.phone) === normPhone) ||
-        a.name.toLowerCase() === name.toLowerCase()
-      );
-      if (exists) {
-        bannerTitle.textContent = `Data Kehadiran Atas Nama ${name} Sudah Tercatat`;
-        bannerDesc.innerHTML = `Kehadiran Anda sudah tersimpan di sistem. E-Sertifikat tidak diterbitkan otomatis saat presensi dan baru dapat dicek serta diunduh pada menu <strong>E-Sertifikat</strong> setelah jam kegiatan berakhir (<strong>${escapeHtml(releaseSchedule)}</strong>).`;
-        banner.classList.remove('hidden');
-        showToast('Nama atau Nomor WhatsApp Anda sudah tercatat hadir!');
-        lucide.createIcons();
-        return;
-      }
-
-      const submitBtn = document.getElementById('btn-submit-att');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('opacity-70');
-      }
-
-      const sigCanvas = document.getElementById('signature-pad');
-      const signatureData = (hasSignatureDrawn && sigCanvas) ? sigCanvas.toDataURL('image/png') : '';
+      const btn = document.getElementById('btn-submit-att');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Menyimpan Daftar Hadir...</span>';
 
       const now = new Date();
-      const pad2 = (n) => String(n).padStart(2, '0');
-      const timestamp = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      const timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toTimeString().slice(0, 5);
       const attId = 'att-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
 
-      const newRecord = {
+      const newAttendee = {
         id: attId,
         name,
         school,
@@ -1903,7 +1866,6 @@
         role,
         phone,
         email,
-        signatureData,
         timestamp,
         createdAt: Date.now(),
         verified: true
@@ -1911,88 +1873,94 @@
 
       try {
         if (isFirebaseReady && db) {
-          await db.collection('events').doc(ev.id).collection('attendees').doc(attId).set(newRecord);
+          await db.collection('events').doc(ev.id).collection('attendees').doc(attId).set(newAttendee);
         } else {
           if (!ev.attendees) ev.attendees = [];
-          ev.attendees.unshift(newRecord);
-          eventsData[evIndex] = ev;
+          ev.attendees.unshift(newAttendee);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
-          updateHeroStats();
+          updateStats();
           renderEvents();
-          document.getElementById('tab-count-absensi').textContent = ev.attendees.length;
-          document.getElementById('room-quota-text').textContent = `${ev.attendees.length} / ${ev.quota || 100} Peserta`;
-          renderRoomAttendees();
+          refreshOpenRoomCountsAndLists();
         }
 
         if (appSettings.webhookUrl && appSettings.webhookUrl.startsWith('http')) {
-          try {
-            fetch(appSettings.webhookUrl, {
-              method: 'POST',
-              mode: 'no-cors',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ eventId: ev.id, eventTitle: ev.title, ...newRecord })
-            });
-          } catch (err) {}
+          fetch(appSettings.webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ eventId: ev.id, eventTitle: ev.title, ...newAttendee })
+          }).catch(() => {});
         }
 
         document.getElementById('attendance-form').reset();
         clearSignaturePad();
+        document.getElementById('cert-lookup-input').value = name;
 
-        bannerTitle.textContent = `Daftar Hadir Berhasil Disimpan — ${name}`;
-        bannerDesc.innerHTML = `Terima kasih, data kehadiran Anda telah tercatat di cloud. E-Sertifikat tidak langsung dibuat otomatis, dan dapat dicek serta diunduh di tab <strong>E-Sertifikat</strong> setelah jam kegiatan berakhir pada <strong>${escapeHtml(releaseSchedule)}</strong>.`;
+        const banner = document.getElementById('attendance-success-banner');
+        const bannerTitle = document.getElementById('attendance-success-title');
+        const bannerDesc = document.getElementById('attendance-success-desc');
         banner.classList.remove('hidden');
-        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        showToast('Daftar hadir berhasil disimpan!');
-        lucide.createIcons();
-      } catch (err) {
-        console.error('Gagal menyimpan presensi:', err);
-        alert('Gagal menyimpan daftar hadir ke server Firebase. Periksa koneksi internet atau aturan Firestore Rules Anda.');
-      } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('opacity-70');
-        }
-      }
-    }
 
-    function maskPhone(phone) {
-      if (!phone || phone.length < 7) return '***';
-      return phone.slice(0, 4) + '****' + phone.slice(-3);
+        if (isCertificateReleased(ev)) {
+          bannerTitle.textContent = `Daftar Hadir Tercatat atas nama ${name}!`;
+          bannerDesc.innerHTML = `Kehadiran Anda telah tersimpan di sistem. Karena kegiatan telah berakhir, Anda sudah dapat mengecek dan mengunduh E-Sertifikat pada menu <strong>E-Sertifikat</strong>.`;
+        } else {
+          const relDate = getCertificateReleaseDate(ev);
+          const relText = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + ` pukul ${relDate.toTimeString().slice(0, 5).replace(':', '.')} WIB`;
+          bannerTitle.textContent = `Daftar Hadir Tercatat atas nama ${name}!`;
+          bannerDesc.innerHTML = `Terima kasih telah mengisi daftar hadir. E-Sertifikat tidak diterbitkan langsung saat absensi dan baru dapat diakses pada menu <strong>E-Sertifikat</strong> setelah kegiatan berakhir (<strong>${relText}</strong>).`;
+        }
+
+        showToast('Daftar hadir berhasil tercatat!');
+      } catch (err) {
+        console.error('Submit attendance error:', err);
+        alert('Gagal menyimpan daftar hadir ke server. Periksa koneksi internet Anda.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Kirim Daftar Hadir</span>';
+        if (window.lucide) lucide.createIcons();
+      }
     }
 
     function renderRoomAttendees() {
       const ev = eventsData.find(item => item.id === activeEventId);
       if (!ev) return;
       const list = ev.attendees || [];
-      const q = (document.getElementById('att-search-list').value || '').toLowerCase();
-      const filtered = list.filter(a => a.name.toLowerCase().includes(q) || a.school.toLowerCase().includes(q) || a.region.toLowerCase().includes(q));
-
       document.getElementById('live-att-total').textContent = list.length;
-      const container = document.getElementById('room-attendees-list');
 
+      const q = document.getElementById('att-search-list').value.trim().toLowerCase();
+      const filtered = list.filter(a =>
+        a.name.toLowerCase().includes(q) ||
+        a.school.toLowerCase().includes(q) ||
+        a.region.toLowerCase().includes(q)
+      );
+
+      const container = document.getElementById('room-attendees-list');
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-xs text-slate-400">Belum ada data kehadiran yang sesuai.</div>`;
+        container.innerHTML = `<div class="p-8 text-center text-xs text-slate-400">Belum ada peserta yang tercatat hadir.</div>`;
         return;
       }
 
       container.innerHTML = filtered.map((a, idx) => `
         <div class="p-3.5 flex items-center justify-between gap-3 hover:bg-blue-50/40 transition">
           <div class="flex items-center gap-3 min-w-0">
-            <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center shrink-0">${filtered.length - idx}</span>
+            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[11px] font-bold flex items-center justify-center shrink-0">
+              ${filtered.length - idx}
+            </span>
             <div class="min-w-0">
-              <p class="font-bold text-xs sm:text-sm text-navy-900 truncate">${escapeHtml(a.name)}</p>
-              <p class="text-[11px] text-slate-500 truncate">${escapeHtml(a.school)} • ${escapeHtml(a.region)} (${escapeHtml(a.role)})</p>
+              <p class="text-xs font-bold text-navy-900 truncate">${a.name}</p>
+              <p class="text-[11px] text-slate-500 truncate">${a.school} • ${a.region}</p>
             </div>
           </div>
           <div class="text-right shrink-0">
             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <i data-lucide="check" class="w-3 h-3"></i> Hadir
+              <i data-lucide="check" class="w-2.5 h-2.5"></i> Hadir
             </span>
-            <p class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(maskPhone(a.phone))}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">${a.timestamp || ''}</p>
           </div>
         </div>
       `).join('');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function renderRoomMaterials() {
@@ -2002,35 +1970,35 @@
       const container = document.getElementById('room-materials-list');
 
       if (mats.length === 0) {
-        container.innerHTML = `<div class="col-span-2 bg-white border border-blue-100 rounded-2xl p-8 text-center text-xs text-slate-500">Materi untuk kegiatan ini belum diunggah panitia.</div>`;
+        container.innerHTML = `<div class="col-span-2 text-center py-12 bg-white rounded-2xl border border-blue-100 text-xs text-slate-500">Materi kegiatan belum diunggah oleh panitia.</div>`;
         return;
       }
 
       container.innerHTML = mats.map(m => `
-        <div class="bg-white border border-blue-100 rounded-2xl p-4 shadow-xs hover:border-blue-300 transition flex flex-col justify-between gap-3">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 font-extrabold text-xs flex items-center justify-center shrink-0 border border-blue-200">
-              ${escapeHtml(m.type || 'FILE')}
+        <div class="p-4 rounded-2xl border border-blue-100 bg-white hover:border-blue-300 shadow-xs flex items-start justify-between gap-3 transition">
+          <div class="flex items-start gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 font-extrabold text-[11px] flex items-center justify-center shrink-0 border border-blue-200">
+              ${m.type || 'FILE'}
             </div>
-            <div>
-              <h4 class="font-bold text-sm text-navy-900">${escapeHtml(m.title)}</h4>
-              <p class="text-xs text-slate-500 mt-1">${escapeHtml(m.desc || 'Dokumen materi pelatihan JSIT Lampung')}</p>
+            <div class="min-w-0">
+              <h5 class="font-bold text-sm text-navy-900 leading-snug">${m.title}</h5>
+              <p class="text-xs text-slate-500 mt-0.5">${m.desc || 'Dokumen materi resmi kegiatan'}</p>
             </div>
           </div>
-          <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+          <a href="${m.url}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 inline-flex items-center gap-1.5 transition">
+            <span>Unduh</span>
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-            <span>Buka / Unduh Materi</span>
           </a>
         </div>
       `).join('');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    function extractYouTubeId(url) {
+    function getYouTubeEmbedUrl(url) {
       if (!url) return null;
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
       const match = url.match(regExp);
-      return (match && match[2].length === 11) ? match[2] : null;
+      return match ? `https://www.youtube.com/embed/${match[1]}` : null;
     }
 
     function renderRoomRecordings() {
@@ -2040,67 +2008,154 @@
       const container = document.getElementById('room-recordings-list');
 
       if (recs.length === 0) {
-        container.innerHTML = `<div class="bg-white border border-blue-100 rounded-2xl p-8 text-center text-xs text-slate-500">Rekaman video atau dokumentasi kegiatan belum tersedia.</div>`;
+        container.innerHTML = `<div class="text-center py-12 bg-white rounded-2xl border border-blue-100 text-xs text-slate-500">Rekaman video kegiatan belum tersedia.</div>`;
         return;
       }
 
       container.innerHTML = recs.map(r => {
-        const ytId = extractYouTubeId(r.url);
+        const embedUrl = getYouTubeEmbedUrl(r.url);
         return `
-          <div class="bg-white border border-blue-100 rounded-2xl overflow-hidden shadow-xs">
-            ${ytId ? `
-              <div class="aspect-video bg-navy-950">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}" title="${escapeHtml(r.title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
+            ${embedUrl ? `
+              <div class="aspect-video w-full bg-navy-950">
+                <iframe src="${embedUrl}" title="${r.title}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
             ` : ''}
             <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span class="inline-block px-2 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-bold uppercase mb-1">${escapeHtml(r.platform || 'Video')}</span>
-                <h4 class="font-bold text-sm text-navy-900">${escapeHtml(r.title)}</h4>
-                <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(r.notes || '')}</p>
+                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800 uppercase">${r.platform || 'Video'}</span>
+                <h5 class="font-bold text-sm text-navy-900 mt-1">${r.title}</h5>
+                <p class="text-xs text-slate-500">${r.notes || ''}</p>
               </div>
-              <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold shrink-0 transition">
-                <i data-lucide="play-circle" class="w-4 h-4 text-sky-400"></i>
-                <span>Tonton / Buka Tautan</span>
+              <a href="${r.url}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 shrink-0 transition">
+                <i data-lucide="play-circle" class="w-4 h-4 text-sky-300"></i>
+                <span>Tonton di ${r.platform || 'Tautan'}</span>
               </a>
             </div>
           </div>
         `;
       }).join('');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    async function verifyAndGenerateCert() {
+    // CERTIFICATE VERIFICATION & DEDICATED QR VERIFICATION PAGE
+    function buildVerificationUrl(payload) {
+      const base = window.location.href.split('#')[0];
+      const compactData = {
+        no: payload.certNumber,
+        kab: payload.region || 'Provinsi Lampung',
+        tgl: payload.dateRange,
+        ins: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+        ttd: `${payload.signerName} - ${payload.signerTitle}`,
+        hal: payload.eventTitle,
+        nama: payload.ownerName,
+        sek: payload.school,
+        sts: payload.role,
+        jp: payload.jp,
+        iss: payload.issuedDate,
+        evId: payload.eventId || '',
+        attId: payload.attendeeId || '',
+        code: payload.verCode
+      };
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compactData))));
+      return `${base}#verifikasi?cert=${encodeURIComponent(payload.verCode)}&v=${encodeURIComponent(encoded)}`;
+    }
+
+    function copyActiveVerificationLink() {
+      if (!activeCertPayload) return;
+      const url = activeCertPayload.verificationUrl || buildVerificationUrl(activeCertPayload);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => showToast('Tautan halaman verifikasi sertifikat disalin!'));
+      } else {
+        const tmp = document.createElement('textarea');
+        tmp.value = url;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        showToast('Tautan halaman verifikasi sertifikat disalin!');
+      }
+    }
+
+    function applyCertificateLayoutToDOM(payload) {
+      const printArea = document.getElementById('certificate-print-area');
+      const qrBlock = document.getElementById('cert-qr-block');
+      const qrTextBox = document.getElementById('cert-qr-text-box');
+      const signerBlock = document.getElementById('cert-signer-block');
+      const issuedWrap = document.getElementById('cert-view-issued-wrap');
+      if (!printArea || !payload) return;
+
+      const boxW = printArea.clientWidth || 896;
+      const unitPx = boxW / 1000;
+
+      const qrX = Number(payload.qrOffsetX || 0);
+      const qrY = Number(payload.qrOffsetY || 0);
+      const qrScale = Number(payload.qrScale || 100);
+      const showScanBg = payload.showScanBg !== false;
+
+      if (qrBlock) {
+        qrBlock.style.transform = `translate(${(qrX * unitPx).toFixed(1)}px, ${(qrY * unitPx).toFixed(1)}px) scale(${(qrScale / 100).toFixed(2)})`;
+      }
+      if (qrTextBox) {
+        qrTextBox.className = showScanBg
+          ? 'text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1 rounded'
+          : 'text-[10px] text-slate-700 leading-tight px-2 py-1 rounded';
+      }
+
+      const signerX = Number(payload.signerOffsetX || 0);
+      const signerY = Number(payload.signerOffsetY || 0);
+      const signerScale = Number(payload.signerScale || 100);
+      const showIssuedDate = payload.showIssuedDate !== false;
+
+      if (signerBlock) {
+        signerBlock.style.transform = `translate(${(signerX * unitPx).toFixed(1)}px, ${(signerY * unitPx).toFixed(1)}px) scale(${(signerScale / 100).toFixed(2)})`;
+      }
+      if (issuedWrap) {
+        issuedWrap.classList.toggle('hidden', !showIssuedDate);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      if (activeCertPayload) applyCertificateLayoutToDOM(activeCertPayload);
+    });
+    window.addEventListener('beforeprint', () => {
+      if (activeCertPayload) {
+        setTimeout(() => applyCertificateLayoutToDOM(activeCertPayload), 20);
+      }
+    });
+
+    function verifyAndGenerateCert() {
       const ev = eventsData.find(item => item.id === activeEventId);
       if (!ev) return;
 
       if (!isCertificateReleased(ev)) {
-        setupCertificateTabLockState(ev);
+        updateCertTabReleaseState(ev);
         return;
       }
 
       const query = document.getElementById('cert-lookup-input').value.trim().toLowerCase();
-      const queryDigits = normalizePhone(query);
       const msgEl = document.getElementById('cert-lookup-msg');
-      const resultBox = document.getElementById('cert-result-box');
+      const resBox = document.getElementById('cert-result-box');
 
       if (!query) {
-        msgEl.textContent = 'Silakan masukkan Nama Lengkap atau Nomor WhatsApp terlebih dahulu.';
-        msgEl.className = 'text-xs mt-2 text-red-600 font-semibold block';
-        resultBox.classList.add('hidden');
+        msgEl.textContent = 'Silakan masukkan Nama Lengkap atau Nomor WhatsApp Anda.';
+        msgEl.className = 'text-xs mt-2 text-rose-600 font-semibold';
+        msgEl.classList.remove('hidden');
+        resBox.classList.add('hidden');
         return;
       }
 
       const attendees = ev.attendees || [];
       const foundIndex = attendees.findIndex(a =>
         a.name.toLowerCase().includes(query) ||
-        (a.phone && queryDigits.length >= 6 && normalizePhone(a.phone).includes(queryDigits))
+        (a.phone && a.phone.replace(/\D/g, '').includes(query.replace(/\D/g, '')) && query.replace(/\D/g, '').length >= 6)
       );
 
       if (foundIndex === -1) {
-        msgEl.textContent = 'Data tidak ditemukan pada Daftar Hadir kegiatan ini. Pastikan Anda sudah mengisi Daftar Hadir terlebih dahulu.';
-        msgEl.className = 'text-xs mt-2 text-red-600 font-semibold block';
-        resultBox.classList.add('hidden');
+        msgEl.textContent = 'Data Anda belum ditemukan di Daftar Hadir kegiatan ini. Silakan isi Daftar Hadir terlebih dahulu pada menu Daftar Hadir.';
+        msgEl.className = 'text-xs mt-2 text-rose-600 font-semibold';
+        msgEl.classList.remove('hidden');
+        resBox.classList.add('hidden');
         return;
       }
 
@@ -2108,50 +2163,49 @@
       const attendee = attendees[foundIndex];
       const certCfg = ev.certificate || {};
       const seqNum = String(attendees.length - foundIndex).padStart(3, '0');
-      const prefix = certCfg.prefix || 'SERT/JSIT-LPG/2026';
-      const certNumber = `${seqNum}/${prefix}`;
-      const jp = certCfg.jp || '8 JP';
-      const roleLabel = certCfg.roleLabel || 'Peserta';
-      const themeColor = certCfg.themeColor || '#1E3A8A';
-      const signerName = certCfg.signerName || appSettings.signerName;
-      const signerTitle = certCfg.signerTitle || appSettings.signerTitle;
-      const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
+      const certNumber = `${seqNum}/${certCfg.prefix || 'SERT/JSIT-LPG/2026'}`;
       const verCode = `JSIT-${ev.id.slice(-3).toUpperCase()}-${seqNum}`;
+      const dateRange = formatDateIndo(ev.dateStart, ev.dateEnd);
+      const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
 
       activeCertPayload = {
         eventId: ev.id,
-        attendeeId: attendee.id,
+        attendeeId: attendee.id || '',
         certNumber,
-        name: attendee.name,
-        rawSchool: attendee.school,
+        verCode,
+        ownerName: attendee.name,
+        school: attendee.school,
         region: attendee.region || 'Provinsi Lampung',
-        school: `${attendee.school} — ${attendee.region || 'Provinsi Lampung'}`,
+        role: certCfg.roleLabel || 'Peserta',
         category: ev.category,
         eventTitle: ev.title,
-        dateRange: formatDateIndo(ev.dateStart, ev.dateEnd),
+        dateRange,
         location: ev.location,
-        jp,
-        roleLabel,
-        themeColor,
+        jp: certCfg.jp || '8 JP',
         issuedDate,
-        signerName,
-        signerTitle,
-        verCode,
+        signerName: certCfg.signerName || appSettings.signerName,
+        signerTitle: certCfg.signerTitle || appSettings.signerTitle,
+        themeColor: certCfg.themeColor || '#1E3A8A',
         customTemplateImg: certCfg.customTemplateImg || '',
         hideDefaultChrome: certCfg.hideDefaultChrome !== false,
         textColor: certCfg.textColor || '#0B1F3A',
-        offsetY: certCfg.offsetY || 0
+        offsetY: certCfg.offsetY || 0,
+        qrOffsetX: certCfg.qrOffsetX || 0,
+        qrOffsetY: certCfg.qrOffsetY || 0,
+        qrScale: certCfg.qrScale || 100,
+        showScanBg: certCfg.showScanBg !== false,
+        signerOffsetX: certCfg.signerOffsetX || 0,
+        signerOffsetY: certCfg.signerOffsetY || 0,
+        signerScale: certCfg.signerScale || 100,
+        showIssuedDate: certCfg.showIssuedDate !== false
       };
-
-      activeVerificationUrl = buildVerificationUrl(activeCertPayload);
-      const qrDataUrl = await generateQRDataURL(activeVerificationUrl);
-      activeCertPayload.qrDataUrl = qrDataUrl;
+      activeCertPayload.verificationUrl = buildVerificationUrl(activeCertPayload);
 
       const printArea = document.getElementById('certificate-print-area');
       const innerBorder = document.getElementById('cert-inner-border');
       const defaultKop = document.getElementById('cert-default-kop');
-      const cornerTL = document.getElementById('cert-corner-tl');
-      const cornerBR = document.getElementById('cert-corner-br');
+      const cTL = document.getElementById('cert-corner-tl');
+      const cBR = document.getElementById('cert-corner-br');
       const dynBlock = document.getElementById('cert-dynamic-content-block');
 
       if (activeCertPayload.customTemplateImg) {
@@ -2160,224 +2214,228 @@
           printArea.style.borderWidth = '0px';
           innerBorder.classList.remove('border', 'border-amber-400/80');
           defaultKop.classList.add('invisible');
-          cornerTL.classList.add('hidden');
-          cornerBR.classList.add('hidden');
+          cTL.classList.add('hidden');
+          cBR.classList.add('hidden');
         } else {
           printArea.style.borderWidth = '8px';
-          printArea.style.borderColor = themeColor;
+          printArea.style.borderColor = activeCertPayload.themeColor;
           innerBorder.classList.add('border', 'border-amber-400/80');
           defaultKop.classList.remove('invisible');
-          cornerTL.classList.remove('hidden');
-          cornerBR.classList.remove('hidden');
+          cTL.classList.remove('hidden');
+          cBR.classList.remove('hidden');
         }
-        dynBlock.style.transform = `translateY(${activeCertPayload.offsetY}px)`;
+        const boxW = printArea.clientWidth || 896;
+        dynBlock.style.transform = `translateY(${Math.round(activeCertPayload.offsetY * (boxW / 835))}px)`;
       } else {
         printArea.style.backgroundImage = 'none';
         printArea.style.borderWidth = '8px';
-        printArea.style.borderColor = themeColor;
+        printArea.style.borderColor = activeCertPayload.themeColor;
         innerBorder.classList.add('border', 'border-amber-400/80');
         defaultKop.classList.remove('invisible');
-        cornerTL.classList.remove('hidden');
-        cornerBR.classList.remove('hidden');
+        cTL.classList.remove('hidden');
+        cBR.classList.remove('hidden');
         dynBlock.style.transform = 'translateY(0px)';
       }
 
-      const txtCol = activeCertPayload.customTemplateImg ? activeCertPayload.textColor : '#0B1F3A';
-      document.getElementById('cert-view-heading').style.color = themeColor;
-      document.getElementById('cert-view-name').style.color = txtCol;
-      document.getElementById('cert-view-body').style.color = activeCertPayload.customTemplateImg ? txtCol : '#475569';
-      document.getElementById('cert-view-signer-name').style.color = txtCol;
+      const activeTxtCol = activeCertPayload.customTemplateImg ? activeCertPayload.textColor : '#0B1F3A';
+      document.getElementById('cert-view-heading').style.color = activeCertPayload.themeColor;
+      document.getElementById('cert-view-name').style.color = activeTxtCol;
+      document.getElementById('cert-view-body').style.color = activeCertPayload.customTemplateImg ? activeCertPayload.textColor : '#475569';
+      document.getElementById('cert-view-issued-wrap').style.color = activeTxtCol;
+      document.getElementById('cert-view-signer-title').style.color = activeTxtCol;
+      document.getElementById('cert-view-signer-name').style.color = activeTxtCol;
 
-      document.getElementById('cert-view-role').textContent = roleLabel;
       document.getElementById('cert-view-number').textContent = `Nomor: ${certNumber}`;
       document.getElementById('cert-view-name').textContent = attendee.name;
-      document.getElementById('cert-view-school').textContent = activeCertPayload.school;
+      document.getElementById('cert-view-school').textContent = `${attendee.school} — ${attendee.region}`;
+      document.getElementById('cert-view-role').textContent = activeCertPayload.role;
       document.getElementById('cert-view-category').textContent = ev.category;
       document.getElementById('cert-view-event').textContent = `"${ev.title}"`;
-      document.getElementById('cert-view-date').textContent = activeCertPayload.dateRange;
+      document.getElementById('cert-view-date').textContent = dateRange;
       document.getElementById('cert-view-loc').textContent = ev.location;
-      document.getElementById('cert-view-jp').textContent = jp;
+      document.getElementById('cert-view-jp').textContent = activeCertPayload.jp;
       document.getElementById('cert-view-issued-date').textContent = issuedDate;
-      document.getElementById('cert-view-signer-name').textContent = signerName;
-      document.getElementById('cert-view-signer-title').textContent = signerTitle;
+      document.getElementById('cert-view-signer-name').textContent = activeCertPayload.signerName;
+      document.getElementById('cert-view-signer-title').textContent = activeCertPayload.signerTitle;
       document.getElementById('cert-view-code').textContent = `Kode: ${verCode}`;
-      document.getElementById('cert-qr-img').src = qrDataUrl;
 
-      resultBox.classList.remove('hidden');
-      lucide.createIcons();
+      const qrImg = document.getElementById('cert-qr-img');
+      if (window.QRCode) {
+        QRCode.toDataURL(activeCertPayload.verificationUrl, {
+          width: 180,
+          margin: 1,
+          color: { dark: '#0B1F3A', light: '#FFFFFF' }
+        }, function (err, url) {
+          if (!err && url) {
+            qrImg.src = url;
+          }
+        });
+      }
+
+      resBox.classList.remove('hidden');
+      requestAnimationFrame(() => applyCertificateLayoutToDOM(activeCertPayload));
+      if (window.lucide) lucide.createIcons();
     }
 
-    async function openVerificationPageFromHash(hashStr) {
-      if (releaseCountdownInterval) {
-        clearInterval(releaseCountdownInterval);
-        releaseCountdownInterval = null;
-      }
+    // POPULATE DEDICATED VERIFICATION PAGE WHEN USER SCANS QR BARCODE
+    function renderVerificationPage(data) {
+      document.getElementById('portal-home-view').classList.add('hidden');
+      document.getElementById('event-room-page').classList.add('hidden');
+      document.getElementById('certificate-verification-page').classList.remove('hidden');
 
-      const queryPart = hashStr.includes('?') ? hashStr.split('?')[1] : '';
-      const params = new URLSearchParams(queryPart);
-      const encodedV = params.get('v');
-      const certParam = params.get('cert') || '';
-
-      let data = null;
-      if (encodedV) {
-        try {
-          data = decodePayloadBase64(encodedV);
-        } catch (e) {}
-      }
-
-      let matchedEvent = null;
-      let matchedAttendee = null;
-      if (data && data.evId) {
-        matchedEvent = eventsData.find(e => e.id === data.evId);
-        if (!matchedEvent && isFirebaseReady && db) {
-          try {
-            const evDoc = await db.collection('events').doc(data.evId).get();
-            if (evDoc.exists) matchedEvent = normalizeEventItem({ id: evDoc.id, ...evDoc.data() });
-          } catch (e) {}
-        }
-        if (matchedEvent && data.attId) {
-          matchedAttendee = (matchedEvent.attendees || []).find(a => a.id === data.attId);
-          if (!matchedAttendee && isFirebaseReady && db) {
-            try {
-              const attDoc = await db.collection('events').doc(data.evId).collection('attendees').doc(data.attId).get();
-              if (attDoc.exists) matchedAttendee = { id: attDoc.id, ...attDoc.data() };
-            } catch (e) {}
-          }
-        }
-      }
-
-      const noSertifikat = (data && data.no) || certParam || '001/SERT/JSIT-LPG/2026';
-      const kabupatenKota = (matchedAttendee && matchedAttendee.region) || (data && data.kab) || 'Provinsi Lampung';
-      const tanggalKegiatan = matchedEvent ? formatDateIndo(matchedEvent.dateStart, matchedEvent.dateEnd) : ((data && data.tgl) || '-');
-      const instansi = (data && data.ins) || appSettings.orgSub || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung';
-      const signerName = (matchedEvent && matchedEvent.certificate && matchedEvent.certificate.signerName) || appSettings.signerName;
-      const signerTitle = (matchedEvent && matchedEvent.certificate && matchedEvent.certificate.signerTitle) || appSettings.signerTitle;
-      const ditandatangani = (data && data.ttd) || `${signerName} - ${signerTitle}`;
-      const perihal = (matchedEvent && matchedEvent.title) || (data && data.hal) || 'Kegiatan Pendidikan & Diklat JSIT Lampung';
-      const namaPemilik = (matchedAttendee && matchedAttendee.name) || (data && data.nama) || 'Peserta Terdaftar';
-      const asalSekolah = (matchedAttendee && matchedAttendee.school) || (data && data.sek) || 'Sekolah Islam Terpadu';
-      const roleStatus = (matchedEvent && matchedEvent.certificate && matchedEvent.certificate.roleLabel) || (data && data.sts) || 'Peserta';
-      const jp = (matchedEvent && matchedEvent.certificate && matchedEvent.certificate.jp) || (data && data.jp) || '8 JP';
-      const issuedDate = (data && data.iss) || tanggalKegiatan;
-      const verCode = (data && data.code) || certParam || 'VERIFIED';
-
-      document.getElementById('ver-cert-number').textContent = noSertifikat;
-      document.getElementById('ver-cert-region').textContent = kabupatenKota;
-      document.getElementById('ver-cert-date').textContent = tanggalKegiatan;
-      document.getElementById('ver-cert-institution').textContent = instansi;
-      document.getElementById('ver-cert-signer').textContent = ditandatangani;
-      document.getElementById('ver-cert-subject').textContent = perihal;
-      document.getElementById('ver-cert-owner').textContent = `${namaPemilik} - ${asalSekolah}`;
-      document.getElementById('ver-cert-role-status').textContent = `Status sebagai ${roleStatus}`;
-
-      const certCfg = (matchedEvent && matchedEvent.certificate) || {};
-      activeVerificationUrl = window.location.href;
-      const qrDataUrl = await generateQRDataURL(activeVerificationUrl);
+      document.getElementById('ver-cert-number').textContent = data.certNumber || '-';
+      document.getElementById('ver-cert-region').textContent = data.region || 'Provinsi Lampung';
+      document.getElementById('ver-cert-date').textContent = data.dateRange || '-';
+      document.getElementById('ver-cert-institution').textContent = data.institution || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung';
+      document.getElementById('ver-cert-signer').textContent = data.signerFull || `${data.signerName || appSettings.signerName} - ${data.signerTitle || appSettings.signerTitle}`;
+      document.getElementById('ver-cert-subject').textContent = data.eventTitle || '-';
+      document.getElementById('ver-cert-owner').textContent = `${(data.ownerName || '').toUpperCase()} - ${data.school || '-'}`;
+      document.getElementById('ver-cert-role-status').textContent = `Status sebagai ${data.role || 'Peserta'}`;
 
       activeCertPayload = {
-        eventId: matchedEvent ? matchedEvent.id : ((data && data.evId) || ''),
-        attendeeId: matchedAttendee ? matchedAttendee.id : ((data && data.attId) || ''),
-        certNumber: noSertifikat,
-        name: namaPemilik,
-        rawSchool: asalSekolah,
-        region: kabupatenKota,
-        school: `${asalSekolah} — ${kabupatenKota}`,
-        category: matchedEvent ? matchedEvent.category : 'Diklat',
-        eventTitle: perihal,
-        dateRange: tanggalKegiatan,
-        location: matchedEvent ? matchedEvent.location : 'Provinsi Lampung',
-        jp,
-        roleLabel: roleStatus,
+        eventId: data.eventId || '',
+        attendeeId: data.attendeeId || '',
+        certNumber: data.certNumber,
+        verCode: data.verCode || 'VERIFIED',
+        ownerName: data.ownerName,
+        school: data.school,
+        region: data.region || 'Provinsi Lampung',
+        role: data.role || 'Peserta',
+        category: data.category || 'Kegiatan',
+        eventTitle: data.eventTitle,
+        dateRange: data.dateRange,
+        location: data.location || 'Provinsi Lampung',
+        jp: data.jp || '8 JP',
+        issuedDate: data.issuedDate || data.dateRange,
+        signerName: data.signerName || appSettings.signerName,
+        signerTitle: data.signerTitle || appSettings.signerTitle,
+        themeColor: data.themeColor || '#1E3A8A',
+        customTemplateImg: data.customTemplateImg || '',
+        hideDefaultChrome: data.hideDefaultChrome !== false,
+        textColor: data.textColor || '#0B1F3A',
+        offsetY: data.offsetY || 0,
+        qrOffsetX: data.qrOffsetX || 0,
+        qrOffsetY: data.qrOffsetY || 0,
+        qrScale: data.qrScale || 100,
+        showScanBg: data.showScanBg !== false,
+        signerOffsetX: data.signerOffsetX || 0,
+        signerOffsetY: data.signerOffsetY || 0,
+        signerScale: data.signerScale || 100,
+        showIssuedDate: data.showIssuedDate !== false,
+        verificationUrl: window.location.href
+      };
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function refreshVerificationPageFromLiveEvents() {
+      if (!pendingHashCertData) return;
+      const ev = eventsData.find(e => e.id === pendingHashCertData.eventId);
+      if (!ev) return;
+
+      const certCfg = ev.certificate || {};
+      const attendees = ev.attendees || [];
+      const foundIndex = attendees.findIndex(a => a.id === pendingHashCertData.attendeeId || a.name === pendingHashCertData.ownerName);
+      const attendee = foundIndex !== -1 ? attendees[foundIndex] : null;
+
+      const updatedData = {
+        ...pendingHashCertData,
+        eventTitle: ev.title,
+        category: ev.category,
+        location: ev.location,
+        dateRange: formatDateIndo(ev.dateStart, ev.dateEnd),
+        issuedDate: formatDateIndo(ev.dateEnd || ev.dateStart, ''),
+        role: certCfg.roleLabel || pendingHashCertData.role || 'Peserta',
+        jp: certCfg.jp || pendingHashCertData.jp || '8 JP',
+        signerName: certCfg.signerName || appSettings.signerName,
+        signerTitle: certCfg.signerTitle || appSettings.signerTitle,
+        signerFull: `${certCfg.signerName || appSettings.signerName} - ${certCfg.signerTitle || appSettings.signerTitle}`,
         themeColor: certCfg.themeColor || '#1E3A8A',
-        issuedDate,
-        signerName,
-        signerTitle,
-        verCode,
         customTemplateImg: certCfg.customTemplateImg || '',
         hideDefaultChrome: certCfg.hideDefaultChrome !== false,
         textColor: certCfg.textColor || '#0B1F3A',
         offsetY: certCfg.offsetY || 0,
-        qrDataUrl
+        qrOffsetX: certCfg.qrOffsetX || 0,
+        qrOffsetY: certCfg.qrOffsetY || 0,
+        qrScale: certCfg.qrScale || 100,
+        showScanBg: certCfg.showScanBg !== false,
+        signerOffsetX: certCfg.signerOffsetX || 0,
+        signerOffsetY: certCfg.signerOffsetY || 0,
+        signerScale: certCfg.signerScale || 100,
+        showIssuedDate: certCfg.showIssuedDate !== false,
+        ownerName: attendee ? attendee.name : pendingHashCertData.ownerName,
+        school: attendee ? attendee.school : pendingHashCertData.school,
+        region: attendee ? attendee.region : pendingHashCertData.region
       };
-
-      document.getElementById('portal-home-view').classList.add('hidden');
-      document.getElementById('event-room-page').classList.add('hidden');
-      document.getElementById('certificate-verification-page').classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      lucide.createIcons();
+      renderVerificationPage(updatedData);
     }
 
-    function copyActiveVerificationLink() {
-      const urlToCopy = activeVerificationUrl || window.location.href;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(urlToCopy).then(() => {
-          showToast('Tautan verifikasi berhasil disalin!');
-        }).catch(() => {
-          fallbackCopyText(urlToCopy);
-        });
-      } else {
-        fallbackCopyText(urlToCopy);
-      }
-    }
+    function openVerificationPageFromHash() {
+      const hash = window.location.hash || '';
+      if (!hash.startsWith('#verifikasi')) return false;
 
-    function fallbackCopyText(text) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast('Tautan verifikasi berhasil disalin!');
-    }
+      const qIndex = hash.indexOf('?');
+      if (qIndex === -1) return false;
+      const params = new URLSearchParams(hash.slice(qIndex + 1));
+      const vEncoded = params.get('v');
+      const certParam = params.get('cert') || '';
 
-    function loadImageAsync(src) {
-      return new Promise((resolve) => {
-        if (!src) { resolve(null); return; }
-        const img = new Image();
-        if (!src.startsWith('data:')) {
-          img.crossOrigin = 'anonymous';
+      if (vEncoded) {
+        try {
+          const decodedJson = decodeURIComponent(escape(atob(vEncoded)));
+          const obj = JSON.parse(decodedJson);
+          const ttdParts = (obj.ttd || '').split(' - ');
+
+          pendingHashCertData = {
+            eventId: obj.evId || '',
+            attendeeId: obj.attId || '',
+            certNumber: obj.no || certParam,
+            verCode: obj.code || certParam,
+            region: obj.kab || 'Provinsi Lampung',
+            dateRange: obj.tgl || '-',
+            institution: obj.ins || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+            signerFull: obj.ttd || `${appSettings.signerName} - ${appSettings.signerTitle}`,
+            signerName: ttdParts[0] || appSettings.signerName,
+            signerTitle: ttdParts.slice(1).join(' - ') || appSettings.signerTitle,
+            eventTitle: obj.hal || 'Kegiatan JSIT Lampung',
+            ownerName: obj.nama || 'Peserta Terverifikasi',
+            school: obj.sek || '-',
+            role: obj.sts || 'Peserta',
+            jp: obj.jp || '8 JP',
+            issuedDate: obj.iss || obj.tgl || '-'
+          };
+          renderVerificationPage(pendingHashCertData);
+          refreshVerificationPageFromLiveEvents();
+          return true;
+        } catch (err) {
+          console.error('Gagal decode QR verifikasi:', err);
         }
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
-        img.src = src;
-      });
+      }
+      return false;
     }
 
-    function drawWrappedCenteredText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
-      const words = String(text || '').split(/\s+/);
-      const lines = [];
-      let current = '';
-
-      for (let i = 0; i < words.length; i++) {
-        const testLine = current ? `${current} ${words[i]}` : words[i];
-        if (ctx.measureText(testLine).width > maxWidth && current) {
-          lines.push(current);
-          current = words[i];
-          if (lines.length === maxLines - 1) {
-            const rest = [current, ...words.slice(i + 1)].join(' ');
-            let trimmed = rest;
-            while (ctx.measureText(trimmed + '...').width > maxWidth && trimmed.length > 10) {
-              trimmed = trimmed.slice(0, -1);
-            }
-            lines.push(trimmed === rest ? rest : trimmed + '...');
-            current = '';
-            break;
-          }
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      let currY = y;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line.trim(), x, currY);
+          line = words[n] + ' ';
+          currY += lineHeight;
         } else {
-          current = testLine;
+          line = testLine;
         }
       }
-      if (current) lines.push(current);
-
-      lines.forEach((line, idx) => {
-        ctx.fillText(line, x, y + idx * lineHeight);
-      });
-      return lines.length;
+      ctx.fillText(line.trim(), x, currY);
+      return currY;
     }
 
-    async function downloadCertificatePNG() {
+    // GENERATE & DOWNLOAD A4 LANDSCAPE CERTIFICATE PNG (1754 x 1240 px)
+    function downloadCertificatePNG() {
       if (!activeCertPayload) return;
       const p = activeCertPayload;
       const canvas = document.getElementById('hd-cert-canvas');
@@ -2385,146 +2443,290 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, W, H);
+      const drawForegroundAndExport = (bgImg) => {
+        ctx.clearRect(0, 0, W, H);
 
-      const tplImg = await loadImageAsync(p.customTemplateImg);
-      const qrDataUrl = p.qrDataUrl || await generateQRDataURL(activeVerificationUrl || buildVerificationUrl(p));
-      const qrImg = await loadImageAsync(qrDataUrl);
+        if (bgImg) {
+          ctx.drawImage(bgImg, 0, 0, W, H);
+        } else {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, W, H);
 
-      if (tplImg) {
-        ctx.drawImage(tplImg, 0, 0, W, H);
-      }
+          const gradTL = ctx.createLinearGradient(0, 0, 350, 350);
+          gradTL.addColorStop(0, 'rgba(30, 58, 138, 0.14)');
+          gradTL.addColorStop(1, 'rgba(14, 165, 233, 0)');
+          ctx.fillStyle = gradTL;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(380, 0);
+          ctx.arc(0, 0, 380, 0, Math.PI / 2);
+          ctx.closePath();
+          ctx.fill();
 
-      const drawDefaultChrome = !tplImg || !p.hideDefaultChrome;
-      if (drawDefaultChrome) {
-        ctx.fillStyle = '#0B1F3A';
-        ctx.beginPath();
-        ctx.moveTo(0, 0); ctx.lineTo(380, 0); ctx.lineTo(0, 380); ctx.closePath();
-        ctx.fill();
+          const gradBR = ctx.createLinearGradient(W, H, W - 380, H - 380);
+          gradBR.addColorStop(0, 'rgba(217, 119, 6, 0.14)');
+          gradBR.addColorStop(1, 'rgba(30, 58, 138, 0)');
+          ctx.fillStyle = gradBR;
+          ctx.beginPath();
+          ctx.moveTo(W, H);
+          ctx.lineTo(W - 380, H);
+          ctx.arc(W, H, 380, Math.PI, Math.PI * 1.5);
+          ctx.closePath();
+          ctx.fill();
+        }
 
-        ctx.fillStyle = '#0284C7';
-        ctx.beginPath();
-        ctx.moveTo(W, H); ctx.lineTo(W - 380, H); ctx.lineTo(W, H - 380); ctx.closePath();
-        ctx.fill();
+        if (!bgImg || !p.hideDefaultChrome) {
+          ctx.strokeStyle = p.themeColor;
+          ctx.lineWidth = 14;
+          ctx.strokeRect(42, 42, W - 84, H - 84);
 
-        ctx.strokeStyle = p.themeColor || '#1E3A8A';
-        ctx.lineWidth = 14;
-        ctx.strokeRect(52, 52, W - 104, H - 104);
+          ctx.strokeStyle = '#D97706';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(66, 66, W - 132, H - 132);
 
-        ctx.strokeStyle = '#D97706';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(78, 78, W - 156, H - 156);
+          ctx.fillStyle = '#0B1F3A';
+          ctx.beginPath();
+          ctx.roundRect(W / 2 - 270, 108, 540, 42, 21);
+          ctx.fill();
+
+          ctx.fillStyle = '#FCD34D';
+          ctx.font = 'bold 18px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU INDONESIA', W / 2, 135);
+
+          ctx.fillStyle = '#0B1F3A';
+          ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 195);
+        }
+
+        const shiftY = bgImg ? Math.round((p.offsetY || 0) * 2.1) : 0;
+        const primaryTxt = bgImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
+        const bodyTxt = bgImg ? (p.textColor || '#334155') : '#334155';
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#1E3A8A';
-        ctx.font = 'bold 26px Inter, sans-serif';
-        ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 175);
+        ctx.fillStyle = p.themeColor;
+        ctx.font = '800 76px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('SERTIFIKAT', W / 2, 295 + shiftY);
 
-        ctx.fillStyle = '#0284C7';
-        ctx.font = '800 34px Plus Jakarta Sans, sans-serif';
-        ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 222);
-      }
+        ctx.fillStyle = '#64748B';
+        ctx.font = '600 24px Inter, sans-serif';
+        ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, 340 + shiftY);
 
-      const yShift = tplImg ? (Number(p.offsetY || 0) * 2.1) : 0;
-      const primaryTextColor = tplImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
-      const secondaryTextColor = tplImg ? (p.textColor || '#334155') : '#334155';
+        ctx.fillStyle = bodyTxt;
+        ctx.font = '500 26px Inter, sans-serif';
+        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 415 + shiftY);
 
-      ctx.textAlign = 'center';
+        ctx.fillStyle = primaryTxt;
+        ctx.font = '800 54px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(p.ownerName, W / 2, 490 + shiftY);
 
-      ctx.fillStyle = p.themeColor || '#1E3A8A';
-      ctx.font = '800 82px Plus Jakarta Sans, sans-serif';
-      ctx.fillText('SERTIFIKAT', W / 2, 330 + yShift);
+        const nameWidth = Math.min(ctx.measureText(p.ownerName).width + 100, 1200);
+        ctx.strokeStyle = '#F59E0B';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(W / 2 - nameWidth / 2, 512 + shiftY);
+        ctx.lineTo(W / 2 + nameWidth / 2, 512 + shiftY);
+        ctx.stroke();
 
-      ctx.fillStyle = '#475569';
-      ctx.font = '600 25px Inter, sans-serif';
-      ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, 376 + yShift);
+        ctx.fillStyle = '#1D4ED8';
+        ctx.font = '700 28px Inter, sans-serif';
+        ctx.fillText(`${p.school} — ${p.region}`, W / 2, 558 + shiftY);
 
-      ctx.fillStyle = secondaryTextColor;
-      ctx.font = '500 27px Inter, sans-serif';
-      ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 452 + yShift);
+        ctx.fillStyle = bodyTxt;
+        ctx.font = '500 26px Inter, sans-serif';
+        ctx.fillText(`Atas partisipasi aktif sebagai ${p.role} dalam kegiatan ${p.category}:`, W / 2, 630 + shiftY);
 
-      ctx.fillStyle = primaryTextColor;
-      ctx.font = '800 58px Plus Jakarta Sans, sans-serif';
-      ctx.fillText(p.name, W / 2, 536 + yShift);
+        ctx.fillStyle = primaryTxt;
+        ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+        const nextY = wrapCanvasText(ctx, `"${p.eventTitle}"`, W / 2, 682 + shiftY, 1340, 42);
 
-      const nameWidth = Math.min(1050, ctx.measureText(p.name).width + 130);
-      ctx.strokeStyle = '#D97706';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(W / 2 - nameWidth / 2, 556 + yShift);
-      ctx.lineTo(W / 2 + nameWidth / 2, 556 + yShift);
-      ctx.stroke();
+        ctx.fillStyle = bodyTxt;
+        ctx.font = '500 25px Inter, sans-serif';
+        wrapCanvasText(
+          ctx,
+          `yang diselenggarakan oleh JSIT Wilayah Lampung pada tanggal ${p.dateRange} bertempat di ${p.location} dengan bobot pelatihan setara ${p.jp}.`,
+          W / 2,
+          nextY + 50,
+          1340,
+          36
+        );
 
-      ctx.fillStyle = '#1D4ED8';
-      ctx.font = '700 29px Inter, sans-serif';
-      ctx.fillText(p.school, W / 2, 604 + yShift);
+        // SIGNER BLOCK (ADJUSTABLE POSITION & SCALE)
+        const signerShiftX = Math.round((Number(p.signerOffsetX || 0) / 1000) * W);
+        const signerShiftY = Math.round((Number(p.signerOffsetY || 0) / 1000) * W);
+        const signerScale = Number(p.signerScale || 100) / 100;
+        const showIssuedDate = p.showIssuedDate !== false;
 
-      ctx.fillStyle = secondaryTextColor;
-      ctx.font = '500 26px Inter, sans-serif';
-      ctx.fillText(`Atas partisipasi aktif sebagai ${p.roleLabel || 'Peserta'} dalam kegiatan ${p.category}:`, W / 2, 676 + yShift);
+        const signerCenterX = (W - 450) + signerShiftX;
+        const signerBaseY = 915 + signerShiftY;
 
-      ctx.fillStyle = primaryTextColor;
-      ctx.font = '800 31px Plus Jakarta Sans, sans-serif';
-      const lineCount = drawWrappedCenteredText(ctx, `"${p.eventTitle}"`, W / 2, 728 + yShift, 1340, 40, 2);
+        ctx.save();
+        ctx.translate(signerCenterX, signerBaseY);
+        ctx.scale(signerScale, signerScale);
 
-      const extraLineOffset = lineCount > 1 ? 36 : 0;
-      ctx.fillStyle = '#475569';
-      ctx.font = '500 24px Inter, sans-serif';
-      ctx.fillText(`Diselenggarakan pada ${p.dateRange} • Bobot Pelatihan: ${p.jp}`, W / 2, 782 + yShift + extraLineOffset);
+        ctx.textAlign = 'center';
+        if (showIssuedDate) {
+          ctx.fillStyle = primaryTxt;
+          ctx.font = '500 23px Inter, sans-serif';
+          ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, 0, 0);
+        }
 
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#475569';
-      ctx.font = '500 23px Inter, sans-serif';
-      ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, W - 450, 915);
-      ctx.fillText(p.signerTitle, W - 450, 950);
+        ctx.fillStyle = primaryTxt;
+        ctx.font = '600 23px Inter, sans-serif';
+        ctx.fillText(p.signerTitle, 0, showIssuedDate ? 35 : 15);
 
-      ctx.fillStyle = '#1D4ED8';
-      ctx.font = 'italic 22px Inter, sans-serif';
-      ctx.fillText('[ Terverifikasi Secara Elektronik ]', W - 450, 1022);
-
-      ctx.fillStyle = primaryTextColor;
-      ctx.font = '800 27px Plus Jakarta Sans, sans-serif';
-      ctx.fillText(p.signerName, W - 450, 1086);
-
-      if (qrImg) {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(190, 918, 174, 174);
-        ctx.strokeStyle = '#CBD5E1';
+        ctx.fillStyle = 'rgba(239, 246, 255, 0.92)';
+        ctx.strokeStyle = '#93C5FD';
         ctx.lineWidth = 2;
-        ctx.strokeRect(190, 918, 174, 174);
-        ctx.drawImage(qrImg, 197, 925, 160, 160);
-      }
+        const badgeY = showIssuedDate ? 65 : 48;
+        ctx.beginPath();
+        ctx.roundRect(-190, badgeY, 380, 44, 10);
+        ctx.fill();
+        ctx.stroke();
 
-      ctx.textAlign = 'left';
-      ctx.fillStyle = primaryTextColor;
-      ctx.font = 'bold 21px Inter, sans-serif';
-      ctx.fillText('VERIFIKASI KEASLIAN DIGITAL', 385, 975);
-      ctx.fillStyle = '#475569';
-      ctx.font = '500 20px Inter, sans-serif';
-      ctx.fillText(`Kode Validasi: ${p.verCode}`, 385, 1008);
-      ctx.fillText('Scan Barcode untuk Info Sertifikat Resmi', 385, 1040);
+        ctx.fillStyle = '#1E40AF';
+        ctx.font = 'italic 600 21px Inter, sans-serif';
+        ctx.fillText('TTD Elektronik Terverifikasi', 0, badgeY + 29);
 
-      try {
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        const safeName = p.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        link.download = `Sertifikat_A4_Landscape_JSIT_Lampung_${safeName}.png`;
-        link.href = dataUrl;
-        link.click();
-        showToast('E-Sertifikat A4 Landscape (PNG) berhasil diunduh!');
-      } catch (err) {
-        console.warn('Canvas tainted oleh gambar eksternal, membuka mode Cetak / PDF:', err);
-        showToast('Membuka dialog Cetak / Simpan PDF sertifikat...');
-        window.print();
+        ctx.fillStyle = primaryTxt;
+        ctx.font = '800 26px "Plus Jakarta Sans", sans-serif';
+        const sigNameY = badgeY + 84;
+        ctx.fillText(p.signerName, 0, sigNameY);
+
+        const sigWidth = ctx.measureText(p.signerName).width;
+        ctx.strokeStyle = primaryTxt;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-sigWidth / 2, sigNameY + 7);
+        ctx.lineTo(sigWidth / 2, sigNameY + 7);
+        ctx.stroke();
+        ctx.restore();
+
+        // QR CODE & SCAN VERIFICATION TEXT BLOCK (ADJUSTABLE POSITION & SCALE)
+        const qrShiftX = Math.round((Number(p.qrOffsetX || 0) / 1000) * W);
+        const qrShiftY = Math.round((Number(p.qrOffsetY || 0) / 1000) * W);
+        const qrScale = Number(p.qrScale || 100) / 100;
+        const showScanBg = p.showScanBg !== false;
+
+        const qrOriginX = 190 + qrShiftX;
+        const qrOriginY = 918 + qrShiftY;
+
+        const finalizeDownload = () => {
+          const link = document.createElement('a');
+          link.download = `E-Sertifikat_${p.ownerName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          showToast('E-Sertifikat A4 Landscape (PNG) berhasil diunduh!');
+        };
+
+        const qrDataUrl = document.getElementById('cert-qr-img').src;
+        if (qrDataUrl && qrDataUrl.startsWith('data:image')) {
+          const qrImage = new Image();
+          qrImage.onload = function () {
+            ctx.save();
+            ctx.translate(qrOriginX, qrOriginY);
+            ctx.scale(qrScale, qrScale);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.strokeStyle = '#CBD5E1';
+            ctx.lineWidth = 3;
+            ctx.fillRect(-6, -6, 186, 186);
+            ctx.strokeRect(-6, -6, 186, 186);
+            ctx.drawImage(qrImage, 0, 0, 174, 174);
+
+            if (showScanBg) {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+              ctx.beginPath();
+              ctx.roundRect(195, 22, 410, 130, 14);
+              ctx.fill();
+            }
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#0B1F3A';
+            ctx.font = '800 24px Inter, sans-serif';
+            ctx.fillText('Scan Verifikasi', 212, 58);
+
+            ctx.fillStyle = '#1E40AF';
+            ctx.font = '700 21px Inter, sans-serif';
+            ctx.fillText('JSIT Wilayah Lampung', 212, 92);
+
+            ctx.fillStyle = '#475569';
+            ctx.font = '600 19px monospace';
+            ctx.fillText(`Kode: ${p.verCode}`, 212, 126);
+            ctx.restore();
+
+            finalizeDownload();
+          };
+          qrImage.src = qrDataUrl;
+        } else if (window.QRCode) {
+          QRCode.toDataURL(p.verificationUrl || buildVerificationUrl(p), {
+            width: 180,
+            margin: 1,
+            color: { dark: '#0B1F3A', light: '#FFFFFF' }
+          }, function (err, genUrl) {
+            if (!err && genUrl) {
+              document.getElementById('cert-qr-img').src = genUrl;
+              const qrImage = new Image();
+              qrImage.onload = function () {
+                ctx.save();
+                ctx.translate(qrOriginX, qrOriginY);
+                ctx.scale(qrScale, qrScale);
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.strokeStyle = '#CBD5E1';
+                ctx.lineWidth = 3;
+                ctx.fillRect(-6, -6, 186, 186);
+                ctx.strokeRect(-6, -6, 186, 186);
+                ctx.drawImage(qrImage, 0, 0, 174, 174);
+
+                if (showScanBg) {
+                  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+                  ctx.beginPath();
+                  ctx.roundRect(195, 22, 410, 130, 14);
+                  ctx.fill();
+                }
+
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#0B1F3A';
+                ctx.font = '800 24px Inter, sans-serif';
+                ctx.fillText('Scan Verifikasi', 212, 58);
+
+                ctx.fillStyle = '#1E40AF';
+                ctx.font = '700 21px Inter, sans-serif';
+                ctx.fillText('JSIT Wilayah Lampung', 212, 92);
+
+                ctx.fillStyle = '#475569';
+                ctx.font = '600 19px monospace';
+                ctx.fillText(`Kode: ${p.verCode}`, 212, 126);
+                ctx.restore();
+
+                finalizeDownload();
+              };
+              qrImage.src = genUrl;
+            } else {
+              finalizeDownload();
+            }
+          });
+        } else {
+          finalizeDownload();
+        }
+      };
+
+      if (p.customTemplateImg) {
+        const bgImage = new Image();
+        bgImage.onload = () => drawForegroundAndExport(bgImage);
+        bgImage.onerror = () => drawForegroundAndExport(null);
+        bgImage.src = p.customTemplateImg;
+      } else {
+        drawForegroundAndExport(null);
       }
     }
 
+    // GLOBAL CERTIFICATE SEARCH
     function openGlobalCertModal() {
       document.getElementById('global-cert-modal').classList.remove('hidden');
-      const input = document.getElementById('global-cert-query');
-      if (input) setTimeout(() => input.focus(), 50);
-      lucide.createIcons();
+      document.getElementById('global-cert-query').focus();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeGlobalCertModal() {
@@ -2533,63 +2735,72 @@
 
     function searchGlobalCertificates() {
       const q = document.getElementById('global-cert-query').value.trim().toLowerCase();
-      const qDigits = normalizePhone(q);
-      const container = document.getElementById('global-cert-results');
-      if (!q) return;
+      const resContainer = document.getElementById('global-cert-results');
+      if (q.length < 3) {
+        resContainer.innerHTML = `<p class="text-xs text-rose-600 text-center py-4 font-semibold">Masukkan minimal 3 huruf nama atau nomor HP.</p>`;
+        return;
+      }
 
       const matches = [];
       eventsData.forEach(ev => {
         (ev.attendees || []).forEach(att => {
-          const matchName = att.name.toLowerCase().includes(q);
-          const matchPhone = att.phone && qDigits.length >= 6 && normalizePhone(att.phone).includes(qDigits);
-          if (matchName || matchPhone) {
-            matches.push({ event: ev, attendee: att });
+          if (att.name.toLowerCase().includes(q) || (att.phone && att.phone.includes(q))) {
+            matches.push({ event: ev, attendee: att, released: isCertificateReleased(ev) });
           }
         });
       });
 
       if (matches.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-xs text-red-600 bg-red-50 rounded-xl">Tidak ditemukan riwayat kehadiran atas nama/nomor tersebut.</div>`;
+        resContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Tidak ditemukan data kehadiran dengan kata kunci tersebut.</p>`;
         return;
       }
 
-      container.innerHTML = matches.map(m => {
-        const ready = isCertificateReleased(m.event);
-        const relText = formatReleaseScheduleIndo(m.event);
-        const encodedEvId = encodeURIComponent(m.event.id);
-        const encodedAttName = encodeURIComponent(m.attendee.name);
-        return `
-          <div class="p-4 rounded-xl border border-blue-100 bg-blue-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800">${escapeHtml(m.event.category)}</span>
-              <h4 class="font-bold text-sm text-navy-900 mt-1">${escapeHtml(m.event.title)}</h4>
-              <p class="text-xs text-slate-600">Peserta: <strong>${escapeHtml(m.attendee.name)}</strong> (${escapeHtml(m.attendee.school)})</p>
-            </div>
-            ${ready ? `
-              <button onclick="launchCertFromGlobal(decodeURIComponent('${encodedEvId}'), decodeURIComponent('${encodedAttName}'))" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 transition">
-                Buka Sertifikat
-              </button>
-            ` : `<span class="text-[11px] font-semibold text-amber-800 bg-amber-100 px-3 py-1.5 rounded-lg shrink-0 text-right">Rilis Setelah Kegiatan:<br/>${escapeHtml(relText)}</span>`}
+      resContainer.innerHTML = matches.map(m => `
+        <div class="p-3.5 rounded-xl border border-blue-100 bg-blue-50/40 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <span class="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold">${m.event.category}</span>
+            <p class="font-bold text-xs text-navy-900 mt-1 truncate">${m.attendee.name}</p>
+            <p class="text-[11px] text-slate-600 truncate">${m.event.title}</p>
           </div>
-        `;
-      }).join('');
+          ${m.released ? `
+            <button onclick="jumpToCert('${m.event.id}', '${m.attendee.name.replace(/'/g, "\\'")}')" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0">
+              Buka Sertifikat
+            </button>
+          ` : `
+            <span class="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-bold shrink-0">
+              Menunggu Jam Berakhir
+            </span>
+          `}
+        </div>
+      `).join('');
     }
 
-    async function launchCertFromGlobal(eventId, attendeeName) {
+    function jumpToCert(eventId, name) {
       closeGlobalCertModal();
-      openEventPage(eventId, true, 'sertifikat');
-      document.getElementById('cert-lookup-input').value = attendeeName;
-      await verifyAndGenerateCert();
+      openEventRoom(eventId, 'sertifikat');
+      document.getElementById('cert-lookup-input').value = name;
+      verifyAndGenerateCert();
     }
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
       document.getElementById('toast-message').textContent = msg;
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3200);
+      setTimeout(() => toast.classList.add('hidden'), 3500);
     }
 
-    document.addEventListener('DOMContentLoaded', initApp);
+    window.addEventListener('hashchange', () => {
+      if (!openVerificationPageFromHash()) {
+        if (!activeEventId) backToCatalog();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initRegionDropdown();
+      loadPortalData();
+      openVerificationPageFromHash();
+      if (window.lucide) lucide.createIcons();
+    });
   </script>
 </body>
 </html>

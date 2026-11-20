@@ -374,10 +374,8 @@
                 <span id="room-jp-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-200 border border-amber-300/30">16 JP</span>
               </div>
             </div>
-
             <h1 id="room-title" class="text-xl sm:text-3xl font-extrabold leading-snug">Judul Kegiatan</h1>
-
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pt-1 text-xs sm:text-sm text-blue-100">
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-blue-100">
               <span class="inline-flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-sky-300"></i> <span id="room-date">-</span></span>
               <span class="inline-flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4 text-sky-300"></i> <span id="room-time">-</span></span>
               <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4 text-sky-300"></i> <span id="room-location">-</span></span>
@@ -385,331 +383,324 @@
           </div>
         </div>
 
-        <!-- Dedicated Page Tab Panels -->
-        <div class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-7">
-          
-          <!-- TAB 1: INFO & NARASUMBER (+ RUANG FLYER DI DALAM KOLOM NARASUMBER & FASILITATOR) -->
-          <div id="tab-content-info" class="room-tab-panel space-y-6">
-            <div class="grid md:grid-cols-3 gap-6">
-              <div class="md:col-span-2 space-y-5">
-                <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs">
-                  <h4 class="text-sm font-bold text-navy-900 uppercase tracking-wider mb-2.5 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> Deskripsi & Tujuan Kegiatan
-                  </h4>
-                  <p id="room-description" class="text-sm text-slate-700 leading-relaxed"></p>
-                </div>
+        <!-- Room Tab Contents -->
+        <div class="flex-1 p-5 sm:p-8 bg-slate-50/70">
+          <div class="max-w-5xl mx-auto">
 
-                <!-- NARASUMBER, FASILITATOR & RUANG FLYER KEGIATAN -->
-                <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs">
-                  <h4 class="text-sm font-bold text-navy-900 uppercase tracking-wider mb-3.5 flex items-center gap-2">
-                    <i data-lucide="mic-2" class="w-4 h-4 text-blue-600"></i> Narasumber & Fasilitator
-                  </h4>
-                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                    <!-- Daftar Narasumber & Fasilitator -->
-                    <div id="room-speakers-list" class="lg:col-span-7 grid sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
+            <!-- TAB 1: INFO & NARASUMBER -->
+            <div id="tab-panel-info" class="room-panel space-y-6">
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-4">
+                  <div class="bg-white rounded-2xl p-5 sm:p-6 border border-blue-100 shadow-xs space-y-3">
+                    <h4 class="font-bold text-navy-900 flex items-center gap-2 text-base">
+                      <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> Deskripsi & Tujuan Kegiatan
+                    </h4>
+                    <p id="room-description" class="text-sm text-slate-600 leading-relaxed"></p>
+                  </div>
 
-                    <!-- Kolom Ruang Flyer (Proporsional & Kompak di dalam Kolom Narasumber) -->
-                    <div id="room-flyer-box" class="lg:col-span-5">
-                      <div class="rounded-xl border border-blue-100 bg-blue-50/40 p-2.5 flex flex-col items-center text-center">
-                        <div class="w-full flex items-center justify-between mb-2 px-0.5">
-                          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1">
-                            <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i> Flyer Kegiatan
-                          </span>
-                          <button type="button" id="btn-expand-flyer" onclick="openFlyerLightbox()" class="hidden text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                            <i data-lucide="maximize-2" class="w-3 h-3"></i> Perbesar
-                          </button>
-                        </div>
-
-                        <!-- Saat Flyer Tersedia -->
-                        <div id="room-flyer-filled" class="hidden w-full space-y-2">
-                          <div onclick="openFlyerLightbox()" title="Klik untuk memperbesar flyer" class="w-full rounded-lg overflow-hidden border border-blue-200/80 bg-white shadow-2xs cursor-zoom-in group">
-                            <img id="room-flyer-image" src="" alt="Flyer Kegiatan JSIT Lampung" class="w-full max-h-48 object-contain mx-auto bg-slate-50 group-hover:scale-[1.02] transition-transform duration-200" />
-                          </div>
-                          <div class="flex items-center gap-1.5 w-full">
-                            <button type="button" onclick="openFlyerLightbox()" class="flex-1 py-1.5 px-2 rounded-lg bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold transition">
-                              Lihat Penuh
-                            </button>
-                            <a id="room-flyer-download" href="#" download="Flyer_Kegiatan_JSIT_Lampung.jpg" class="flex-1 py-1.5 px-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition text-center">
-                              Unduh Flyer
-                            </a>
-                          </div>
-                        </div>
-
-                        <!-- Saat Flyer Belum Diunggah Admin -->
-                        <div id="room-flyer-empty" class="w-full py-5 px-3 rounded-lg border border-dashed border-blue-200 bg-white/80 flex flex-col items-center justify-center gap-1 text-slate-400">
-                          <i data-lucide="image-plus" class="w-5 h-5 text-blue-300"></i>
-                          <p class="text-[11px] font-semibold text-slate-500">Ruang Flyer Kegiatan</p>
-                          <p class="text-[10px] text-slate-400 leading-tight">Flyer tampil di sini setelah diunggah admin.</p>
-                        </div>
+                  <!-- Tautan Zoom Meeting Kegiatan -->
+                  <div id="room-zoom-card" class="hidden bg-gradient-to-r from-blue-600 to-sky-600 rounded-2xl p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                        <i data-lucide="video" class="w-5 h-5 text-white"></i>
+                      </div>
+                      <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-sky-100 block">Ruang Virtual / Live Streaming</span>
+                        <h5 class="font-bold text-sm sm:text-base">Tautan Zoom Meeting Kegiatan</h5>
+                        <p id="room-zoom-url-text" class="text-xs text-blue-100 break-all mt-0.5"></p>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-4">
-                <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs space-y-3.5">
-                  <h4 class="text-sm font-bold text-navy-900">Informasi Pelaksanaan</h4>
-                  <div class="space-y-2.5 text-xs">
-                    <div class="flex justify-between gap-2 py-1.5 border-b border-slate-100">
-                      <span class="text-slate-500 shrink-0">Moda Pelaksanaan</span>
-                      <span id="room-mode" class="font-bold text-slate-800 text-right">-</span>
-                    </div>
-                    <div class="flex justify-between gap-2 py-1.5 border-b border-slate-100">
-                      <span class="text-slate-500 shrink-0">Kuota Peserta</span>
-                      <span id="room-quota-text" class="font-bold text-blue-700 text-right">0 / 0</span>
-                    </div>
-                    <div class="flex justify-between gap-2 py-1.5 border-b border-slate-100">
-                      <span class="text-slate-500 shrink-0">Rilis E-Sertifikat</span>
-                      <span id="room-cert-status" class="font-bold text-emerald-700 text-right">Tersedia</span>
-                    </div>
-                  </div>
-                  <div class="pt-2 flex flex-col gap-2.5">
-                    <button onclick="switchRoomTab('absensi')" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition">
-                      <i data-lucide="user-check" class="w-4 h-4"></i> Isi Daftar Hadir Sekarang
-                    </button>
-                    <button onclick="switchRoomTab('materi')" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs flex items-center justify-center gap-2 transition">
-                      <i data-lucide="book-open" class="w-4 h-4"></i> Lihat Materi & Modul
-                    </button>
-                    <a id="room-zoom-btn" href="https://zoom.us/join" target="_blank" rel="noopener" class="w-full py-2.5 px-4 rounded-xl bg-[#2D8CFF] hover:bg-[#1A73E8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition">
-                      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M4 6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H4zm13.5 3.6 3.7-2.5A.8.8 0 0 1 22.5 7.8v8.4a.8.8 0 0 1-1.3.7l-3.7-2.5V9.6z"/>
-                      </svg>
-                      <span>Gabung Zoom Kegiatan</span>
+                    <a id="room-zoom-btn" href="#" target="_blank" rel="noopener" class="px-4 py-2.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-extrabold text-xs text-center shadow-xs shrink-0 transition">
+                      Gabung Zoom &nearr;
                     </a>
                   </div>
+
+                  <div class="bg-white rounded-2xl p-5 sm:p-6 border border-blue-100 shadow-xs space-y-3">
+                    <h4 class="font-bold text-navy-900 flex items-center gap-2 text-base">
+                      <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Narasumber & Fasilitator
+                    </h4>
+                    <div id="room-flyer-wrapper" class="hidden rounded-2xl border border-indigo-100 bg-indigo-50/40 p-3 sm:p-4 space-y-2.5">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-indigo-900">
+                          <i data-lucide="image" class="w-3.5 h-3.5 text-indigo-600"></i> Flyer Resmi Kegiatan
+                        </span>
+                        <a id="room-flyer-open-link" href="#" target="_blank" rel="noopener" class="text-[11px] font-bold text-blue-600 hover:underline">
+                          Lihat Ukuran Penuh &nearr;
+                        </a>
+                      </div>
+                      <div class="rounded-xl overflow-hidden bg-white border border-indigo-100 flex items-center justify-center">
+                        <img id="room-flyer-img" src="" alt="Flyer Kegiatan" class="w-full max-h-[520px] object-contain mx-auto" />
+                      </div>
+                    </div>
+                    <div id="room-speakers-list" class="grid sm:grid-cols-2 gap-3"></div>
+                  </div>
+                </div>
+
+                <!-- Quick Action Box -->
+                <div class="space-y-4">
+                  <div class="bg-blue-50/80 rounded-2xl p-5 border border-blue-200 space-y-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-blue-700">Aksi Cepat Peserta</span>
+                    <button onclick="switchRoomTab('absensi')" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 transition">
+                      <i data-lucide="pen-tool" class="w-4 h-4"></i>
+                      <span>Isi Daftar Hadir Sekarang</span>
+                    </button>
+                    <button onclick="switchRoomTab('materi')" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-blue-50 text-blue-800 border border-blue-200 font-semibold text-sm flex items-center justify-center gap-2 transition">
+                      <i data-lucide="download" class="w-4 h-4"></i>
+                      <span>Unduh Materi & Bahan Tayang</span>
+                    </button>
+                    <button onclick="switchRoomTab('sertifikat')" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-blue-50 text-blue-800 border border-blue-200 font-semibold text-sm flex items-center justify-center gap-2 transition">
+                      <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
+                      <span>Cek & Cetak E-Sertifikat</span>
+                    </button>
+                  </div>
+
+                  <div class="bg-white rounded-2xl p-5 border border-slate-200 space-y-2.5 text-xs">
+                    <div class="flex justify-between py-1 border-b border-slate-100">
+                      <span class="text-slate-500">Moda Kegiatan</span>
+                      <span class="font-bold text-navy-900" id="room-mode">-</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-100">
+                      <span class="text-slate-500">Kuota Peserta</span>
+                      <span class="font-bold text-navy-900" id="room-quota">-</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-slate-100">
+                      <span class="text-slate-500">Status E-Sertifikat</span>
+                      <span class="font-bold text-emerald-700" id="room-cert-status">-</span>
+                    </div>
+                    <div class="flex justify-between py-1">
+                      <span class="text-slate-500">Waktu Rilis Sertifikat</span>
+                      <span class="font-bold text-blue-700 text-right" id="room-cert-release-time">-</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- TAB 2: DAFTAR HADIR (PRESENSI DIGITAL) -->
-          <div id="tab-content-absensi" class="room-tab-panel hidden space-y-6">
-            <div id="attendance-success-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+            <!-- TAB 2: DAFTAR HADIR DIGITAL -->
+            <div id="tab-panel-absensi" class="room-panel hidden space-y-6">
+              <div class="grid lg:grid-cols-12 gap-6">
+                <!-- Form Isi Daftar Hadir -->
+                <div class="lg:col-span-5">
+                  <form onsubmit="submitAttendance(event)" class="bg-white rounded-2xl p-5 sm:p-6 border border-blue-200 shadow-xs space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                      <h4 class="font-bold text-navy-900 text-base flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-4 h-4 text-blue-600"></i> Formulir Daftar Hadir
+                      </h4>
+                      <p class="text-xs text-slate-500 mt-0.5">Penulisan nama & gelar akan dicetak otomatis pada E-Sertifikat Anda.</p>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
+                      <input type="text" id="att-name" required placeholder="Contoh: Ahmad Fauzi, S.Pd.I., M.Pd." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Asal Sekolah / Instansi <span class="text-red-500">*</span></label>
+                      <input type="text" id="att-school" required placeholder="Contoh: SDIT Permata Bunda Bandar Lampung" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten / Kota <span class="text-red-500">*</span></label>
+                        <select id="att-region" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none"></select>
+                      </div>
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Peran / Status <span class="text-red-500">*</span></label>
+                        <select id="att-role" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none">
+                          <option value="Peserta">Peserta</option>
+                          <option value="Kepala Sekolah">Kepala Sekolah</option>
+                          <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                          <option value="Guru SIT">Guru SIT</option>
+                          <option value="Pengurus Yayasan">Pengurus Yayasan</option>
+                          <option value="Panitia">Panitia</option>
+                          <option value="Narasumber">Narasumber</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp <span class="text-red-500">*</span></label>
+                        <input type="tel" id="att-phone" required placeholder="0812xxxxxxxx" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm outline-none" />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Email (Opsional)</label>
+                        <input type="email" id="att-email" placeholder="nama@sekolah.sch.id" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm outline-none" />
+                      </div>
+                    </div>
+
+                    <div id="att-pin-wrapper" class="hidden">
+                      <label class="block text-xs font-bold text-amber-800 mb-1">Kode PIN Absensi Kegiatan <span class="text-red-500">*</span></label>
+                      <input type="text" id="att-pin" placeholder="Masukkan kode PIN dari panitia" class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50/50 focus:border-amber-500 text-sm outline-none" />
+                    </div>
+
+                    <button type="submit" id="btn-submit-attendance" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition">
+                      <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                      <span>Kirim & Catat Kehadiran</span>
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Live Daftar Hadir Table -->
+                <div class="lg:col-span-7">
+                  <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
+                    <div class="p-4 sm:p-5 border-b border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <h4 class="font-bold text-navy-900 text-base">Daftar Peserta Hadir</h4>
+                        <p class="text-xs text-slate-500">Tercatat secara langsung pada sistem JSIT Wilayah Lampung</p>
+                      </div>
+                      <input type="text" id="att-list-search" oninput="renderRoomAttendees()" placeholder="Cari nama atau sekolah..." class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs outline-none focus:border-blue-500 sm:w-56" />
+                    </div>
+                    <div class="overflow-x-auto max-h-[460px]">
+                      <table class="w-full text-left border-collapse">
+                        <thead class="bg-blue-50/80 text-[11px] font-bold uppercase text-navy-900 sticky top-0">
+                          <tr>
+                            <th class="py-3 px-4">No</th>
+                            <th class="py-3 px-4">Nama Peserta</th>
+                            <th class="py-3 px-4">Asal Sekolah / Kab.</th>
+                            <th class="py-3 px-4">Waktu Hadir</th>
+                          </tr>
+                        </thead>
+                        <tbody id="room-attendees-tbody" class="divide-y divide-slate-100 text-xs"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="space-y-1 text-xs sm:text-sm">
-                <h4 class="font-bold text-emerald-950" id="attendance-success-title">Daftar Hadir Berhasil Tercatat!</h4>
-                <p class="text-emerald-800 leading-relaxed" id="attendance-success-desc">
-                  Terima kasih telah mengisi daftar hadir. E-Sertifikat tidak diterbitkan secara otomatis saat ini dan baru dapat dicek serta diunduh pada menu <strong>E-Sertifikat</strong> setelah jam kegiatan berakhir.
+            </div>
+
+            <!-- TAB 3: MATERI KEGIATAN -->
+            <div id="tab-panel-materi" class="room-panel hidden space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-navy-900 text-lg">Modul, Slide & Bahan Tayang Kegiatan</h4>
+                  <p class="text-xs text-slate-500">Silakan unduh atau buka tautan materi resmi yang dibagikan oleh narasumber dan tim diklat.</p>
+                </div>
+              </div>
+              <div id="room-materials-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- TAB 4: REKAMAN KEGIATAN -->
+            <div id="tab-panel-rekaman" class="room-panel hidden space-y-4">
+              <div>
+                <h4 class="font-bold text-navy-900 text-lg">Video Rekaman & Dokumentasi Sesi</h4>
+                <p class="text-xs text-slate-500">Saksikan kembali tayangan ulang pembelajaran dan sesi diskusi kegiatan ini.</p>
+              </div>
+              <div id="room-recordings-list" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 5: E-SERTIFIKAT & BARCODE VERIFIKASI -->
+            <div id="tab-panel-sertifikat" class="room-panel hidden space-y-6">
+              <!-- Release Lock Banner (ditampilkan jika kegiatan belum berakhir) -->
+              <div id="cert-locked-banner" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-center space-y-3 max-w-2xl mx-auto">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+                  <i data-lucide="clock" class="w-6 h-6"></i>
+                </div>
+                <h4 class="font-display font-extrabold text-lg text-navy-900">E-Sertifikat Belum Dirilis</h4>
+                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed" id="cert-locked-message">
+                  Sesuai ketentuan panitia, pengecekan & pengunduhan E-Sertifikat otomatis dibuka setelah waktu kegiatan berakhir.
                 </p>
-              </div>
-            </div>
-
-            <div class="grid lg:grid-cols-12 gap-6">
-              <div class="lg:col-span-6 bg-white rounded-2xl p-5 sm:p-6 border border-blue-100 shadow-xs">
-                <div class="flex items-center gap-2.5 mb-4">
-                  <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
-                    <i data-lucide="pen-tool" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-navy-900 text-base">Formulir Daftar Hadir Peserta</h3>
-                    <p class="text-xs text-slate-500">Pastikan penulisan nama & gelar benar untuk pencetakan E-Sertifikat setelah kegiatan berakhir.</p>
-                  </div>
-                </div>
-
-                <form id="attendance-form" onsubmit="submitAttendance(event)" class="space-y-3.5">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap & Gelar (Untuk Sertifikat) <span class="text-red-500">*</span></label>
-                    <input type="text" id="att-name" required placeholder="Contoh: Ahmad Fauzi, S.Pd.I., M.Pd." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm bg-white outline-none" />
-                  </div>
-
-                  <div class="grid sm:grid-cols-2 gap-3">
-                    <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1">Asal Sekolah / Lembaga SIT <span class="text-red-500">*</span></label>
-                      <input type="text" id="att-school" required placeholder="Contoh: SDIT Permata Bunda" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none" />
-                    </div>
-                    <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten / Kota <span class="text-red-500">*</span></label>
-                      <select id="att-region" required class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none"></select>
-                    </div>
-                  </div>
-
-                  <div class="grid sm:grid-cols-2 gap-3">
-                    <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan / Peran <span class="text-red-500">*</span></label>
-                      <select id="att-role" required class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none">
-                        <option value="Guru">Guru / Pendidik</option>
-                        <option value="Kepala Sekolah">Kepala Sekolah</option>
-                        <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
-                        <option value="Tenaga Kependidikan / TU">Tenaga Kependidikan / TU</option>
-                        <option value="Pengurus Yayasan">Pengurus Yayasan</option>
-                        <option value="Komite / Orang Tua">Komite / Orang Tua</option>
-                        <option value="Umum / Mahasiswa">Umum / Mahasiswa</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
-                      <input type="tel" id="att-phone" required placeholder="0812xxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Email (Opsional)</label>
-                    <input type="email" id="att-email" placeholder="nama@sekolah.sch.id" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 text-sm bg-white outline-none" />
-                  </div>
-
-                  <div id="att-pin-wrapper" class="hidden">
-                    <label class="block text-xs font-bold text-amber-800 mb-1">Kode PIN Presensi Panitia <span class="text-red-500">*</span></label>
-                    <input type="text" id="att-pin-input" placeholder="Masukkan kode PIN dari panitia" class="w-full px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50 focus:border-blue-600 text-sm outline-none" />
-                  </div>
-
-                  <div>
-                    <div class="flex items-center justify-between mb-1">
-                      <label class="text-xs font-bold text-slate-700">Tanda Tangan Digital</label>
-                      <button type="button" onclick="clearSignaturePad()" class="text-[11px] font-semibold text-blue-600 hover:underline">Bersihkan TTD</button>
-                    </div>
-                    <div class="bg-slate-50 border border-dashed border-blue-300 rounded-xl overflow-hidden">
-                      <canvas id="signature-pad" width="420" height="100" class="w-full h-24 cursor-crosshair touch-none"></canvas>
-                    </div>
-                  </div>
-
-                  <button type="submit" id="btn-submit-att" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-700 to-sky-600 hover:from-blue-800 hover:to-sky-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition">
-                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                    <span>Kirim Daftar Hadir</span>
-                  </button>
-                </form>
-              </div>
-
-              <div class="lg:col-span-6 bg-white rounded-2xl p-5 border border-blue-100 shadow-xs space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                  <h4 class="font-bold text-navy-900 text-sm flex items-center gap-2">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
-                    <span>Peserta Tercatat Hadir (<span id="live-att-total">0</span>)</span>
-                  </h4>
-                  <input type="text" id="att-search-list" oninput="renderRoomAttendees()" placeholder="Cari nama/sekolah..." class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs outline-none focus:border-blue-500" />
-                </div>
-
-                <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
-                  <div class="max-h-[460px] overflow-y-auto divide-y divide-slate-100" id="room-attendees-list"></div>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-amber-200 text-xs font-bold text-amber-900" id="cert-locked-schedule">
+                  Jadwal Rilis: -
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- TAB 3: MATERI KEGIATAN -->
-          <div id="tab-content-materi" class="room-tab-panel hidden space-y-4">
-            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs">
-              <h3 class="font-bold text-navy-900 text-base">Modul, Bahan Tayang & Materi Pelatihan</h3>
-              <p class="text-xs text-slate-500">Klik tombol buka/unduh untuk mengakses materi resmi dari narasumber.</p>
-            </div>
-            <div id="room-materials-list" class="grid sm:grid-cols-2 gap-4"></div>
-          </div>
-
-          <!-- TAB 4: REKAMAN KEGIATAN -->
-          <div id="tab-content-rekaman" class="room-tab-panel hidden space-y-5">
-            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs">
-              <h3 class="font-bold text-navy-900 text-base">Rekaman Video Sesi & Dokumentasi Kegiatan</h3>
-              <p class="text-xs text-slate-500">Simak kembali tayangan ulang materi pelatihan atau akses album dokumentasi kegiatan.</p>
-            </div>
-            <div id="room-recordings-list" class="space-y-5"></div>
-          </div>
-
-          <!-- TAB 5: E-SERTIFIKAT KEGIATAN -->
-          <div id="tab-content-sertifikat" class="room-tab-panel hidden space-y-6">
-            <div id="cert-disabled-banner" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 text-center space-y-3 shadow-xs">
-              <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
-                <i data-lucide="clock" class="w-7 h-7"></i>
-              </div>
-              <h4 class="font-display font-extrabold text-amber-950 text-lg" id="cert-lock-heading">E-Sertifikat Akan Rilis Setelah Jam Kegiatan Berakhir</h4>
-              <p class="text-xs sm:text-sm text-amber-900/90 max-w-xl mx-auto leading-relaxed" id="cert-lock-desc">
-                Anda sudah dapat mengisi Daftar Hadir sekarang. Pengecekan dan pengunduhan E-Sertifikat akan otomatis dibuka ketika jam kegiatan berakhir.
-              </p>
-              <div id="cert-release-schedule-box" class="inline-flex flex-col sm:flex-row items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-amber-300 text-xs font-bold text-navy-900 shadow-2xs">
-                <span class="inline-flex items-center gap-1.5 text-blue-700">
-                  <i data-lucide="calendar-clock" class="w-4 h-4"></i> Jadwal Rilis:
-                </span>
-                <span id="cert-release-datetime-text">-</span>
-              </div>
-              <div id="cert-countdown-wrapper" class="pt-1">
-                <span class="inline-block px-3.5 py-1.5 rounded-lg bg-navy-900 text-sky-300 font-mono text-xs font-bold" id="cert-countdown-timer">Menghitung waktu rilis...</span>
-              </div>
-            </div>
-
-            <div id="cert-active-section" class="space-y-6">
-              <div class="bg-white border border-blue-200 rounded-2xl p-5 shadow-xs">
-                <h4 class="font-bold text-navy-900 text-sm mb-1 flex items-center gap-2">
-                  <i data-lucide="badge-check" class="w-4 h-4 text-blue-600"></i> Verifikasi & Penerbitan E-Sertifikat Mandiri (Format A4 Landscape)
-                </h4>
-                <p class="text-xs text-slate-600 mb-3">Masukkan <strong>Nama Lengkap</strong> atau <strong>Nomor WhatsApp</strong> yang Anda gunakan saat mengisi Daftar Hadir pada kegiatan ini.</p>
-                <div class="flex flex-col sm:flex-row gap-2.5">
-                  <input type="text" id="cert-lookup-input" onkeyup="if(event.key==='Enter') verifyAndGenerateCert()" placeholder="Ketik Nama Lengkap atau No. WhatsApp terdaftar..." class="flex-1 px-4 py-2.5 rounded-xl border border-blue-200 bg-white text-sm outline-none focus:border-blue-600" />
-                  <button onclick="verifyAndGenerateCert()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>Tampilkan Sertifikat</span>
-                  </button>
-                </div>
-                <p id="cert-lookup-msg" class="text-xs mt-2 hidden"></p>
-              </div>
-
-              <div id="cert-result-box" class="hidden space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl">
-                  <div class="flex items-center gap-2 text-emerald-800 text-xs font-semibold">
-                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
-                    <span>Data kehadiran terverifikasi! E-Sertifikat A4 Landscape siap diunduh atau dicetak.</span>
+              <div id="cert-unlocked-area" class="space-y-6">
+                <div class="bg-white rounded-2xl p-5 sm:p-6 border border-blue-200 shadow-xs">
+                  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div class="space-y-1">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Terintegrasi Daftar Hadir & Barcode Verifikasi
+                      </span>
+                      <h4 class="font-bold text-navy-900 text-lg">Cek & Unduh E-Sertifikat Resmi</h4>
+                      <p class="text-xs text-slate-500">Masukkan <strong>Nama Lengkap</strong> atau <strong>Nomor WhatsApp</strong> yang digunakan saat mengisi daftar hadir kegiatan ini.</p>
+                    </div>
+                    <form onsubmit="verifyAndGenerateCert(event)" class="flex flex-col sm:flex-row gap-2.5 flex-1 max-w-xl">
+                      <input type="text" id="cert-search-query" required placeholder="Ketik Nama Lengkap atau No. WhatsApp..." class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+                      <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shrink-0 transition">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <span>Terbitkan Sertifikat</span>
+                      </button>
+                    </form>
                   </div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="downloadCertificatePNG()" class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-                      <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Sertifikat (PNG)
-                    </button>
-                    <button onclick="copyActiveVerificationLink()" class="px-3.5 py-2 rounded-lg bg-white hover:bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition">
-                      <i data-lucide="link" class="w-3.5 h-3.5"></i> Salin Tautan Verifikasi
-                    </button>
-                    <button onclick="window.print()" class="px-3.5 py-2 rounded-lg bg-navy-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-                      <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak / PDF
-                    </button>
-                  </div>
+                  <div id="cert-feedback-msg" class="hidden mt-4"></div>
                 </div>
 
-                <div class="overflow-x-auto pb-2">
-                  <div id="certificate-print-area" class="bg-white border-8 border-double border-blue-900 rounded-xl p-5 sm:p-8 shadow-xl relative overflow-hidden text-center w-full max-w-4xl mx-auto aspect-[297/210] flex flex-col justify-between bg-cover bg-center">
-                    <div id="cert-corner-tl" class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-800 to-sky-500 opacity-15 rounded-br-full pointer-events-none"></div>
-                    <div id="cert-corner-br" class="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-blue-800 to-amber-500 opacity-15 rounded-tl-full pointer-events-none"></div>
-                    
-                    <div id="cert-inner-border" class="border border-amber-400/80 p-4 sm:p-7 rounded-lg flex-1 flex flex-col justify-between relative z-10">
-                      <div id="cert-default-kop" class="flex flex-col items-center justify-center gap-1">
-                        <span class="px-3 py-0.5 rounded-full bg-blue-900 text-amber-300 text-[10px] font-bold tracking-widest uppercase">Jaringan Sekolah Islam Terpadu Indonesia</span>
-                        <h3 class="font-display font-extrabold text-base sm:text-xl text-blue-950 tracking-wide">WILAYAH PROVINSI LAMPUNG</h3>
+                <!-- Certificate Preview & Print Card (A4 Landscape 297mm x 210mm) -->
+                <div id="cert-preview-wrapper" class="hidden space-y-4">
+                  <div class="flex flex-wrap items-center justify-between gap-3 bg-navy-900 text-white px-5 py-3.5 rounded-2xl">
+                    <div class="flex items-center gap-2 text-sm">
+                      <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+                      <span>E-Sertifikat Valid (Format A4 Landscape) — Siap diunduh atau dicetak.</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button onclick="downloadCertificatePNG()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-navy-950 font-bold text-xs flex items-center gap-1.5 transition">
+                        <i data-lucide="image-down" class="w-4 h-4"></i>
+                        <span>Unduh Gambar (PNG A4)</span>
+                      </button>
+                      <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-navy-900 font-bold text-xs flex items-center gap-1.5 transition">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>Cetak / Simpan PDF A4</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Printable A4 Landscape Certificate Sheet (297mm x 210mm) -->
+                  <div id="certificate-print-area" class="bg-white border-[10px] border-double border-blue-900 rounded-2xl p-6 sm:p-10 shadow-xl max-w-4xl mx-auto aspect-[297/210] relative overflow-hidden bg-cover bg-center flex flex-col justify-between">
+                    <div id="cert-watermark-icon" class="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
+                      <i data-lucide="graduation-cap" class="w-96 h-96 text-blue-900"></i>
+                    </div>
+
+                    <div id="cert-inner-frame" class="relative z-10 border-2 border-amber-400/70 rounded-xl p-5 sm:p-8 text-center flex-1 flex flex-col justify-between">
+                      <!-- Header -->
+                      <div id="cert-default-header" class="space-y-1">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold uppercase tracking-widest">
+                          Jaringan Sekolah Islam Terpadu Indonesia
+                        </div>
+                        <h3 class="font-display font-extrabold text-lg sm:text-xl text-navy-900 tracking-wide">WILAYAH PROVINSI LAMPUNG</h3>
+                        <p class="text-[11px] text-slate-500">Sekretariat: Jl. Endro Suratmin, Sukarame, Bandar Lampung • Website: jsitlampung.or.id</p>
                       </div>
 
-                      <div id="cert-dynamic-content-block" class="flex-1 flex flex-col justify-around">
-                        <div>
-                          <h2 id="cert-view-heading" class="font-display font-extrabold text-2xl sm:text-4xl text-blue-800 tracking-wider uppercase">SERTIFIKAT</h2>
-                          <p class="text-xs font-semibold text-slate-500 mt-0.5" id="cert-view-number">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
+                      <!-- Dynamic Title, Recipient & Event Details -->
+                      <div id="cert-dynamic-body" class="flex-1 flex flex-col justify-around py-1">
+                        <div class="space-y-1">
+                          <h2 id="cert-view-heading" class="hidden font-display font-extrabold text-3xl sm:text-4xl text-blue-800 tracking-wider">SERTIFIKAT</h2>
+                          <p class="text-xs sm:text-sm font-bold text-slate-600" id="cert-view-number">Nomor: 001/SERT-JSIT-LPG/2026</p>
                         </div>
 
                         <div class="space-y-1">
-                          <p class="text-xs sm:text-sm text-slate-600" id="cert-label-given">Diberikan dengan hormat kepada:</p>
-                          <div id="cert-view-name" class="font-display font-extrabold text-xl sm:text-3xl text-navy-900 border-b-2 border-amber-500 inline-block px-6 pb-1">Nama Peserta</div>
-                          <p id="cert-view-school" class="text-xs sm:text-sm font-semibold text-blue-700 mt-1">Asal Sekolah / Instansi</p>
+                          <p class="text-xs sm:text-sm text-slate-500" id="cert-view-given-label">Diberikan dengan hormat kepada:</p>
+                          <div class="font-display font-extrabold text-xl sm:text-3xl text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-8 py-1" id="cert-view-name">Nama Lengkap Peserta</div>
+                          <p class="text-xs sm:text-sm font-semibold text-blue-700 pt-1" id="cert-view-school">Asal Sekolah / Instansi</p>
                         </div>
 
-                        <p id="cert-view-body" class="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                          Atas partisipasi aktif sebagai <strong id="cert-view-role" class="text-navy-900">Peserta</strong> dalam kegiatan <strong id="cert-view-category" class="text-blue-800">Bimtek</strong>:
-                          <br/>
-                          <span id="cert-view-event" class="font-bold text-navy-900 text-sm sm:text-base">"Judul Kegiatan"</span>
-                          <br/>
-                          yang diselenggarakan oleh JSIT Wilayah Lampung pada tanggal <span id="cert-view-date" class="font-semibold">-</span> bertempat di <span id="cert-view-loc" class="font-semibold">-</span> dengan bobot pelatihan setara <strong id="cert-view-jp" class="text-blue-800">16 JP</strong>.
+                        <p class="text-xs sm:text-sm text-slate-700 max-w-2xl mx-auto leading-relaxed" id="cert-view-description">
+                          Atas partisipasi aktif dan dedikasinya sebagai <strong id="cert-view-role">Peserta</strong> dalam kegiatan <strong id="cert-view-category">Bimtek</strong>:<br/>
+                          <strong class="text-navy-900 text-sm sm:text-base" id="cert-view-event-title">"Judul Kegiatan"</strong><br/>
+                          yang diselenggarakan oleh <strong>JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</strong> pada tanggal <span id="cert-view-date">-</span> dengan bobot pelatihan setara <strong class="text-blue-800" id="cert-view-jp">16 JP</strong>.
                         </p>
                       </div>
 
-                      <div class="pt-2 grid grid-cols-2 items-end max-w-2xl w-full mx-auto text-left relative z-20">
-                        <div id="cert-qr-block" class="flex items-center gap-2.5 origin-bottom-left">
-                          <img id="cert-qr-img" src="" alt="Barcode Verifikasi Sertifikat" class="w-16 h-16 border border-slate-200 rounded p-0.5 bg-white shadow-2xs" />
-                          <div id="cert-qr-text-box" class="text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1 rounded">
-                            <strong class="text-navy-900 block">Scan Verifikasi</strong>
-                            JSIT Wilayah Lampung<br/>
-                            <span id="cert-view-code" class="font-mono text-blue-800 font-bold">Kode: VERIFIED</span>
+                      <!-- Footer: Real Scannable QR Code & Signer -->
+                      <div class="grid grid-cols-2 items-end gap-4 pt-2 relative z-20">
+                        <div id="cert-view-qr-block" class="flex items-center gap-3 text-left origin-bottom-left">
+                          <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-xs shrink-0">
+                            <img id="cert-qr-image" src="" alt="Barcode Verifikasi Sertifikat" class="w-16 h-16 sm:w-20 sm:h-20" />
+                          </div>
+                          <div id="cert-view-qr-text" class="text-[10px] text-slate-500 leading-snug bg-white/85 px-2 py-1 rounded-lg">
+                            <span class="font-bold text-navy-900 block">Scan Verifikasi Keaslian</span>
+                            <span>JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span>
+                            <span class="font-mono text-blue-700 font-semibold block mt-0.5" id="cert-view-code">KODE: JSIT-001</span>
                           </div>
                         </div>
-                        <div id="cert-signer-block" class="text-center origin-bottom">
-                          <p class="text-[11px] text-slate-500" id="cert-view-issued-wrap">Bandar Lampung, <span id="cert-view-issued-date">-</span></p>
-                          <p class="text-[11px] font-semibold text-slate-700" id="cert-view-signer-title">Ketua JSIT Indonesia Wilayah Lampung</p>
-                          <div class="h-9 flex items-center justify-center">
-                            <span class="font-display italic text-blue-900/80 text-[11px] border border-blue-200 bg-blue-50/80 px-3 py-0.5 rounded">TTD Elektronik Terverifikasi</span>
+
+                        <div id="cert-view-signer-block" class="text-center space-y-1 origin-bottom">
+                          <p class="text-[11px] text-slate-600" id="cert-view-issued-date">Bandar Lampung, 29 November 2026</p>
+                          <p class="text-xs font-semibold text-slate-700" id="cert-view-signer-title">Ketua JSIT Indonesia Wilayah Lampung</p>
+                          <div class="py-1 flex flex-col items-center justify-center">
+                            <span class="px-3 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[10px] font-semibold text-blue-800 italic">Ditandatangani secara elektronik</span>
                           </div>
-                          <p class="text-xs font-extrabold text-navy-900 underline" id="cert-view-signer-name">Muslimin, M.Pd.I.,Gr.</p>
+                          <p class="font-display font-extrabold text-sm sm:text-base text-navy-900 underline" id="cert-view-signer-name">Muslimin, M.Pd.I.,Gr.</p>
                         </div>
                       </div>
                     </div>
@@ -717,212 +708,95 @@
                 </div>
               </div>
             </div>
-          </div>
 
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================================================================== -->
-  <!-- VIEW 3: HALAMAN VERIFIKASI KEPEMILIKAN SERTIFIKAT (HASIL SCAN QR)     -->
-  <!-- ===================================================================== -->
-  <section id="certificate-verification-page" class="hidden flex-1 py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-b from-blue-50/80 via-slate-50 to-blue-50/60">
-    <div class="max-w-2xl mx-auto space-y-5">
-      <div class="bg-white rounded-3xl border border-blue-100 shadow-xl overflow-hidden">
-        <div class="hero-pattern text-white p-6 sm:p-7 text-center relative">
-          <div class="edu-grid-bg absolute inset-0 pointer-events-none"></div>
-          <div class="relative z-10 space-y-2.5">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-300/40 text-emerald-300 flex items-center justify-center mx-auto shadow-lg">
-              <i data-lucide="shield-check" class="w-8 h-8"></i>
-            </div>
-            <h1 class="font-display font-extrabold text-xl sm:text-2xl tracking-wide uppercase">INFORMASI SERTIFIKAT</h1>
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500 text-white text-xs sm:text-sm font-extrabold shadow-md">
-              <i data-lucide="badge-check" class="w-4 h-4"></i>
-              <span>Sertifikat Terverifikasi Resmi Sistem JSIT Lampung</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-5 sm:p-7 space-y-4">
-          <div class="divide-y divide-slate-100 border border-slate-200/80 rounded-2xl overflow-hidden bg-slate-50/40">
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="file-badge" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">No. Sertifikat</span>
-                <p class="font-mono font-extrabold text-sm sm:text-base text-navy-900 break-all mt-0.5" id="ver-cert-number">-</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="map-pin" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Kabupaten/Kota</span>
-                <p class="font-bold text-sm text-slate-800 mt-0.5" id="ver-cert-region">-</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="calendar" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Tanggal</span>
-                <p class="font-bold text-sm text-slate-800 mt-0.5" id="ver-cert-date">-</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-800 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="building-2" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Instansi</span>
-                <p class="font-bold text-sm text-navy-900 mt-0.5" id="ver-cert-institution">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="pen-tool" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Ditandatangani</span>
-                <p class="font-bold text-sm text-navy-900 mt-0.5" id="ver-cert-signer">Muslimin, M.Pd.I.,Gr. - Ketua JSIT Indonesia Wilayah Lampung</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-white">
-              <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
-                <i data-lucide="book-open-check" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Perihal</span>
-                <p class="font-bold text-sm text-navy-900 leading-snug mt-0.5" id="ver-cert-subject">-</p>
-              </div>
-            </div>
-
-            <div class="p-4 flex items-start gap-3.5 bg-blue-50/50">
-              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                <i data-lucide="user-check" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0 flex-1 space-y-1.5">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">Ditujukan Kepada Pemilik Sertifikat</span>
-                <p class="font-display font-extrabold text-base sm:text-lg text-navy-900" id="ver-cert-owner">NAMA PEMILIK - Asal Sekolah</p>
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-extrabold">
-                  <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-700"></i>
-                  <span id="ver-cert-role-status">Status sebagai Peserta</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2 grid sm:grid-cols-2 gap-3">
-            <button onclick="downloadCertificatePNG()" class="w-full py-3.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>Unduh Sertifikat (PNG)</span>
-            </button>
-            <button onclick="copyActiveVerificationLink()" class="w-full py-3.5 px-5 rounded-xl bg-navy-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
-              <i data-lucide="copy" class="w-4 h-4 text-sky-300"></i>
-              <span>Salin Tautan Verifikasi</span>
-            </button>
-          </div>
-
-          <div class="pt-2 text-center">
-            <button onclick="backToCatalog()" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:underline">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-              <span>Kembali ke Portal Katalog Kegiatan JSIT Lampung</span>
-            </button>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MODAL LIGHTBOX FLYER KEGIATAN -->
-  <div id="flyer-lightbox-modal" onclick="if(event.target===this) closeFlyerLightbox()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/85 backdrop-blur-sm p-4 flex items-center justify-center">
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-6">
-      <div class="bg-navy-900 text-white px-5 py-3.5 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2 min-w-0">
-          <i data-lucide="image" class="w-4 h-4 text-sky-300 shrink-0"></i>
-          <h3 class="font-bold text-xs sm:text-sm truncate" id="lightbox-flyer-title">Flyer Kegiatan</h3>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <a id="lightbox-flyer-download" href="#" download="Flyer_Kegiatan_JSIT_Lampung.jpg" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold inline-flex items-center gap-1 transition">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh
-          </a>
-          <button onclick="closeFlyerLightbox()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/25 flex items-center justify-center text-white">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-      <div class="p-4 bg-slate-100 flex items-center justify-center max-h-[80vh] overflow-auto">
-        <img id="lightbox-flyer-img" src="" alt="Flyer Kegiatan Penuh" class="max-w-full max-h-[74vh] object-contain rounded-lg shadow-md bg-white" />
-      </div>
-    </div>
-  </div>
-
-  <!-- GLOBAL CERTIFICATE SEARCH MODAL -->
-  <div id="global-cert-modal" onclick="if(event.target===this) closeGlobalCertModal()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/70 backdrop-blur-sm p-4">
-    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-10">
-      <div class="bg-gradient-to-r from-navy-900 to-blue-800 text-white p-5 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <i data-lucide="award" class="w-6 h-6 text-amber-400"></i>
+  <!-- ===================================================================== -->
+  <!-- VIEW 3: HALAMAN VERIFIKASI KEASLIAN SERTIFIKAT (SCAN QR CODE)         -->
+  <!-- ===================================================================== -->
+  <section id="verification-page" class="hidden flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-3xl border border-blue-200 shadow-xl overflow-hidden">
+      <div class="hero-pattern p-6 sm:p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-400/20 border border-emerald-300/40 flex items-center justify-center text-emerald-300 shrink-0">
+            <i data-lucide="badge-check" class="w-7 h-7"></i>
+          </div>
           <div>
-            <h3 class="font-bold text-base">Pencarian E-Sertifikat Peserta</h3>
-            <p class="text-xs text-blue-200">Cek riwayat kehadiran & unduh sertifikat dari seluruh kegiatan JSIT Lampung</p>
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-300">Sistem Verifikasi E-Sertifikat Resmi</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold">Validasi Keaslian Sertifikat Digital</h2>
           </div>
         </div>
-        <button onclick="closeGlobalCertModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+        <button onclick="closeVerificationPage()" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition self-start sm:self-auto">
+          &larr; Kembali ke Portal
+        </button>
+      </div>
+
+      <div id="verification-result-body" class="p-6 sm:p-8 space-y-6"></div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL CEK E-SERTIFIKAT GLOBAL (DARI NAVBAR / HERO)                    -->
+  <!-- ===================================================================== -->
+  <div id="global-cert-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-4">
+    <div class="max-w-xl mx-auto bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden my-10">
+      <div class="hero-pattern p-6 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
+            <i data-lucide="award" class="w-5 h-5 text-sky-300"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg">Pencarian E-Sertifikat Peserta</h3>
+            <p class="text-xs text-blue-100">Cari sertifikat Anda di seluruh kegiatan JSIT Wilayah Lampung</p>
+          </div>
+        </div>
+        <button onclick="closeGlobalCertModal()" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <div class="p-5 space-y-4">
-        <div class="flex gap-2">
-          <input type="text" id="global-cert-query" onkeyup="if(event.key==='Enter') searchGlobalCertificates()" placeholder="Masukkan Nama Lengkap atau Nomor WhatsApp..." class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-blue-600" />
-          <button onclick="searchGlobalCertificates()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition">Cari</button>
-        </div>
+
+      <div class="p-6 space-y-4">
+        <form onsubmit="searchGlobalCertificates(event)" class="flex gap-2">
+          <input type="text" id="global-cert-input" required placeholder="Masukkan Nama Lengkap atau No. WhatsApp..." class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm outline-none" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm">Cari</button>
+        </form>
         <div id="global-cert-results" class="space-y-2.5 max-h-80 overflow-y-auto">
-          <p class="text-xs text-slate-500 text-center py-6">Ketik nama atau nomor WhatsApp Anda untuk menemukan sertifikat kegiatan.</p>
+          <p class="text-xs text-slate-400 text-center py-6">Ketik nama atau nomor WhatsApp Anda untuk menemukan daftar E-Sertifikat yang telah terbit.</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300">
-    <div class="bg-navy-900 text-white px-4 py-3 rounded-xl shadow-xl border border-blue-700/50 flex items-center gap-2.5 text-sm font-medium">
-      <i data-lucide="check-circle" class="w-4 h-4 text-sky-400"></i>
+  <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300">
+    <div class="bg-navy-900 text-white px-4 py-3 rounded-xl shadow-xl border border-blue-500/40 flex items-center gap-3 text-sm font-medium">
+      <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 shrink-0"></i>
       <span id="toast-message">Berhasil!</span>
     </div>
   </div>
 
+  <!-- Hidden High-Resolution Canvas for PNG Certificate Export -->
+  <canvas id="hd-cert-canvas" width="1754" height="1240" class="hidden"></canvas>
+
   <!-- Footer -->
   <footer class="bg-navy-950 text-blue-200/80 border-t border-blue-900/50 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-lg bg-white border border-blue-400/30 p-1 flex items-center justify-center overflow-hidden">
-          <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
+        <div class="w-7 h-7 rounded-lg bg-white p-0.5 flex items-center justify-center overflow-hidden">
+          <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </div>
-        <div>
-          <p id="footer-org-name" class="font-bold text-white">JSIT Wilayah Lampung — Tim Diklat Wilayah Lampung</p>
-          <p class="text-blue-300/60">Bergerak Bersama Majukan Pendidikan Lampung</p>
-        </div>
+        <span>&copy; 2026 <strong class="text-white">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</strong>. Hak Cipta Dilindungi.</span>
       </div>
       <div class="flex items-center gap-4">
-        <span>&copy; 2026 JSIT Wilayah Lampung</span>
+        <a href="admin.html" class="text-sky-400 hover:underline font-medium">Portal Admin</a>
       </div>
     </div>
   </footer>
 
-  <!-- Hidden High-Res A4 Landscape Canvas (297mm x 210mm @ 150 DPI = 1754 x 1240 px) -->
-  <canvas id="hd-cert-canvas" width="1754" height="1240" class="hidden"></canvas>
-
-  <!-- Main Application Logic (Firebase Firestore Real-Time + Local Fallback) -->
   <script>
 const STORAGE_KEY = 'jsit_lampung_events_v3';
 const SETTINGS_KEY = 'jsit_lampung_settings_v3';
@@ -997,6 +871,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1E3A8A',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1049,6 +924,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#0369A1',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1101,6 +977,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1D4ED8',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1151,6 +1028,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1E3A8A',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1171,30 +1049,22 @@ const DEFAULT_EVENTS = [
     let eventsData = [];
     let attendeesMap = {};
     let attendeeUnsubs = {};
-    let appSettings = { ...DEFAULT_SETTINGS };
-    let currentCategory = 'ALL';
-    let activeEventId = null;
-    let isRoomSidebarExpanded = false;
-    let sigCanvas, sigCtx, isDrawing = false, hasSigned = false;
+    let settingsData = { ...DEFAULT_SETTINGS };
+    let activeCategory = 'ALL';
+    let currentEventId = null;
     let activeCertPayload = null;
-    let countdownInterval = null;
-    let pendingHashCertData = null;
+    let activeVerificationPayload = null;
+    let isRoomSidebarExpanded = false;
 
     function isFirebaseConfigured() {
       const cfg = window.FIREBASE_CONFIG;
       return cfg && cfg.apiKey && !cfg.apiKey.includes('GANTI_DENGAN') && cfg.projectId && !cfg.projectId.includes('GANTI_DENGAN');
     }
 
-    function setCloudBadge(status, text) {
-      const pill = document.getElementById('firebase-status-pill');
-      if (!pill) return;
-      if (status === 'online') {
-        pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${text}`;
-      } else {
-        pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
-        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${text}`;
-      }
+    function normalizePhone(phoneStr) {
+      let digits = String(phoneStr || '').replace(/\D/g, '');
+      if (digits.startsWith('62')) digits = '0' + digits.slice(2);
+      return digits;
     }
 
     function parseEndTimeFromText(timeStr) {
@@ -1224,11 +1094,19 @@ const DEFAULT_EVENTS = [
       return new Date() >= getCertificateReleaseDate(ev);
     }
 
+    function formatReleaseDateTimeIndo(ev) {
+      const dt = getCertificateReleaseDate(ev);
+      const dPart = dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      const tPart = `${String(dt.getHours()).padStart(2, '0')}.${String(dt.getMinutes()).padStart(2, '0')} WIB`;
+      return `${dPart}, pukul ${tPart}`;
+    }
+
     function normalizeEventItem(item) {
       const c = item.certificate || {};
       if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
       if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
       if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
+      if (typeof c.showCertHeading !== 'boolean') c.showCertHeading = false;
       if (typeof c.qrOffsetX !== 'number') c.qrOffsetX = 0;
       if (typeof c.qrOffsetY !== 'number') c.qrOffsetY = 0;
       if (typeof c.qrScale !== 'number') c.qrScale = 100;
@@ -1250,7 +1128,19 @@ const DEFAULT_EVENTS = [
       return item;
     }
 
-    function attachEventAttendeeListener(eventId) {
+    function updateCloudPill(status, text) {
+      const pill = document.getElementById('firebase-status-pill');
+      if (!pill) return;
+      if (status === 'online') {
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${text}`;
+      } else {
+        pill.className = 'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
+        pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${text}`;
+      }
+    }
+
+    function attachAttendeeListener(eventId) {
       if (!db || attendeeUnsubs[eventId]) return;
       attendeeUnsubs[eventId] = db.collection('events').doc(eventId).collection('attendees')
         .onSnapshot((snap) => {
@@ -1262,18 +1152,19 @@ const DEFAULT_EVENTS = [
           if (ev) ev.attendees = list;
           updateStats();
           renderEvents();
-          if (activeEventId === eventId) {
-            refreshOpenRoomCountsAndLists();
-          }
-          if (pendingHashCertData) {
-            refreshVerificationPageFromLiveEvents();
-          }
+          if (currentEventId === eventId) refreshOpenRoomState();
+          refreshVerificationPageFromLiveEvents();
         }, (err) => {
           console.warn('Attendee listener error:', err);
         });
     }
 
-    function loadPortalData() {
+    function initApp() {
+      const regionSelect = document.getElementById('att-region');
+      if (regionSelect) {
+        regionSelect.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+      }
+
       if (window.firebase && isFirebaseConfigured()) {
         try {
           if (!firebase.apps.length) {
@@ -1281,25 +1172,24 @@ const DEFAULT_EVENTS = [
           }
           db = firebase.firestore();
           isFirebaseReady = true;
-          setCloudBadge('online', 'Cloud Real-Time');
+          updateCloudPill('online', 'Cloud Real-Time');
 
           db.collection('settings').doc('global').onSnapshot((doc) => {
             if (doc.exists) {
-              appSettings = { ...DEFAULT_SETTINGS, ...doc.data() };
-              applyOrgBranding();
+              settingsData = { ...DEFAULT_SETTINGS, ...doc.data() };
+              applyHeaderSettings();
             }
           });
 
           db.collection('events').onSnapshot((snapshot) => {
-            document.getElementById('loading-events-state').classList.add('hidden');
-            const freshEvents = [];
+            document.getElementById('loading-events-state')?.classList.add('hidden');
+            const freshList = [];
             const activeIds = new Set();
-
             snapshot.forEach((doc) => {
               activeIds.add(doc.id);
               const item = normalizeEventItem({ id: doc.id, ...doc.data() });
-              freshEvents.push(item);
-              attachEventAttendeeListener(doc.id);
+              freshList.push(item);
+              attachAttendeeListener(doc.id);
             });
 
             Object.keys(attendeeUnsubs).forEach((oldId) => {
@@ -1310,20 +1200,17 @@ const DEFAULT_EVENTS = [
               }
             });
 
-            freshEvents.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
-            eventsData = freshEvents;
+            freshList.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
+            eventsData = freshList;
             updateStats();
             renderEvents();
-
-            if (activeEventId) {
-              refreshOpenRoomCountsAndLists();
-            }
-            if (pendingHashCertData) {
-              refreshVerificationPageFromLiveEvents();
-            }
-          }, (error) => {
-            console.error('Firestore events error:', error);
-            setCloudBadge('local', 'Mode Offline');
+            if (currentEventId) refreshOpenRoomState();
+            refreshVerificationPageFromLiveEvents();
+            checkVerificationHash();
+          }, (err) => {
+            console.error('Firestore events error:', err);
+            document.getElementById('loading-events-state')?.classList.add('hidden');
+            updateCloudPill('local', 'Mode Lokal');
             loadLocalFallbackData();
           });
           return;
@@ -1332,22 +1219,22 @@ const DEFAULT_EVENTS = [
         }
       }
 
-      setCloudBadge('local', 'Mode Lokal');
+      document.getElementById('loading-events-state')?.classList.add('hidden');
+      updateCloudPill('local', 'Mode Lokal');
       loadLocalFallbackData();
     }
 
     function loadLocalFallbackData() {
-      document.getElementById('loading-events-state').classList.add('hidden');
       const savedSettings = localStorage.getItem(SETTINGS_KEY);
       if (savedSettings) {
-        try { appSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch (e) {}
+        try { settingsData = { ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) }; } catch (e) {}
       }
-      applyOrgBranding();
+      applyHeaderSettings();
 
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+      const savedEvents = localStorage.getItem(STORAGE_KEY);
+      if (savedEvents) {
         try {
-          eventsData = JSON.parse(saved).map(normalizeEventItem);
+          eventsData = JSON.parse(savedEvents).map(normalizeEventItem);
         } catch (e) {
           eventsData = DEFAULT_EVENTS.map(normalizeEventItem);
         }
@@ -1357,15 +1244,14 @@ const DEFAULT_EVENTS = [
       }
       updateStats();
       renderEvents();
+      refreshVerificationPageFromLiveEvents();
+      checkVerificationHash();
     }
 
-    function applyOrgBranding() {
-      document.getElementById('nav-org-sub').textContent = appSettings.orgSub || DEFAULT_SETTINGS.orgSub;
-    }
-
-    function initRegionDropdown() {
-      const select = document.getElementById('att-region');
-      select.innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+    function applyHeaderSettings() {
+      document.getElementById('nav-org-name').textContent = (settingsData.orgName || 'JSIT LAMPUNG').toUpperCase();
+      const subEl = document.getElementById('nav-org-sub');
+      if (subEl) subEl.textContent = settingsData.orgSub || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung';
     }
 
     function formatDateIndo(start, end) {
@@ -1377,36 +1263,19 @@ const DEFAULT_EVENTS = [
       return `${d1} – ${d2}`;
     }
 
-    function getStatusBadgeClass(status) {
-      if (status === 'Buka Pendaftaran') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      if (status === 'Berlangsung') return 'bg-sky-100 text-sky-800 border-sky-200';
-      return 'bg-slate-100 text-slate-700 border-slate-200';
-    }
-
-    function getCategoryBadgeClass(cat) {
-      const map = {
-        'Seminar': 'bg-indigo-600 text-white',
-        'Webinar': 'bg-sky-600 text-white',
-        'Pelatihan': 'bg-blue-700 text-white',
-        'Workshop': 'bg-cyan-700 text-white',
-        'Bimtek': 'bg-navy-900 text-amber-300'
-      };
-      return map[cat] || 'bg-blue-600 text-white';
-    }
-
     function updateStats() {
       document.getElementById('stat-total-events').textContent = eventsData.length;
       const totalAtt = eventsData.reduce((sum, ev) => sum + (ev.attendees ? ev.attendees.length : 0), 0);
       const totalMat = eventsData.reduce((sum, ev) => sum + (ev.materials ? ev.materials.length : 0) + (ev.recordings ? ev.recordings.length : 0), 0);
-      const totalCerts = eventsData.filter(ev => isCertificateReleased(ev)).length;
+      const totalCertEvents = eventsData.filter(ev => isCertificateReleased(ev)).length;
 
       document.getElementById('stat-total-attendees').textContent = totalAtt;
       document.getElementById('stat-total-materials').textContent = totalMat;
-      document.getElementById('stat-total-certs').textContent = totalCerts;
+      document.getElementById('stat-total-certs').textContent = totalCertEvents;
     }
 
     function setCategoryFilter(cat) {
-      currentCategory = cat;
+      activeCategory = cat;
       document.querySelectorAll('.cat-pill').forEach(btn => {
         if (btn.dataset.cat === cat) {
           btn.className = 'cat-pill active px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm transition whitespace-nowrap';
@@ -1423,107 +1292,119 @@ const DEFAULT_EVENTS = [
       setCategoryFilter('ALL');
     }
 
+    function getStatusBadgeStyle(status) {
+      if (status === 'Buka Pendaftaran') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      if (status === 'Berlangsung') return 'bg-amber-50 text-amber-700 border-amber-200';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
     function renderEvents() {
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const grid = document.getElementById('events-grid');
+      const emptyState = document.getElementById('empty-state');
+      const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
       const statusVal = document.getElementById('status-filter').value;
-      const standardCats = ['Seminar', 'Webinar', 'Pelatihan', 'Workshop', 'Bimtek'];
 
       const filtered = eventsData.filter(ev => {
-        const matchCat = currentCategory === 'ALL'
-          ? true
-          : currentCategory === 'Lainnya'
-            ? !standardCats.includes(ev.category)
-            : ev.category === currentCategory;
+        const matchCat = activeCategory === 'ALL' || (ev.category || '').toLowerCase() === activeCategory.toLowerCase();
         const matchStatus = statusVal === 'ALL' || ev.status === statusVal;
-        const speakerStr = (ev.speakers || []).map(s => s.name).join(' ').toLowerCase();
+        const speakerNames = (ev.speakers || []).map(s => s.name.toLowerCase()).join(' ');
         const matchQuery = !query ||
           ev.title.toLowerCase().includes(query) ||
           (ev.description || '').toLowerCase().includes(query) ||
           (ev.location || '').toLowerCase().includes(query) ||
-          ev.category.toLowerCase().includes(query) ||
-          speakerStr.includes(query);
+          speakerNames.includes(query);
         return matchCat && matchStatus && matchQuery;
       });
 
       document.getElementById('showing-count').textContent = `Menampilkan ${filtered.length} kegiatan`;
-      const grid = document.getElementById('events-grid');
-      const empty = document.getElementById('empty-state');
 
       if (filtered.length === 0) {
         grid.innerHTML = '';
-        empty.classList.remove('hidden');
+        emptyState.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
         return;
       }
-      empty.classList.add('hidden');
 
+      emptyState.classList.add('hidden');
       grid.innerHTML = filtered.map(ev => {
         const attCount = ev.attendees ? ev.attendees.length : 0;
         const matCount = ev.materials ? ev.materials.length : 0;
         const recCount = ev.recordings ? ev.recordings.length : 0;
+        const released = isCertificateReleased(ev);
         const jpLabel = ev.certificate && ev.certificate.jp ? ev.certificate.jp : '8 JP';
-        const certReleased = isCertificateReleased(ev);
+        const certLabel = released ? `Sertifikat Rilis (${jpLabel})` : `Sertifikat (${jpLabel})`;
 
         return `
-          <article class="bg-white rounded-2xl border border-blue-100/90 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group">
+          <article class="bg-white rounded-2xl border border-blue-100 hover:border-blue-300 shadow-xs hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-200 flex flex-col overflow-hidden group">
             <div class="p-5 pb-3 flex items-center justify-between gap-2 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 to-sky-50/40">
-              <span class="px-3 py-1 rounded-lg text-xs font-extrabold tracking-wide ${getCategoryBadgeClass(ev.category)}">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white">
+                <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
                 ${ev.category}
               </span>
-              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border ${getStatusBadgeClass(ev.status)}">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border ${getStatusBadgeStyle(ev.status)}">
                 ${ev.status}
               </span>
             </div>
 
             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div class="space-y-2.5">
-                <h3 onclick="openEventRoom('${ev.id}', 'info')" class="font-display font-bold text-lg text-navy-900 group-hover:text-blue-700 transition leading-snug line-clamp-2 cursor-pointer">
+                <h3 onclick="openEventRoom('${ev.id}', 'info')" class="font-display font-bold text-base sm:text-lg text-navy-900 group-hover:text-blue-700 transition cursor-pointer line-clamp-2 leading-snug">
                   ${ev.title}
                 </h3>
-                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                  ${ev.description || ''}
-                </p>
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">${ev.description || ''}</p>
+              </div>
 
-                <div class="pt-2 space-y-1.5 text-xs text-slate-600">
-                  <div class="flex items-center gap-2">
-                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
-                    <span class="font-medium">${formatDateIndo(ev.dateStart, ev.dateEnd)} • ${ev.time || ''}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-600 shrink-0"></i>
-                    <span class="truncate">${ev.location}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600 shrink-0"></i>
-                    <span><strong>${attCount}</strong> / ${ev.quota || 200} Peserta Hadir • <span class="text-blue-700 font-semibold">${jpLabel}</span></span>
-                  </div>
+              <div class="space-y-2 text-xs text-slate-600 pt-1">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
+                  <span class="font-medium">${formatDateIndo(ev.dateStart, ev.dateEnd)}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-600 shrink-0"></i>
+                  <span>${ev.time || '-'}</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5"></i>
+                  <span class="line-clamp-1">${ev.location || '-'}</span>
                 </div>
               </div>
 
-              <div class="pt-3 border-t border-slate-100 space-y-2.5">
-                <div class="grid grid-cols-4 gap-1.5 text-[11px] font-semibold">
-                  <button onclick="openEventRoom('${ev.id}', 'absensi')" class="py-1.5 px-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 flex flex-col items-center gap-0.5 transition">
-                    <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
-                    <span>Absensi</span>
-                  </button>
-                  <button onclick="openEventRoom('${ev.id}', 'materi')" class="py-1.5 px-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 flex flex-col items-center gap-0.5 transition">
-                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-                    <span>Materi (${matCount})</span>
-                  </button>
-                  <button onclick="openEventRoom('${ev.id}', 'rekaman')" class="py-1.5 px-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex flex-col items-center gap-0.5 transition">
-                    <i data-lucide="video" class="w-3.5 h-3.5"></i>
-                    <span>Rekam (${recCount})</span>
-                  </button>
-                  <button onclick="openEventRoom('${ev.id}', 'sertifikat')" class="py-1.5 px-1 rounded-lg ${certReleased ? 'bg-amber-50 hover:bg-amber-100 text-amber-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'} flex flex-col items-center gap-0.5 transition">
-                    <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                    <span>Sertifikat</span>
-                  </button>
+              <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100 text-center">
+                <div class="bg-slate-50 rounded-xl p-2">
+                  <div class="text-xs font-extrabold text-navy-900">${attCount}</div>
+                  <div class="text-[10px] text-slate-500">Hadir</div>
                 </div>
-
-                <button onclick="openEventRoom('${ev.id}', 'info')" class="w-full py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
-                  <span>Masuk Ruang Kegiatan</span>
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </button>
+                <div class="bg-slate-50 rounded-xl p-2">
+                  <div class="text-xs font-extrabold text-blue-700">${matCount} File</div>
+                  <div class="text-[10px] text-slate-500">Materi</div>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-2">
+                  <div class="text-xs font-extrabold text-sky-700">${recCount} Video</div>
+                  <div class="text-[10px] text-slate-500">Rekaman</div>
+                </div>
               </div>
+            </div>
+
+            <div class="p-4 pt-0 grid grid-cols-2 gap-2">
+              <button onclick="openEventRoom('${ev.id}', 'absensi')" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+                <span>Daftar Hadir</span>
+              </button>
+              <button onclick="openEventRoom('${ev.id}', 'info')" class="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                <span>Ruang Kegiatan</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <div class="px-4 pb-4 grid grid-cols-3 gap-1.5 text-[11px]">
+              <button onclick="openEventRoom('${ev.id}', 'materi')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
+                <i data-lucide="folder-down" class="w-3 h-3 text-blue-600"></i> Materi
+              </button>
+              <button onclick="openEventRoom('${ev.id}', 'rekaman')" class="py-1.5 px-2 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-slate-700 font-medium flex items-center justify-center gap-1 transition">
+                <i data-lucide="video" class="w-3 h-3 text-sky-600"></i> Rekaman
+              </button>
+              <button onclick="openEventRoom('${ev.id}', 'sertifikat')" class="py-1.5 px-2 rounded-lg border ${released ? 'border-emerald-200 bg-emerald-50/60 text-emerald-800' : 'border-slate-200 text-slate-700'} hover:border-blue-300 font-semibold flex items-center justify-center gap-1 transition">
+                <i data-lucide="award" class="w-3 h-3 ${released ? 'text-emerald-600' : 'text-amber-600'}"></i> Sertifikat
+              </button>
             </div>
           </article>
         `;
@@ -1532,14 +1413,16 @@ const DEFAULT_EVENTS = [
       if (window.lucide) lucide.createIcons();
     }
 
-    // COLLAPSIBLE SIDEBAR TOGGLE
-    function toggleRoomSidebar() {
-      isRoomSidebarExpanded = !isRoomSidebarExpanded;
+    // =========================================================================
+    // FULL PAGE EVENT ROOM & COLLAPSIBLE SIDEBAR (HAMBURGER <-> X)
+    // =========================================================================
+    function toggleRoomSidebar(forceState = null) {
+      isRoomSidebarExpanded = forceState !== null ? forceState : !isRoomSidebarExpanded;
       const sidebar = document.getElementById('room-sidebar');
       const barsIcon = document.getElementById('icon-hamburger-bars');
       const closeIcon = document.getElementById('icon-hamburger-close');
       const brandLabel = document.getElementById('sidebar-brand-label');
-      const navLabels = document.querySelectorAll('.room-nav-label');
+      const labels = document.querySelectorAll('.room-nav-label');
 
       if (isRoomSidebarExpanded) {
         sidebar.classList.remove('md:w-16');
@@ -1547,79 +1430,27 @@ const DEFAULT_EVENTS = [
         barsIcon.classList.add('hidden');
         closeIcon.classList.remove('hidden');
         brandLabel.classList.remove('hidden');
-        navLabels.forEach(el => el.classList.remove('hidden'));
+        labels.forEach(el => el.classList.remove('hidden'));
       } else {
         sidebar.classList.remove('md:w-64');
         sidebar.classList.add('md:w-16');
         barsIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
         brandLabel.classList.add('hidden');
-        navLabels.forEach(el => el.classList.add('hidden'));
+        labels.forEach(el => el.classList.add('hidden'));
       }
     }
 
-    // NAVIGATION BETWEEN CATALOG & EVENT ROOM
-    function openEventRoom(eventId, defaultTab = 'info') {
-      const ev = eventsData.find(e => e.id === eventId);
-      if (!ev) return;
-      activeEventId = eventId;
-      pendingHashCertData = null;
-
-      document.getElementById('portal-home-view').classList.add('hidden');
-      document.getElementById('certificate-verification-page').classList.add('hidden');
-      document.getElementById('event-room-page').classList.remove('hidden');
-      document.getElementById('attendance-success-banner').classList.add('hidden');
-
-      refreshOpenRoomCountsAndLists();
-      document.getElementById('cert-result-box').classList.add('hidden');
-      document.getElementById('cert-lookup-msg').classList.add('hidden');
-
-      switchRoomTab(defaultTab);
+    function backToCatalog() {
+      currentEventId = null;
+      document.getElementById('event-room-page').classList.add('hidden');
+      document.getElementById('verification-page').classList.add('hidden');
+      document.getElementById('portal-home-view').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (window.lucide) lucide.createIcons();
     }
 
-    function renderRoomFlyerBox(ev) {
-      const flyerSrc = (ev.flyerImg || '').trim();
-      const filledBox = document.getElementById('room-flyer-filled');
-      const emptyBox = document.getElementById('room-flyer-empty');
-      const imgEl = document.getElementById('room-flyer-image');
-      const dlEl = document.getElementById('room-flyer-download');
-      const expandBtn = document.getElementById('btn-expand-flyer');
-
-      if (flyerSrc) {
-        imgEl.src = flyerSrc;
-        dlEl.href = flyerSrc;
-        dlEl.download = `Flyer_${(ev.title || 'Kegiatan_JSIT_Lampung').replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
-        filledBox.classList.remove('hidden');
-        emptyBox.classList.add('hidden');
-        expandBtn.classList.remove('hidden');
-      } else {
-        imgEl.src = '';
-        filledBox.classList.add('hidden');
-        emptyBox.classList.remove('hidden');
-        expandBtn.classList.add('hidden');
-      }
-    }
-
-    function openFlyerLightbox() {
-      const ev = eventsData.find(e => e.id === activeEventId);
-      if (!ev || !ev.flyerImg) return;
-      document.getElementById('lightbox-flyer-title').textContent = `Flyer: ${ev.title}`;
-      document.getElementById('lightbox-flyer-img').src = ev.flyerImg;
-      const dl = document.getElementById('lightbox-flyer-download');
-      dl.href = ev.flyerImg;
-      dl.download = `Flyer_${(ev.title || 'Kegiatan_JSIT_Lampung').replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
-      document.getElementById('flyer-lightbox-modal').classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeFlyerLightbox() {
-      document.getElementById('flyer-lightbox-modal').classList.add('hidden');
-    }
-
-    function refreshOpenRoomCountsAndLists() {
-      const ev = eventsData.find(e => e.id === activeEventId);
+    function refreshOpenRoomState() {
+      const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
 
       document.getElementById('room-category-badge').textContent = ev.category;
@@ -1628,217 +1459,140 @@ const DEFAULT_EVENTS = [
       document.getElementById('room-title').textContent = ev.title;
       document.getElementById('room-date').textContent = formatDateIndo(ev.dateStart, ev.dateEnd);
       document.getElementById('room-time').textContent = ev.time || '-';
-      document.getElementById('room-location').textContent = ev.location;
+      document.getElementById('room-location').textContent = ev.location || '-';
       document.getElementById('room-description').textContent = ev.description || '-';
-      document.getElementById('room-mode').textContent = ev.mode || 'Offline / Online';
-      document.getElementById('room-quota-text').textContent = `${(ev.attendees || []).length} / ${ev.quota || 200} Peserta`;
+      document.getElementById('room-mode').textContent = ev.mode || '-';
+      document.getElementById('room-quota').textContent = `${ev.attendees ? ev.attendees.length : 0} / ${ev.quota || 200} Peserta`;
 
       const released = isCertificateReleased(ev);
-      const relDate = getCertificateReleaseDate(ev);
-      const relDateStr = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + relDate.toTimeString().slice(0, 5) + ' WIB';
+      const statusEl = document.getElementById('room-cert-status');
+      statusEl.textContent = released ? 'Sudah Rilis & Aktif' : 'Menunggu Selesai';
+      statusEl.className = released ? 'font-bold text-emerald-700' : 'font-bold text-amber-700';
+      document.getElementById('room-cert-release-time').textContent = formatReleaseDateTimeIndo(ev);
 
-      const certStatusEl = document.getElementById('room-cert-status');
-      if (ev.certificate && (ev.certificate.releaseMode === 'disabled' || ev.certificate.enabled === false)) {
-        certStatusEl.textContent = 'Belum Dibuka';
-        certStatusEl.className = 'font-bold text-rose-600 text-right';
-      } else if (released) {
-        certStatusEl.textContent = `Sudah Rilis (${ev.certificate.jp || '8 JP'})`;
-        certStatusEl.className = 'font-bold text-emerald-700 text-right';
-      } else {
-        certStatusEl.textContent = `Rilis ${relDateStr}`;
-        certStatusEl.className = 'font-bold text-amber-700 text-right';
-      }
-
+      // Tautan Zoom Meeting
+      const zoomCard = document.getElementById('room-zoom-card');
       const zoomBtn = document.getElementById('room-zoom-btn');
-      if (zoomBtn) {
-        zoomBtn.href = (ev.zoomUrl && ev.zoomUrl.trim() !== '') ? ev.zoomUrl.trim() : 'https://zoom.us/join';
+      const zoomUrlText = document.getElementById('room-zoom-url-text');
+      if (ev.zoomUrl && ev.zoomUrl.trim() !== '') {
+        zoomCard.classList.remove('hidden');
+        zoomBtn.href = ev.zoomUrl.trim();
+        zoomUrlText.textContent = ev.zoomUrl.trim();
+      } else {
+        zoomCard.classList.add('hidden');
       }
 
-      const spList = document.getElementById('room-speakers-list');
-      const speakers = ev.speakers && ev.speakers.length ? ev.speakers : [{ name: 'Tim Pengembang JSIT Lampung', role: 'Fasilitator Diklat' }];
-      spList.innerHTML = speakers.map(sp => `
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-50/70 border border-blue-100">
-          <div class="w-10 h-10 rounded-full bg-blue-700 text-white font-bold flex items-center justify-center text-sm shrink-0">
-            ${sp.name.charAt(0)}
-          </div>
-          <div class="min-w-0">
-            <p class="font-bold text-sm text-navy-900 truncate">${sp.name}</p>
-            <p class="text-xs text-slate-600 truncate">${sp.role}</p>
-          </div>
-        </div>
-      `).join('');
+      // Flyer Kegiatan di Kolom Narasumber & Fasilitator
+      const flyerWrap = document.getElementById('room-flyer-wrapper');
+      const flyerImgEl = document.getElementById('room-flyer-img');
+      const flyerOpenLink = document.getElementById('room-flyer-open-link');
+      if (ev.flyerImg && ev.flyerImg.trim() !== '') {
+        flyerWrap.classList.remove('hidden');
+        flyerImgEl.src = ev.flyerImg.trim();
+        flyerOpenLink.href = ev.flyerImg.trim();
+      } else {
+        flyerWrap.classList.add('hidden');
+        flyerImgEl.src = '';
+      }
 
-      renderRoomFlyerBox(ev);
+      document.getElementById('tab-count-absensi').textContent = ev.attendees ? ev.attendees.length : 0;
+      document.getElementById('tab-count-materi').textContent = ev.materials ? ev.materials.length : 0;
+      document.getElementById('tab-count-rekaman').textContent = ev.recordings ? ev.recordings.length : 0;
+
+      const speakersList = document.getElementById('room-speakers-list');
+      speakersList.innerHTML = (ev.speakers && ev.speakers.length)
+        ? ev.speakers.map(sp => `
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center shrink-0">
+                ${sp.name.charAt(0)}
+              </div>
+              <div>
+                <div class="font-bold text-sm text-navy-900">${sp.name}</div>
+                <div class="text-xs text-slate-500">${sp.role}</div>
+              </div>
+            </div>
+          `).join('')
+        : '<p class="text-xs text-slate-400">Informasi narasumber menyusul.</p>';
 
       const pinWrap = document.getElementById('att-pin-wrapper');
       if (ev.pin && ev.pin.trim() !== '') {
         pinWrap.classList.remove('hidden');
-        document.getElementById('att-pin-input').required = true;
+        document.getElementById('att-pin').required = true;
       } else {
         pinWrap.classList.add('hidden');
-        document.getElementById('att-pin-input').required = false;
+        document.getElementById('att-pin').required = false;
       }
 
-      document.getElementById('tab-count-absensi').textContent = (ev.attendees || []).length;
-      document.getElementById('tab-count-materi').textContent = (ev.materials || []).length;
-      document.getElementById('tab-count-rekaman').textContent = (ev.recordings || []).length;
+      // Certificate Release Lock Status
+      const lockedBanner = document.getElementById('cert-locked-banner');
+      const unlockedArea = document.getElementById('cert-unlocked-area');
+      if (!released) {
+        lockedBanner.classList.remove('hidden');
+        unlockedArea.classList.add('hidden');
+        if (ev.certificate && ev.certificate.releaseMode === 'disabled') {
+          document.getElementById('cert-locked-message').textContent = 'Penerbitan E-Sertifikat untuk kegiatan ini sedang ditahan sementara oleh admin.';
+          document.getElementById('cert-locked-schedule').textContent = 'Status: Ditahan Admin';
+        } else {
+          document.getElementById('cert-locked-message').textContent = 'Sesuai ketentuan panitia, pengecekan & pengunduhan E-Sertifikat otomatis dibuka setelah jam kegiatan berakhir.';
+          document.getElementById('cert-locked-schedule').textContent = `Otomatis Dibuka: ${formatReleaseDateTimeIndo(ev)}`;
+        }
+      } else {
+        lockedBanner.classList.add('hidden');
+        unlockedArea.classList.remove('hidden');
+      }
 
       renderRoomAttendees();
       renderRoomMaterials();
       renderRoomRecordings();
-      updateCertTabReleaseState(ev);
     }
 
-    function backToCatalog() {
-      if (countdownInterval) clearInterval(countdownInterval);
-      activeEventId = null;
-      pendingHashCertData = null;
-      if (window.location.hash && window.location.hash.startsWith('#verifikasi')) {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
-      }
-      document.getElementById('event-room-page').classList.add('hidden');
-      document.getElementById('certificate-verification-page').classList.add('hidden');
-      document.getElementById('portal-home-view').classList.remove('hidden');
+    function openEventRoom(eventId, initialTab = 'info') {
+      const ev = eventsData.find(item => item.id === eventId);
+      if (!ev) return;
+
+      currentEventId = eventId;
+      activeCertPayload = null;
+      document.getElementById('cert-preview-wrapper').classList.add('hidden');
+      document.getElementById('cert-feedback-msg').classList.add('hidden');
+      document.getElementById('cert-search-query').value = '';
+
+      refreshOpenRoomState();
+
+      document.getElementById('portal-home-view').classList.add('hidden');
+      document.getElementById('verification-page').classList.add('hidden');
+      document.getElementById('event-room-page').classList.remove('hidden');
+      switchRoomTab(initialTab);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function updateCertTabReleaseState(ev) {
-      if (countdownInterval) clearInterval(countdownInterval);
-      const certDisabledBanner = document.getElementById('cert-disabled-banner');
-      const certActiveSection = document.getElementById('cert-active-section');
-      const certCfg = ev.certificate || {};
-
-      if (certCfg.releaseMode === 'disabled' || certCfg.enabled === false) {
-        certDisabledBanner.classList.remove('hidden');
-        certActiveSection.classList.add('hidden');
-        document.getElementById('cert-lock-heading').textContent = 'E-Sertifikat Belum Diaktifkan Panitia';
-        document.getElementById('cert-lock-desc').textContent = 'Panitia sedang memverifikasi kelengkapan data peserta untuk kegiatan ini.';
-        document.getElementById('cert-release-schedule-box').classList.add('hidden');
-        document.getElementById('cert-countdown-wrapper').classList.add('hidden');
-        return;
-      }
-
-      const targetDate = getCertificateReleaseDate(ev);
-      if (isCertificateReleased(ev)) {
-        certDisabledBanner.classList.add('hidden');
-        certActiveSection.classList.remove('hidden');
-        return;
-      }
-
-      certDisabledBanner.classList.remove('hidden');
-      certActiveSection.classList.add('hidden');
-      document.getElementById('cert-release-schedule-box').classList.remove('hidden');
-      document.getElementById('cert-countdown-wrapper').classList.remove('hidden');
-
-      const formattedRelease = targetDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
-        ` Pukul ${targetDate.toTimeString().slice(0, 5).replace(':', '.')} WIB`;
-      document.getElementById('cert-lock-heading').textContent = 'E-Sertifikat Akan Rilis Setelah Jam Kegiatan Berakhir';
-      document.getElementById('cert-lock-desc').textContent = 'Terima kasih atas partisipasi Anda. Anda tetap dapat mengisi Daftar Hadir sekarang, dan menu pencetakan E-Sertifikat akan terbuka otomatis sesuai jadwal berikut:';
-      document.getElementById('cert-release-datetime-text').textContent = formattedRelease;
-
-      const tick = () => {
-        const diff = targetDate.getTime() - Date.now();
-        if (diff <= 0) {
-          clearInterval(countdownInterval);
-          certDisabledBanner.classList.add('hidden');
-          certActiveSection.classList.remove('hidden');
-          refreshOpenRoomCountsAndLists();
-          return;
-        }
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const mins = Math.floor((diff / (1000 * 60)) % 60);
-        const secs = Math.floor((diff / 1000) % 60);
-        document.getElementById('cert-countdown-timer').textContent =
-          `Tersisa: ${days > 0 ? days + ' Hari ' : ''}${String(hrs).padStart(2, '0')} Jam ${String(mins).padStart(2, '0')} Menit ${String(secs).padStart(2, '0')} Detik`;
-      };
-      tick();
-      countdownInterval = setInterval(tick, 1000);
+      if (window.lucide) lucide.createIcons();
     }
 
     function switchRoomTab(tabName) {
       document.querySelectorAll('.room-tab-btn').forEach(btn => {
         if (btn.dataset.tab === tabName) {
-          btn.classList.add('active', 'bg-blue-600', 'text-white', 'font-bold');
-          btn.classList.remove('text-blue-200', 'hover:bg-white/10', 'font-semibold');
+          btn.className = 'room-tab-btn active flex items-center gap-3 p-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs transition shrink-0';
         } else {
-          btn.classList.remove('active', 'bg-blue-600', 'text-white', 'font-bold');
-          btn.classList.add('text-blue-200', 'hover:bg-white/10', 'font-semibold');
+          btn.className = 'room-tab-btn flex items-center gap-3 p-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white font-semibold text-xs transition shrink-0';
         }
       });
 
-      document.querySelectorAll('.room-tab-panel').forEach(panel => {
-        panel.classList.add('hidden');
-      });
-      document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
-
-      if (tabName === 'absensi') {
-        initSignaturePad();
-      }
+      document.querySelectorAll('.room-panel').forEach(panel => panel.classList.add('hidden'));
+      document.getElementById(`tab-panel-${tabName}`).classList.remove('hidden');
       if (window.lucide) lucide.createIcons();
     }
 
-    // SIGNATURE PAD
-    function initSignaturePad() {
-      sigCanvas = document.getElementById('signature-pad');
-      if (!sigCanvas) return;
-      sigCtx = sigCanvas.getContext('2d');
-      sigCtx.strokeStyle = '#0B1F3A';
-      sigCtx.lineWidth = 2.2;
-      sigCtx.lineCap = 'round';
-      hasSigned = false;
-
-      const getPos = (e) => {
-        const rect = sigCanvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - rect.left) * (sigCanvas.width / rect.width),
-          y: (clientY - rect.top) * (sigCanvas.height / rect.height)
-        };
-      };
-
-      const startDraw = (e) => {
-        isDrawing = true;
-        hasSigned = true;
-        const pos = getPos(e);
-        sigCtx.beginPath();
-        sigCtx.moveTo(pos.x, pos.y);
-      };
-      const moveDraw = (e) => {
-        if (!isDrawing) return;
-        e.preventDefault();
-        const pos = getPos(e);
-        sigCtx.lineTo(pos.x, pos.y);
-        sigCtx.stroke();
-      };
-      const endDraw = () => { isDrawing = false; };
-
-      sigCanvas.onmousedown = startDraw;
-      sigCanvas.onmousemove = moveDraw;
-      window.onmouseup = endDraw;
-      sigCanvas.ontouchstart = startDraw;
-      sigCanvas.ontouchmove = moveDraw;
-      sigCanvas.ontouchend = endDraw;
-    }
-
-    function clearSignaturePad() {
-      if (sigCtx && sigCanvas) {
-        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-        hasSigned = false;
-      }
-    }
-
-    // SUBMIT ATTENDANCE (ONLY RECORDS ATTENDANCE - CERTIFICATE WAITS FOR END TIME)
+    // =========================================================================
+    // DAFTAR HADIR (SUBMIT KE FIREBASE SUBCOLLECTION)
+    // =========================================================================
     async function submitAttendance(e) {
       e.preventDefault();
-      const ev = eventsData.find(item => item.id === activeEventId);
-      if (!ev) return;
+      const evIndex = eventsData.findIndex(item => item.id === currentEventId);
+      if (evIndex === -1) return;
+      const ev = eventsData[evIndex];
 
       if (ev.pin && ev.pin.trim() !== '') {
-        const enteredPin = document.getElementById('att-pin-input').value.trim();
-        if (enteredPin !== ev.pin.trim()) {
-          alert('Kode PIN Presensi salah! Silakan cek kembali kode dari panitia.');
+        const inputPin = document.getElementById('att-pin').value.trim();
+        if (inputPin !== ev.pin.trim()) {
+          alert('Kode PIN Absensi salah! Silakan tanyakan PIN resmi kepada panitia.');
           return;
         }
       }
@@ -1850,13 +1604,9 @@ const DEFAULT_EVENTS = [
       const phone = document.getElementById('att-phone').value.trim();
       const email = document.getElementById('att-email').value.trim();
 
-      const btn = document.getElementById('btn-submit-att');
-      btn.disabled = true;
-      btn.innerHTML = '<span>Menyimpan Daftar Hadir...</span>';
-
       const now = new Date();
-      const timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toTimeString().slice(0, 5);
-      const attId = 'att-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+      const timestamp = `${now.toISOString().slice(0, 10)} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const attId = 'att-' + Date.now();
 
       const newAttendee = {
         id: attId,
@@ -1871,127 +1621,105 @@ const DEFAULT_EVENTS = [
         verified: true
       };
 
+      const btn = document.getElementById('btn-submit-attendance');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Menyimpan kehadiran...</span>';
+
       try {
         if (isFirebaseReady && db) {
           await db.collection('events').doc(ev.id).collection('attendees').doc(attId).set(newAttendee);
         } else {
-          if (!ev.attendees) ev.attendees = [];
-          ev.attendees.unshift(newAttendee);
+          if (!eventsData[evIndex].attendees) eventsData[evIndex].attendees = [];
+          eventsData[evIndex].attendees.unshift(newAttendee);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
           updateStats();
           renderEvents();
-          refreshOpenRoomCountsAndLists();
+          renderRoomAttendees();
         }
 
-        if (appSettings.webhookUrl && appSettings.webhookUrl.startsWith('http')) {
-          fetch(appSettings.webhookUrl, {
+        if (settingsData.webhookUrl && settingsData.webhookUrl.startsWith('http')) {
+          fetch(settingsData.webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ eventId: ev.id, eventTitle: ev.title, ...newAttendee })
+            body: JSON.stringify({ eventId: ev.id, eventTitle: ev.title, attendee: newAttendee })
           }).catch(() => {});
         }
 
-        document.getElementById('attendance-form').reset();
-        clearSignaturePad();
-        document.getElementById('cert-lookup-input').value = name;
+        document.getElementById('att-name').value = '';
+        document.getElementById('att-school').value = '';
+        document.getElementById('att-phone').value = '';
+        document.getElementById('att-email').value = '';
+        if (document.getElementById('att-pin')) document.getElementById('att-pin').value = '';
 
-        const banner = document.getElementById('attendance-success-banner');
-        const bannerTitle = document.getElementById('attendance-success-title');
-        const bannerDesc = document.getElementById('attendance-success-desc');
-        banner.classList.remove('hidden');
-
-        if (isCertificateReleased(ev)) {
-          bannerTitle.textContent = `Daftar Hadir Tercatat atas nama ${name}!`;
-          bannerDesc.innerHTML = `Kehadiran Anda telah tersimpan di sistem. Karena kegiatan telah berakhir, Anda sudah dapat mengecek dan mengunduh E-Sertifikat pada menu <strong>E-Sertifikat</strong>.`;
-        } else {
-          const relDate = getCertificateReleaseDate(ev);
-          const relText = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + ` pukul ${relDate.toTimeString().slice(0, 5).replace(':', '.')} WIB`;
-          bannerTitle.textContent = `Daftar Hadir Tercatat atas nama ${name}!`;
-          bannerDesc.innerHTML = `Terima kasih telah mengisi daftar hadir. E-Sertifikat tidak diterbitkan langsung saat absensi dan baru dapat diakses pada menu <strong>E-Sertifikat</strong> setelah kegiatan berakhir (<strong>${relText}</strong>).`;
-        }
-
-        showToast('Daftar hadir berhasil tercatat!');
+        showToast('Kehadiran berhasil dicatat secara real-time!');
       } catch (err) {
-        console.error('Submit attendance error:', err);
-        alert('Gagal menyimpan daftar hadir ke server. Periksa koneksi internet Anda.');
+        console.error('Gagal simpan kehadiran:', err);
+        alert('Gagal menyimpan daftar hadir: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Kirim Daftar Hadir</span>';
+        btn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Kirim & Catat Kehadiran</span>';
         if (window.lucide) lucide.createIcons();
       }
     }
 
     function renderRoomAttendees() {
-      const ev = eventsData.find(item => item.id === activeEventId);
+      const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
-      const list = ev.attendees || [];
-      document.getElementById('live-att-total').textContent = list.length;
-
-      const q = document.getElementById('att-search-list').value.trim().toLowerCase();
-      const filtered = list.filter(a =>
-        a.name.toLowerCase().includes(q) ||
-        a.school.toLowerCase().includes(q) ||
-        a.region.toLowerCase().includes(q)
+      const tbody = document.getElementById('room-attendees-tbody');
+      const query = (document.getElementById('att-list-search').value || '').toLowerCase().trim();
+      const list = (ev.attendees || []).filter(a =>
+        !query || a.name.toLowerCase().includes(query) || a.school.toLowerCase().includes(query) || (a.region || '').toLowerCase().includes(query)
       );
 
-      const container = document.getElementById('room-attendees-list');
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-xs text-slate-400">Belum ada peserta yang tercatat hadir.</div>`;
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400">Belum ada data kehadiran yang sesuai.</td></tr>`;
         return;
       }
 
-      container.innerHTML = filtered.map((a, idx) => `
-        <div class="p-3.5 flex items-center justify-between gap-3 hover:bg-blue-50/40 transition">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[11px] font-bold flex items-center justify-center shrink-0">
-              ${filtered.length - idx}
-            </span>
-            <div class="min-w-0">
-              <p class="text-xs font-bold text-navy-900 truncate">${a.name}</p>
-              <p class="text-[11px] text-slate-500 truncate">${a.school} • ${a.region}</p>
-            </div>
-          </div>
-          <div class="text-right shrink-0">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <i data-lucide="check" class="w-2.5 h-2.5"></i> Hadir
-            </span>
-            <p class="text-[10px] text-slate-400 mt-0.5">${a.timestamp || ''}</p>
-          </div>
-        </div>
+      tbody.innerHTML = list.map((a, idx) => `
+        <tr class="hover:bg-blue-50/40 transition">
+          <td class="py-3 px-4 font-bold text-slate-500">${idx + 1}</td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-navy-900">${a.name}</div>
+            <div class="text-[11px] text-blue-700 font-medium">${a.role || 'Peserta'}</div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-medium text-slate-700">${a.school}</div>
+            <div class="text-[11px] text-slate-400">${a.region || '-'}</div>
+          </td>
+          <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${a.timestamp || '-'}</td>
+        </tr>
       `).join('');
-      if (window.lucide) lucide.createIcons();
     }
 
+    // =========================================================================
+    // MATERI & REKAMAN
+    // =========================================================================
     function renderRoomMaterials() {
-      const ev = eventsData.find(item => item.id === activeEventId);
+      const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
+      const grid = document.getElementById('room-materials-grid');
       const mats = ev.materials || [];
-      const container = document.getElementById('room-materials-list');
 
       if (mats.length === 0) {
-        container.innerHTML = `<div class="col-span-2 text-center py-12 bg-white rounded-2xl border border-blue-100 text-xs text-slate-500">Materi kegiatan belum diunggah oleh panitia.</div>`;
+        grid.innerHTML = `<div class="col-span-full bg-white rounded-2xl p-8 text-center border border-slate-200 text-sm text-slate-500">Materi kegiatan belum diunggah oleh tim diklat.</div>`;
         return;
       }
 
-      container.innerHTML = mats.map(m => `
-        <div class="p-4 rounded-2xl border border-blue-100 bg-white hover:border-blue-300 shadow-xs flex items-start justify-between gap-3 transition">
-          <div class="flex items-start gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 font-extrabold text-[11px] flex items-center justify-center shrink-0 border border-blue-200">
-              ${m.type || 'FILE'}
-            </div>
-            <div class="min-w-0">
-              <h5 class="font-bold text-sm text-navy-900 leading-snug">${m.title}</h5>
-              <p class="text-xs text-slate-500 mt-0.5">${m.desc || 'Dokumen materi resmi kegiatan'}</p>
-            </div>
+      grid.innerHTML = mats.map(m => `
+        <div class="bg-white rounded-2xl p-5 border border-blue-100 hover:border-blue-300 shadow-xs flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-extrabold bg-blue-100 text-blue-800">${m.type || 'DOKUMEN'}</span>
+            <h5 class="font-bold text-navy-900 text-sm leading-snug">${m.title}</h5>
+            <p class="text-xs text-slate-500 leading-relaxed">${m.desc || 'Dokumen materi resmi kegiatan.'}</p>
           </div>
-          <a href="${m.url}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 inline-flex items-center gap-1.5 transition">
-            <span>Unduh</span>
+          <a href="${m.url}" target="_blank" rel="noopener" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>Buka / Unduh Materi</span>
           </a>
         </div>
       `).join('');
-      if (window.lucide) lucide.createIcons();
     }
 
     function getYouTubeEmbedUrl(url) {
@@ -2002,192 +1730,213 @@ const DEFAULT_EVENTS = [
     }
 
     function renderRoomRecordings() {
-      const ev = eventsData.find(item => item.id === activeEventId);
+      const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
-      const recs = ev.recordings || [];
       const container = document.getElementById('room-recordings-list');
+      const recs = ev.recordings || [];
 
       if (recs.length === 0) {
-        container.innerHTML = `<div class="text-center py-12 bg-white rounded-2xl border border-blue-100 text-xs text-slate-500">Rekaman video kegiatan belum tersedia.</div>`;
+        container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center border border-slate-200 text-sm text-slate-500">Rekaman video kegiatan belum tersedia.</div>`;
         return;
       }
 
       container.innerHTML = recs.map(r => {
-        const embedUrl = getYouTubeEmbedUrl(r.url);
+        const ytEmbed = getYouTubeEmbedUrl(r.url);
         return `
-          <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
-            ${embedUrl ? `
-              <div class="aspect-video w-full bg-navy-950">
-                <iframe src="${embedUrl}" title="${r.title}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-              </div>
-            ` : ''}
-            <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800 uppercase">${r.platform || 'Video'}</span>
-                <h5 class="font-bold text-sm text-navy-900 mt-1">${r.title}</h5>
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-100 text-sky-800">${r.platform || 'Video'}</span>
+                <h5 class="font-bold text-navy-900 text-base mt-1">${r.title}</h5>
                 <p class="text-xs text-slate-500">${r.notes || ''}</p>
               </div>
-              <a href="${r.url}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 shrink-0 transition">
-                <i data-lucide="play-circle" class="w-4 h-4 text-sky-300"></i>
+              <a href="${r.url}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shrink-0 transition">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
                 <span>Tonton di ${r.platform || 'Tautan'}</span>
               </a>
             </div>
+            ${ytEmbed ? `
+              <div class="aspect-video w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-200">
+                <iframe class="w-full h-full" src="${ytEmbed}" title="${r.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            ` : ''}
           </div>
         `;
       }).join('');
-      if (window.lucide) lucide.createIcons();
     }
 
-    // CERTIFICATE VERIFICATION & DEDICATED QR VERIFICATION PAGE
+    // =========================================================================
+    // E-SERTIFIKAT A4 LANDSCAPE + CUSTOM TEMPLATE + POSISI QR & TTD + JUDUL
+    // =========================================================================
     function buildVerificationUrl(payload) {
-      const base = window.location.href.split('#')[0];
-      const compactData = {
+      const compactPayload = {
         no: payload.certNumber,
-        kab: payload.region || 'Provinsi Lampung',
+        kab: payload.region,
         tgl: payload.dateRange,
         ins: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
         ttd: `${payload.signerName} - ${payload.signerTitle}`,
         hal: payload.eventTitle,
         nama: payload.ownerName,
         sek: payload.school,
-        sts: payload.role,
+        sts: payload.roleLabel,
         jp: payload.jp,
         iss: payload.issuedDate,
         evId: payload.eventId || '',
         attId: payload.attendeeId || '',
         code: payload.verCode
       };
-      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compactData))));
-      return `${base}#verifikasi?cert=${encodeURIComponent(payload.verCode)}&v=${encodeURIComponent(encoded)}`;
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compactPayload))));
+      const baseUrl = window.location.href.split('#')[0].split('?')[0];
+      return `${baseUrl}#verifikasi?cert=${encodeURIComponent(payload.verCode)}&v=${encodeURIComponent(encoded)}`;
     }
 
-    function copyActiveVerificationLink() {
-      if (!activeCertPayload) return;
-      const url = activeCertPayload.verificationUrl || buildVerificationUrl(activeCertPayload);
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => showToast('Tautan halaman verifikasi sertifikat disalin!'));
-      } else {
-        const tmp = document.createElement('textarea');
-        tmp.value = url;
-        document.body.appendChild(tmp);
-        tmp.select();
-        document.execCommand('copy');
-        document.body.removeChild(tmp);
-        showToast('Tautan halaman verifikasi sertifikat disalin!');
-      }
-    }
-
-    function applyCertificateLayoutToDOM(payload) {
+    function applyCertificateLayoutStyles(p) {
       const printArea = document.getElementById('certificate-print-area');
-      const qrBlock = document.getElementById('cert-qr-block');
-      const qrTextBox = document.getElementById('cert-qr-text-box');
-      const signerBlock = document.getElementById('cert-signer-block');
-      const issuedWrap = document.getElementById('cert-view-issued-wrap');
-      if (!printArea || !payload) return;
+      const innerFrame = document.getElementById('cert-inner-frame');
+      const defaultHeader = document.getElementById('cert-default-header');
+      const dynamicBody = document.getElementById('cert-dynamic-body');
+      const watermark = document.getElementById('cert-watermark-icon');
+      const themeColor = p.themeColor || '#1E3A8A';
 
-      const boxW = printArea.clientWidth || 896;
-      const unitPx = boxW / 1000;
+      if (p.customTemplateImg) {
+        printArea.style.backgroundImage = `url('${p.customTemplateImg}')`;
+        watermark.classList.add('hidden');
+        if (p.hideDefaultChrome !== false) {
+          printArea.style.borderWidth = '0px';
+          innerFrame.classList.remove('border-2', 'border-amber-400/70');
+          defaultHeader.classList.add('invisible');
+        } else {
+          printArea.style.borderWidth = '10px';
+          printArea.style.borderColor = themeColor;
+          innerFrame.classList.add('border-2', 'border-amber-400/70');
+          defaultHeader.classList.remove('invisible');
+        }
+        dynamicBody.style.transform = `translateY(${p.offsetY || 0}px)`;
+      } else {
+        printArea.style.backgroundImage = 'none';
+        watermark.classList.remove('hidden');
+        printArea.style.borderWidth = '10px';
+        printArea.style.borderColor = themeColor;
+        innerFrame.classList.add('border-2', 'border-amber-400/70');
+        defaultHeader.classList.remove('invisible');
+        dynamicBody.style.transform = 'translateY(0px)';
+      }
 
-      const qrX = Number(payload.qrOffsetX || 0);
-      const qrY = Number(payload.qrOffsetY || 0);
-      const qrScale = Number(payload.qrScale || 100);
-      const showScanBg = payload.showScanBg !== false;
+      // Sinkronisasi Judul "SERTIFIKAT" dengan pengaturan Studio E-Sertifikat (default: hilang)
+      const headingEl = document.getElementById('cert-view-heading');
+      if (headingEl) {
+        headingEl.classList.toggle('hidden', p.showCertHeading !== true);
+        headingEl.style.color = themeColor;
+      }
 
+      const txtCol = p.customTemplateImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
+      document.getElementById('cert-view-number').style.color = p.customTemplateImg ? txtCol : '#475569';
+      document.getElementById('cert-view-name').style.color = txtCol;
+      document.getElementById('cert-view-description').style.color = p.customTemplateImg ? txtCol : '#334155';
+      document.getElementById('cert-view-signer-title').style.color = txtCol;
+      document.getElementById('cert-view-signer-name').style.color = txtCol;
+
+      // Apply custom QR & Signer positions (proportional to container width)
+      const areaW = (printArea && printArea.clientWidth) ? printArea.clientWidth : 896;
+      const unitPx = areaW / 1000;
+
+      const qrBlock = document.getElementById('cert-view-qr-block');
+      const qrText = document.getElementById('cert-view-qr-text');
+      const qrX = Number(p.qrOffsetX || 0);
+      const qrY = Number(p.qrOffsetY || 0);
+      const qrScale = Number(p.qrScale || 100);
       if (qrBlock) {
         qrBlock.style.transform = `translate(${(qrX * unitPx).toFixed(1)}px, ${(qrY * unitPx).toFixed(1)}px) scale(${(qrScale / 100).toFixed(2)})`;
       }
-      if (qrTextBox) {
-        qrTextBox.className = showScanBg
-          ? 'text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1 rounded'
-          : 'text-[10px] text-slate-700 leading-tight px-2 py-1 rounded';
+      if (qrText) {
+        qrText.className = (p.showScanBg !== false)
+          ? 'text-[10px] text-slate-600 leading-snug bg-white/85 px-2 py-1 rounded-lg'
+          : 'text-[10px] text-slate-700 leading-snug px-2 py-1 rounded-lg';
       }
 
-      const signerX = Number(payload.signerOffsetX || 0);
-      const signerY = Number(payload.signerOffsetY || 0);
-      const signerScale = Number(payload.signerScale || 100);
-      const showIssuedDate = payload.showIssuedDate !== false;
-
+      const signerBlock = document.getElementById('cert-view-signer-block');
+      const issuedEl = document.getElementById('cert-view-issued-date');
+      const sX = Number(p.signerOffsetX || 0);
+      const sY = Number(p.signerOffsetY || 0);
+      const sScale = Number(p.signerScale || 100);
       if (signerBlock) {
-        signerBlock.style.transform = `translate(${(signerX * unitPx).toFixed(1)}px, ${(signerY * unitPx).toFixed(1)}px) scale(${(signerScale / 100).toFixed(2)})`;
+        signerBlock.style.transform = `translate(${(sX * unitPx).toFixed(1)}px, ${(sY * unitPx).toFixed(1)}px) scale(${(sScale / 100).toFixed(2)})`;
       }
-      if (issuedWrap) {
-        issuedWrap.classList.toggle('hidden', !showIssuedDate);
+      if (issuedEl) {
+        issuedEl.classList.toggle('hidden', p.showIssuedDate === false);
       }
     }
 
-    window.addEventListener('resize', () => {
-      if (activeCertPayload) applyCertificateLayoutToDOM(activeCertPayload);
-    });
-    window.addEventListener('beforeprint', () => {
-      if (activeCertPayload) {
-        setTimeout(() => applyCertificateLayoutToDOM(activeCertPayload), 20);
-      }
-    });
-
-    function verifyAndGenerateCert() {
-      const ev = eventsData.find(item => item.id === activeEventId);
+    function verifyAndGenerateCert(e) {
+      e.preventDefault();
+      const ev = eventsData.find(item => item.id === currentEventId);
       if (!ev) return;
 
       if (!isCertificateReleased(ev)) {
-        updateCertTabReleaseState(ev);
+        alert('E-Sertifikat belum dirilis. Silakan cek kembali setelah jam kegiatan berakhir.');
         return;
       }
 
-      const query = document.getElementById('cert-lookup-input').value.trim().toLowerCase();
-      const msgEl = document.getElementById('cert-lookup-msg');
-      const resBox = document.getElementById('cert-result-box');
-
-      if (!query) {
-        msgEl.textContent = 'Silakan masukkan Nama Lengkap atau Nomor WhatsApp Anda.';
-        msgEl.className = 'text-xs mt-2 text-rose-600 font-semibold';
-        msgEl.classList.remove('hidden');
-        resBox.classList.add('hidden');
-        return;
-      }
+      const query = document.getElementById('cert-search-query').value.trim().toLowerCase();
+      const qDigits = normalizePhone(query);
+      const feedback = document.getElementById('cert-feedback-msg');
+      const previewWrapper = document.getElementById('cert-preview-wrapper');
 
       const attendees = ev.attendees || [];
-      const foundIndex = attendees.findIndex(a =>
-        a.name.toLowerCase().includes(query) ||
-        (a.phone && a.phone.replace(/\D/g, '').includes(query.replace(/\D/g, '')) && query.replace(/\D/g, '').length >= 6)
-      );
+      const foundIndex = attendees.findIndex(a => {
+        const nameMatch = a.name.toLowerCase().includes(query);
+        const aDigits = normalizePhone(a.phone);
+        const phoneMatch = qDigits.length >= 6 && aDigits.includes(qDigits);
+        return nameMatch || phoneMatch;
+      });
 
       if (foundIndex === -1) {
-        msgEl.textContent = 'Data Anda belum ditemukan di Daftar Hadir kegiatan ini. Silakan isi Daftar Hadir terlebih dahulu pada menu Daftar Hadir.';
-        msgEl.className = 'text-xs mt-2 text-rose-600 font-semibold';
-        msgEl.classList.remove('hidden');
-        resBox.classList.add('hidden');
+        previewWrapper.classList.add('hidden');
+        feedback.className = 'mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5';
+        feedback.innerHTML = `
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Data tidak ditemukan pada Daftar Hadir kegiatan ini.</strong>
+            <p class="mt-0.5">Pastikan Anda sudah mengisi formulir pada tab <strong>Daftar Hadir</strong> terlebih dahulu, lalu masukkan nama atau nomor WhatsApp yang sesuai.</p>
+          </div>
+        `;
+        feedback.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
         return;
       }
 
-      msgEl.classList.add('hidden');
       const attendee = attendees[foundIndex];
-      const certCfg = ev.certificate || {};
       const seqNum = String(attendees.length - foundIndex).padStart(3, '0');
+      const certCfg = ev.certificate || {};
       const certNumber = `${seqNum}/${certCfg.prefix || 'SERT/JSIT-LPG/2026'}`;
       const verCode = `JSIT-${ev.id.slice(-3).toUpperCase()}-${seqNum}`;
+      const jp = certCfg.jp || '8 JP';
+      const roleLabel = certCfg.roleLabel || 'Peserta';
+      const signerName = certCfg.signerName || settingsData.signerName;
+      const signerTitle = certCfg.signerTitle || settingsData.signerTitle;
       const dateRange = formatDateIndo(ev.dateStart, ev.dateEnd);
       const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
 
       activeCertPayload = {
-        eventId: ev.id,
-        attendeeId: attendee.id || '',
         certNumber,
         verCode,
         ownerName: attendee.name,
         school: attendee.school,
         region: attendee.region || 'Provinsi Lampung',
-        role: certCfg.roleLabel || 'Peserta',
+        roleLabel,
         category: ev.category,
         eventTitle: ev.title,
+        eventId: ev.id,
+        attendeeId: attendee.id,
         dateRange,
-        location: ev.location,
-        jp: certCfg.jp || '8 JP',
+        jp,
         issuedDate,
-        signerName: certCfg.signerName || appSettings.signerName,
-        signerTitle: certCfg.signerTitle || appSettings.signerTitle,
+        signerName,
+        signerTitle,
         themeColor: certCfg.themeColor || '#1E3A8A',
         customTemplateImg: certCfg.customTemplateImg || '',
         hideDefaultChrome: certCfg.hideDefaultChrome !== false,
+        showCertHeading: certCfg.showCertHeading === true,
         textColor: certCfg.textColor || '#0B1F3A',
         offsetY: certCfg.offsetY || 0,
         qrOffsetX: certCfg.qrOffsetX || 0,
@@ -2199,161 +1948,512 @@ const DEFAULT_EVENTS = [
         signerScale: certCfg.signerScale || 100,
         showIssuedDate: certCfg.showIssuedDate !== false
       };
-      activeCertPayload.verificationUrl = buildVerificationUrl(activeCertPayload);
 
-      const printArea = document.getElementById('certificate-print-area');
-      const innerBorder = document.getElementById('cert-inner-border');
-      const defaultKop = document.getElementById('cert-default-kop');
-      const cTL = document.getElementById('cert-corner-tl');
-      const cBR = document.getElementById('cert-corner-br');
-      const dynBlock = document.getElementById('cert-dynamic-content-block');
-
-      if (activeCertPayload.customTemplateImg) {
-        printArea.style.backgroundImage = `url('${activeCertPayload.customTemplateImg}')`;
-        if (activeCertPayload.hideDefaultChrome) {
-          printArea.style.borderWidth = '0px';
-          innerBorder.classList.remove('border', 'border-amber-400/80');
-          defaultKop.classList.add('invisible');
-          cTL.classList.add('hidden');
-          cBR.classList.add('hidden');
-        } else {
-          printArea.style.borderWidth = '8px';
-          printArea.style.borderColor = activeCertPayload.themeColor;
-          innerBorder.classList.add('border', 'border-amber-400/80');
-          defaultKop.classList.remove('invisible');
-          cTL.classList.remove('hidden');
-          cBR.classList.remove('hidden');
-        }
-        const boxW = printArea.clientWidth || 896;
-        dynBlock.style.transform = `translateY(${Math.round(activeCertPayload.offsetY * (boxW / 835))}px)`;
-      } else {
-        printArea.style.backgroundImage = 'none';
-        printArea.style.borderWidth = '8px';
-        printArea.style.borderColor = activeCertPayload.themeColor;
-        innerBorder.classList.add('border', 'border-amber-400/80');
-        defaultKop.classList.remove('invisible');
-        cTL.classList.remove('hidden');
-        cBR.classList.remove('hidden');
-        dynBlock.style.transform = 'translateY(0px)';
-      }
-
-      const activeTxtCol = activeCertPayload.customTemplateImg ? activeCertPayload.textColor : '#0B1F3A';
-      document.getElementById('cert-view-heading').style.color = activeCertPayload.themeColor;
-      document.getElementById('cert-view-name').style.color = activeTxtCol;
-      document.getElementById('cert-view-body').style.color = activeCertPayload.customTemplateImg ? activeCertPayload.textColor : '#475569';
-      document.getElementById('cert-view-issued-wrap').style.color = activeTxtCol;
-      document.getElementById('cert-view-signer-title').style.color = activeTxtCol;
-      document.getElementById('cert-view-signer-name').style.color = activeTxtCol;
+      const verifyUrl = buildVerificationUrl(activeCertPayload);
+      activeCertPayload.verifyUrl = verifyUrl;
 
       document.getElementById('cert-view-number').textContent = `Nomor: ${certNumber}`;
       document.getElementById('cert-view-name').textContent = attendee.name;
-      document.getElementById('cert-view-school').textContent = `${attendee.school} — ${attendee.region}`;
-      document.getElementById('cert-view-role').textContent = activeCertPayload.role;
+      document.getElementById('cert-view-school').textContent = `${attendee.school} — ${attendee.region || 'Lampung'}`;
+      document.getElementById('cert-view-role').textContent = roleLabel;
       document.getElementById('cert-view-category').textContent = ev.category;
-      document.getElementById('cert-view-event').textContent = `"${ev.title}"`;
+      document.getElementById('cert-view-event-title').textContent = `"${ev.title}"`;
       document.getElementById('cert-view-date').textContent = dateRange;
-      document.getElementById('cert-view-loc').textContent = ev.location;
-      document.getElementById('cert-view-jp').textContent = activeCertPayload.jp;
-      document.getElementById('cert-view-issued-date').textContent = issuedDate;
-      document.getElementById('cert-view-signer-name').textContent = activeCertPayload.signerName;
-      document.getElementById('cert-view-signer-title').textContent = activeCertPayload.signerTitle;
-      document.getElementById('cert-view-code').textContent = `Kode: ${verCode}`;
+      document.getElementById('cert-view-jp').textContent = jp;
+      document.getElementById('cert-view-code').textContent = `KODE: ${verCode}`;
+      document.getElementById('cert-view-issued-date').textContent = `Bandar Lampung, ${issuedDate}`;
+      document.getElementById('cert-view-signer-title').textContent = signerTitle;
+      document.getElementById('cert-view-signer-name').textContent = signerName;
 
-      const qrImg = document.getElementById('cert-qr-img');
+      feedback.classList.add('hidden');
+      previewWrapper.classList.remove('hidden');
+      applyCertificateLayoutStyles(activeCertPayload);
+
       if (window.QRCode) {
-        QRCode.toDataURL(activeCertPayload.verificationUrl, {
-          width: 180,
-          margin: 1,
-          color: { dark: '#0B1F3A', light: '#FFFFFF' }
-        }, function (err, url) {
+        QRCode.toDataURL(verifyUrl, { width: 220, margin: 1, color: { dark: '#0B1F3A', light: '#FFFFFF' } }, (err, url) => {
           if (!err && url) {
-            qrImg.src = url;
+            document.getElementById('cert-qr-image').src = url;
+            activeCertPayload.qrDataUrl = url;
           }
         });
       }
 
-      resBox.classList.remove('hidden');
-      requestAnimationFrame(() => applyCertificateLayoutToDOM(activeCertPayload));
       if (window.lucide) lucide.createIcons();
     }
 
-    // POPULATE DEDICATED VERIFICATION PAGE WHEN USER SCANS QR BARCODE
-    function renderVerificationPage(data) {
+    function downloadCertificatePNG() {
+      if (!activeCertPayload) return;
+      const canvas = document.getElementById('hd-cert-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;  // 1754 (A4 Landscape)
+      const H = canvas.height; // 1240
+      const p = activeCertPayload;
+
+      function renderCanvasBody() {
+        const themeColor = p.themeColor || '#1E3A8A';
+        const txtCol = p.customTemplateImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
+        const subTxtCol = p.customTemplateImg ? txtCol : '#334155';
+        const yShift = p.customTemplateImg ? Math.round((p.offsetY || 0) * 1.6) : 0;
+
+        if (!p.customTemplateImg || p.hideDefaultChrome === false) {
+          ctx.strokeStyle = themeColor;
+          ctx.lineWidth = 18;
+          ctx.strokeRect(36, 36, W - 72, H - 72);
+          ctx.strokeStyle = '#D97706';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(64, 64, W - 128, H - 128);
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = themeColor;
+          ctx.font = 'bold 26px sans-serif';
+          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 138);
+          ctx.fillStyle = '#0F172A';
+          ctx.font = 'bold 34px sans-serif';
+          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 182);
+        }
+
+        ctx.textAlign = 'center';
+
+        // Sinkronisasi Judul "SERTIFIKAT" (hanya digambar jika showCertHeading === true)
+        let numY = 295 + yShift;
+        if (p.showCertHeading === true) {
+          ctx.fillStyle = themeColor;
+          ctx.font = 'bold 74px sans-serif';
+          ctx.fillText('SERTIFIKAT', W / 2, 285 + yShift);
+          numY = 335 + yShift;
+        }
+
+        ctx.fillStyle = p.customTemplateImg ? txtCol : '#475569';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, numY);
+
+        ctx.fillStyle = p.customTemplateImg ? txtCol : '#64748B';
+        ctx.font = '26px sans-serif';
+        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 425 + yShift);
+
+        ctx.fillStyle = txtCol;
+        ctx.font = 'bold 54px sans-serif';
+        ctx.fillText(p.ownerName, W / 2, 498 + yShift);
+        const nameW = ctx.measureText(p.ownerName).width;
+        ctx.strokeStyle = '#D97706';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo((W - nameW) / 2, 514 + yShift);
+        ctx.lineTo((W + nameW) / 2, 514 + yShift);
+        ctx.stroke();
+
+        ctx.fillStyle = p.customTemplateImg ? txtCol : '#1D4ED8';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText(`${p.school} — ${p.region}`, W / 2, 560 + yShift);
+
+        ctx.fillStyle = subTxtCol;
+        ctx.font = '25px sans-serif';
+        ctx.fillText(`Atas partisipasi aktif sebagai ${p.roleLabel} dalam kegiatan ${p.category}:`, W / 2, 636 + yShift);
+
+        ctx.fillStyle = txtCol;
+        ctx.font = 'bold 31px sans-serif';
+        const titleLines = wrapCanvasText(ctx, `"${p.eventTitle}"`, W - 300);
+        titleLines.forEach((line, i) => {
+          ctx.fillText(line, W / 2, 686 + yShift + i * 40);
+        });
+
+        const afterTitleY = 686 + yShift + titleLines.length * 40 + 16;
+        ctx.fillStyle = subTxtCol;
+        ctx.font = '24px sans-serif';
+        ctx.fillText(`Diselenggarakan oleh JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung pada ${p.dateRange} (${p.jp})`, W / 2, afterTitleY);
+
+        // QR Code & Verification Text (mengikuti posisi & skala dari Studio)
+        const qrScaleRatio = (Number(p.qrScale || 100)) / 100;
+        const qrBaseX = 135 + Math.round((Number(p.qrOffsetX || 0)) * (W / 1000));
+        const qrBaseY = 930 + Math.round((Number(p.qrOffsetY || 0)) * (W / 1000));
+        const qrSize = Math.round(165 * qrScaleRatio);
+        const qrPad = Math.round(10 * qrScaleRatio);
+
+        if (p.qrDataUrl) {
+          const qrImg = new Image();
+          qrImg.onload = () => {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
+            ctx.strokeStyle = '#CBD5E1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
+            ctx.drawImage(qrImg, qrBaseX, qrBaseY, qrSize, qrSize);
+
+            const textStartX = qrBaseX + qrSize + Math.round(24 * qrScaleRatio);
+            if (p.showScanBg !== false) {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+              ctx.fillRect(textStartX - 10, qrBaseY + Math.round(8 * qrScaleRatio), Math.round(455 * qrScaleRatio), Math.round(136 * qrScaleRatio));
+            }
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#0B1F3A';
+            ctx.font = `bold ${Math.round(21 * qrScaleRatio)}px sans-serif`;
+            ctx.fillText('Scan Barcode Verifikasi Keaslian', textStartX, qrBaseY + Math.round(38 * qrScaleRatio));
+            ctx.fillStyle = '#475569';
+            ctx.font = `${Math.round(18 * qrScaleRatio)}px sans-serif`;
+            ctx.fillText('JSIT Wilayah Lampung', textStartX, qrBaseY + Math.round(70 * qrScaleRatio));
+            ctx.fillText('Tim Diklat Wilayah Lampung', textStartX, qrBaseY + Math.round(98 * qrScaleRatio));
+            ctx.fillStyle = '#1D4ED8';
+            ctx.font = `bold ${Math.round(18 * qrScaleRatio)}px monospace`;
+            ctx.fillText(`Kode: ${p.verCode}`, textStartX, qrBaseY + Math.round(128 * qrScaleRatio));
+
+            finishSignerAndDownload();
+          };
+          qrImg.src = p.qrDataUrl;
+        } else {
+          finishSignerAndDownload();
+        }
+
+        function finishSignerAndDownload() {
+          const sScaleRatio = (Number(p.signerScale || 100)) / 100;
+          const signerX = (W - 380) + Math.round((Number(p.signerOffsetX || 0)) * (W / 1000));
+          const signerTopY = 945 + Math.round((Number(p.signerOffsetY || 0)) * (W / 1000));
+
+          ctx.textAlign = 'center';
+          if (p.showIssuedDate !== false) {
+            ctx.fillStyle = p.customTemplateImg ? txtCol : '#475569';
+            ctx.font = `${Math.round(21 * sScaleRatio)}px sans-serif`;
+            ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, signerX, signerTopY);
+          }
+
+          ctx.fillStyle = txtCol;
+          ctx.font = `bold ${Math.round(23 * sScaleRatio)}px sans-serif`;
+          ctx.fillText(p.signerTitle, signerX, signerTopY + Math.round(35 * sScaleRatio));
+
+          ctx.fillStyle = '#1E40AF';
+          ctx.font = `italic ${Math.round(18 * sScaleRatio)}px sans-serif`;
+          ctx.fillText('[Ditandatangani secara elektronik]', signerX, signerTopY + Math.round(80 * sScaleRatio));
+
+          ctx.fillStyle = txtCol;
+          ctx.font = `bold ${Math.round(26 * sScaleRatio)}px sans-serif`;
+          ctx.fillText(p.signerName, signerX, signerTopY + Math.round(130 * sScaleRatio));
+
+          const link = document.createElement('a');
+          link.download = `E-Sertifikat-A4-${p.ownerName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          showToast('File E-Sertifikat A4 Landscape (PNG) berhasil diunduh!');
+        }
+      }
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, W, H);
+
+      if (p.customTemplateImg) {
+        const bgImg = new Image();
+        bgImg.onload = () => {
+          ctx.drawImage(bgImg, 0, 0, W, H);
+          renderCanvasBody();
+        };
+        bgImg.onerror = () => renderCanvasBody();
+        bgImg.src = p.customTemplateImg;
+      } else {
+        renderCanvasBody();
+      }
+    }
+
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0] || '';
+      for (let i = 1; i < words.length; i++) {
+        const testLine = currentLine + ' ' + words[i];
+        if (ctx.measureText(testLine).width < maxWidth) {
+          currentLine = testLine;
+        } else {
+          lines.push(currentLine);
+          currentLine = words[i];
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    }
+
+    // =========================================================================
+    // GLOBAL CERTIFICATE SEARCH MODAL
+    // =========================================================================
+    function openGlobalCertModal() {
+      document.getElementById('global-cert-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeGlobalCertModal() {
+      document.getElementById('global-cert-modal').classList.add('hidden');
+    }
+
+    function searchGlobalCertificates(e) {
+      e.preventDefault();
+      const q = document.getElementById('global-cert-input').value.trim().toLowerCase();
+      const qDigits = normalizePhone(q);
+      const resBox = document.getElementById('global-cert-results');
+      const matches = [];
+
+      eventsData.forEach(ev => {
+        (ev.attendees || []).forEach((att, idx) => {
+          const nameMatch = att.name.toLowerCase().includes(q);
+          const aDigits = normalizePhone(att.phone);
+          const phoneMatch = qDigits.length >= 6 && aDigits.includes(qDigits);
+          if (nameMatch || phoneMatch) {
+            const seq = String((ev.attendees || []).length - idx).padStart(3, '0');
+            const released = isCertificateReleased(ev);
+            matches.push({
+              eventId: ev.id,
+              eventTitle: ev.title,
+              released,
+              releaseLabel: formatReleaseDateTimeIndo(ev),
+              ownerName: att.name,
+              school: att.school,
+              certNumber: `${seq}/${(ev.certificate && ev.certificate.prefix) || 'SERT/JSIT-LPG/2026'}`
+            });
+          }
+        });
+      });
+
+      if (matches.length === 0) {
+        resBox.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-2xl">Tidak ditemukan riwayat kehadiran dengan nama/nomor tersebut. Pastikan Anda sudah mengisi daftar hadir pada kegiatan terkait.</div>`;
+        return;
+      }
+
+      resBox.innerHTML = matches.map(m => `
+        <div class="p-4 rounded-2xl border border-blue-100 bg-blue-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[11px] font-bold ${m.released ? 'text-emerald-700' : 'text-amber-700'}">${m.released ? m.certNumber : 'Rilis: ' + m.releaseLabel}</span>
+            <h5 class="font-bold text-sm text-navy-900">${m.ownerName}</h5>
+            <p class="text-xs text-slate-600 line-clamp-1">${m.eventTitle}</p>
+          </div>
+          <button onclick="openCertFromGlobal('${m.eventId}', '${m.ownerName.replace(/'/g, "\\'")}')" class="px-3.5 py-2 rounded-xl ${m.released ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-amber-100 text-amber-900'} text-xs font-bold shrink-0">
+            ${m.released ? 'Buka & Unduh' : 'Lihat Jadwal Rilis'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openCertFromGlobal(eventId, ownerName) {
+      closeGlobalCertModal();
+      openEventRoom(eventId, 'sertifikat');
+      const ev = eventsData.find(item => item.id === eventId);
+      if (ev && isCertificateReleased(ev)) {
+        document.getElementById('cert-search-query').value = ownerName;
+        verifyAndGenerateCert(new Event('submit'));
+      }
+    }
+
+    // =========================================================================
+    // BARCODE VERIFICATION LANDING PAGE (#verifikasi?cert=...&v=...)
+    // =========================================================================
+    function checkVerificationHash() {
+      const hash = window.location.hash || '';
+      if (!hash.startsWith('#verifikasi')) return;
+
+      const queryString = hash.split('?')[1] || '';
+      const params = new URLSearchParams(queryString);
+      const encoded = params.get('v');
+      const certCodeParam = params.get('cert') || '';
+
+      let payload = null;
+      if (encoded) {
+        try {
+          payload = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+        } catch (e) {
+          payload = null;
+        }
+      }
+
+      if (!payload && certCodeParam) {
+        for (const ev of eventsData) {
+          const list = ev.attendees || [];
+          for (let i = 0; i < list.length; i++) {
+            const seq = String(list.length - i).padStart(3, '0');
+            const code = `JSIT-${ev.id.slice(-3).toUpperCase()}-${seq}`;
+            if (code === certCodeParam) {
+              const certCfg = ev.certificate || {};
+              payload = {
+                no: `${seq}/${certCfg.prefix || 'SERT/JSIT-LPG/2026'}`,
+                kab: list[i].region || 'Provinsi Lampung',
+                tgl: formatDateIndo(ev.dateStart, ev.dateEnd),
+                ins: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+                ttd: `${certCfg.signerName || settingsData.signerName} - ${certCfg.signerTitle || settingsData.signerTitle}`,
+                hal: ev.title,
+                nama: list[i].name,
+                sek: list[i].school || '-',
+                sts: certCfg.roleLabel || 'Peserta',
+                jp: certCfg.jp || '8 JP',
+                iss: formatDateIndo(ev.dateEnd || ev.dateStart, ''),
+                evId: ev.id,
+                attId: list[i].id,
+                code
+              };
+              break;
+            }
+          }
+          if (payload) break;
+        }
+      }
+
+      activeVerificationPayload = payload;
       document.getElementById('portal-home-view').classList.add('hidden');
       document.getElementById('event-room-page').classList.add('hidden');
-      document.getElementById('certificate-verification-page').classList.remove('hidden');
+      const verPage = document.getElementById('verification-page');
+      verPage.classList.remove('hidden');
 
-      document.getElementById('ver-cert-number').textContent = data.certNumber || '-';
-      document.getElementById('ver-cert-region').textContent = data.region || 'Provinsi Lampung';
-      document.getElementById('ver-cert-date').textContent = data.dateRange || '-';
-      document.getElementById('ver-cert-institution').textContent = data.institution || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung';
-      document.getElementById('ver-cert-signer').textContent = data.signerFull || `${data.signerName || appSettings.signerName} - ${data.signerTitle || appSettings.signerTitle}`;
-      document.getElementById('ver-cert-subject').textContent = data.eventTitle || '-';
-      document.getElementById('ver-cert-owner').textContent = `${(data.ownerName || '').toUpperCase()} - ${data.school || '-'}`;
-      document.getElementById('ver-cert-role-status').textContent = `Status sebagai ${data.role || 'Peserta'}`;
-
-      activeCertPayload = {
-        eventId: data.eventId || '',
-        attendeeId: data.attendeeId || '',
-        certNumber: data.certNumber,
-        verCode: data.verCode || 'VERIFIED',
-        ownerName: data.ownerName,
-        school: data.school,
-        region: data.region || 'Provinsi Lampung',
-        role: data.role || 'Peserta',
-        category: data.category || 'Kegiatan',
-        eventTitle: data.eventTitle,
-        dateRange: data.dateRange,
-        location: data.location || 'Provinsi Lampung',
-        jp: data.jp || '8 JP',
-        issuedDate: data.issuedDate || data.dateRange,
-        signerName: data.signerName || appSettings.signerName,
-        signerTitle: data.signerTitle || appSettings.signerTitle,
-        themeColor: data.themeColor || '#1E3A8A',
-        customTemplateImg: data.customTemplateImg || '',
-        hideDefaultChrome: data.hideDefaultChrome !== false,
-        textColor: data.textColor || '#0B1F3A',
-        offsetY: data.offsetY || 0,
-        qrOffsetX: data.qrOffsetX || 0,
-        qrOffsetY: data.qrOffsetY || 0,
-        qrScale: data.qrScale || 100,
-        showScanBg: data.showScanBg !== false,
-        signerOffsetX: data.signerOffsetX || 0,
-        signerOffsetY: data.signerOffsetY || 0,
-        signerScale: data.signerScale || 100,
-        showIssuedDate: data.showIssuedDate !== false,
-        verificationUrl: window.location.href
-      };
-
+      renderVerificationPage(payload);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (window.lucide) lucide.createIcons();
     }
 
     function refreshVerificationPageFromLiveEvents() {
-      if (!pendingHashCertData) return;
-      const ev = eventsData.find(e => e.id === pendingHashCertData.eventId);
-      if (!ev) return;
+      const verPage = document.getElementById('verification-page');
+      if (!verPage || verPage.classList.contains('hidden') || !activeVerificationPayload) return;
+      renderVerificationPage(activeVerificationPayload);
+      if (window.lucide) lucide.createIcons();
+    }
 
-      const certCfg = ev.certificate || {};
-      const attendees = ev.attendees || [];
-      const foundIndex = attendees.findIndex(a => a.id === pendingHashCertData.attendeeId || a.name === pendingHashCertData.ownerName);
-      const attendee = foundIndex !== -1 ? attendees[foundIndex] : null;
+    function renderVerificationPage(payload) {
+      const body = document.getElementById('verification-result-body');
+      if (!body) return;
 
-      const updatedData = {
-        ...pendingHashCertData,
-        eventTitle: ev.title,
-        category: ev.category,
-        location: ev.location,
-        dateRange: formatDateIndo(ev.dateStart, ev.dateEnd),
-        issuedDate: formatDateIndo(ev.dateEnd || ev.dateStart, ''),
-        role: certCfg.roleLabel || pendingHashCertData.role || 'Peserta',
-        jp: certCfg.jp || pendingHashCertData.jp || '8 JP',
-        signerName: certCfg.signerName || appSettings.signerName,
-        signerTitle: certCfg.signerTitle || appSettings.signerTitle,
-        signerFull: `${certCfg.signerName || appSettings.signerName} - ${certCfg.signerTitle || appSettings.signerTitle}`,
+      if (!payload) {
+        body.innerHTML = `
+          <div class="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm space-y-2">
+            <strong class="block text-base">Data Verifikasi Tidak Valid atau Rusak</strong>
+            <p>Tautan verifikasi barcode tidak lengkap. Pastikan Anda memindai QR Code langsung dari dokumen E-Sertifikat resmi JSIT Wilayah Lampung.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let matchedEv = null;
+      let matchedAtt = null;
+      let liveSeq = '';
+      if (payload.evId) {
+        matchedEv = eventsData.find(e => e.id === payload.evId) || null;
+      }
+      if (!matchedEv && payload.hal) {
+        matchedEv = eventsData.find(e => (e.title || '').trim() === (payload.hal || '').trim()) || null;
+      }
+      if (matchedEv) {
+        const list = matchedEv.attendees || [];
+        let idx = payload.attId ? list.findIndex(a => a.id === payload.attId) : -1;
+        if (idx === -1 && payload.nama) {
+          idx = list.findIndex(a => (a.name || '').trim().toLowerCase() === (payload.nama || '').trim().toLowerCase());
+        }
+        if (idx !== -1) {
+          matchedAtt = list[idx];
+          liveSeq = String(list.length - idx).padStart(3, '0');
+        }
+      }
+
+      const certCfg = (matchedEv && matchedEv.certificate) ? matchedEv.certificate : {};
+      const liveCertNo = (matchedEv && liveSeq)
+        ? `${liveSeq}/${certCfg.prefix || 'SERT/JSIT-LPG/2026'}`
+        : (payload.no || '-');
+      const liveOwner = matchedAtt ? matchedAtt.name : (payload.nama || '-');
+      const liveSchool = matchedAtt ? (matchedAtt.school || '-') : (payload.sek || '-');
+      const liveKab = matchedAtt ? (matchedAtt.region || payload.kab || 'Provinsi Lampung') : (payload.kab || 'Provinsi Lampung');
+      const liveEventTitle = matchedEv ? matchedEv.title : (payload.hal || '-');
+      const liveDateRange = matchedEv ? formatDateIndo(matchedEv.dateStart, matchedEv.dateEnd) : (payload.tgl || '-');
+      const liveRole = certCfg.roleLabel || payload.sts || 'Peserta';
+      const liveJp = certCfg.jp || payload.jp || '8 JP';
+      const liveSignerName = certCfg.signerName || settingsData.signerName || 'Muslimin, M.Pd.I.,Gr.';
+      const liveSignerTitle = certCfg.signerTitle || settingsData.signerTitle || 'Ketua JSIT Indonesia Wilayah Lampung';
+      const liveSignerFull = (matchedEv || !payload.ttd) ? `${liveSignerName} - ${liveSignerTitle}` : payload.ttd;
+      const liveIssuedDate = matchedEv ? formatDateIndo(matchedEv.dateEnd || matchedEv.dateStart, '') : (payload.iss || liveDateRange);
+      const isReleased = matchedEv ? isCertificateReleased(matchedEv) : true;
+      const releaseScheduleLabel = matchedEv ? formatReleaseDateTimeIndo(matchedEv) : '-';
+
+      const statusBanner = isReleased
+        ? `
+          <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <i data-lucide="shield-check" class="w-6 h-6 text-emerald-600 shrink-0 mt-0.5"></i>
+              <div class="text-xs sm:text-sm text-emerald-900">
+                <strong class="block text-emerald-800 text-sm sm:text-base">DOKUMEN ASLI & TERVERIFIKASI SAH (SUDAH RILIS)</strong>
+                <span>Data sertifikat di bawah ini tercatat sah pada sistem informasi <strong>JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</strong>.</span>
+              </div>
+            </div>
+            <button type="button" onclick="downloadVerifiedCertificateFromPage()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 shadow-xs transition">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Unduh E-Sertifikat (PNG)</span>
+            </button>
+          </div>
+        `
+        : `
+          <div class="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+            <i data-lucide="clock" class="w-6 h-6 text-amber-600 shrink-0 mt-0.5"></i>
+            <div class="text-xs sm:text-sm text-amber-900">
+              <strong class="block text-amber-800 text-sm sm:text-base">TERDAFTAR SEBAGAI CALON PEMILIK SERTIFIKAT (MENUNGGU RILIS)</strong>
+              <span>Peserta tercatat hadir pada kegiatan ini, namun E-Sertifikat baru dapat diunduh setelah jadwal rilis: <strong>${releaseScheduleLabel}</strong>.</span>
+            </div>
+          </div>
+        `;
+
+      body.innerHTML = `
+        ${statusBanner}
+
+        <div class="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100 text-xs sm:text-sm">
+          <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
+            <span class="font-semibold text-slate-500">Nomor Sertifikat</span>
+            <span class="sm:col-span-2 font-extrabold text-navy-900 font-mono">${liveCertNo}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4">
+            <span class="font-semibold text-slate-500">Kode Validasi</span>
+            <span class="sm:col-span-2 font-bold text-blue-700 font-mono">${payload.code || '-'}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
+            <span class="font-semibold text-slate-500">Pemilik Sertifikat</span>
+            <span class="sm:col-span-2 font-extrabold text-navy-900 text-base">${liveOwner}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4">
+            <span class="font-semibold text-slate-500">Asal Sekolah / Lembaga</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${liveSchool}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
+            <span class="font-semibold text-slate-500">Kabupaten / Kota</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${liveKab}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4">
+            <span class="font-semibold text-slate-500">Perihal Kegiatan</span>
+            <span class="sm:col-span-2 font-bold text-navy-900">${liveEventTitle}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
+            <span class="font-semibold text-slate-500">Tanggal Pelaksanaan</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${liveDateRange}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4">
+            <span class="font-semibold text-slate-500">Status Kepesertaan & JP</span>
+            <span class="sm:col-span-2 font-bold text-blue-700">${liveRole} (${liveJp})</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4 bg-slate-50/70">
+            <span class="font-semibold text-slate-500">Instansi Penyelenggara</span>
+            <span class="sm:col-span-2 font-semibold text-slate-800">${payload.ins || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung'}</span>
+          </div>
+          <div class="grid sm:grid-cols-3 p-4">
+            <span class="font-semibold text-slate-500">Penandatangan Sah</span>
+            <span class="sm:col-span-2 font-bold text-navy-900">${liveSignerFull}</span>
+          </div>
+        </div>
+      `;
+
+      window.__verifiedCertReadyData = isReleased ? {
+        certNumber: liveCertNo,
+        verCode: payload.code || 'JSIT-VERIFIED',
+        ownerName: liveOwner,
+        school: liveSchool,
+        region: liveKab,
+        roleLabel: liveRole,
+        category: matchedEv ? matchedEv.category : 'Kegiatan',
+        eventTitle: liveEventTitle,
+        eventId: matchedEv ? matchedEv.id : (payload.evId || ''),
+        attendeeId: matchedAtt ? matchedAtt.id : (payload.attId || ''),
+        dateRange: liveDateRange,
+        jp: liveJp,
+        issuedDate: liveIssuedDate,
+        signerName: liveSignerName,
+        signerTitle: liveSignerTitle,
         themeColor: certCfg.themeColor || '#1E3A8A',
         customTemplateImg: certCfg.customTemplateImg || '',
         hideDefaultChrome: certCfg.hideDefaultChrome !== false,
+        showCertHeading: certCfg.showCertHeading === true,
         textColor: certCfg.textColor || '#0B1F3A',
         offsetY: certCfg.offsetY || 0,
         qrOffsetX: certCfg.qrOffsetX || 0,
@@ -2364,441 +2464,49 @@ const DEFAULT_EVENTS = [
         signerOffsetY: certCfg.signerOffsetY || 0,
         signerScale: certCfg.signerScale || 100,
         showIssuedDate: certCfg.showIssuedDate !== false,
-        ownerName: attendee ? attendee.name : pendingHashCertData.ownerName,
-        school: attendee ? attendee.school : pendingHashCertData.school,
-        region: attendee ? attendee.region : pendingHashCertData.region
-      };
-      renderVerificationPage(updatedData);
+        verifyUrl: window.location.href
+      } : null;
     }
 
-    function openVerificationPageFromHash() {
-      const hash = window.location.hash || '';
-      if (!hash.startsWith('#verifikasi')) return false;
-
-      const qIndex = hash.indexOf('?');
-      if (qIndex === -1) return false;
-      const params = new URLSearchParams(hash.slice(qIndex + 1));
-      const vEncoded = params.get('v');
-      const certParam = params.get('cert') || '';
-
-      if (vEncoded) {
-        try {
-          const decodedJson = decodeURIComponent(escape(atob(vEncoded)));
-          const obj = JSON.parse(decodedJson);
-          const ttdParts = (obj.ttd || '').split(' - ');
-
-          pendingHashCertData = {
-            eventId: obj.evId || '',
-            attendeeId: obj.attId || '',
-            certNumber: obj.no || certParam,
-            verCode: obj.code || certParam,
-            region: obj.kab || 'Provinsi Lampung',
-            dateRange: obj.tgl || '-',
-            institution: obj.ins || 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
-            signerFull: obj.ttd || `${appSettings.signerName} - ${appSettings.signerTitle}`,
-            signerName: ttdParts[0] || appSettings.signerName,
-            signerTitle: ttdParts.slice(1).join(' - ') || appSettings.signerTitle,
-            eventTitle: obj.hal || 'Kegiatan JSIT Lampung',
-            ownerName: obj.nama || 'Peserta Terverifikasi',
-            school: obj.sek || '-',
-            role: obj.sts || 'Peserta',
-            jp: obj.jp || '8 JP',
-            issuedDate: obj.iss || obj.tgl || '-'
-          };
-          renderVerificationPage(pendingHashCertData);
-          refreshVerificationPageFromLiveEvents();
-          return true;
-        } catch (err) {
-          console.error('Gagal decode QR verifikasi:', err);
-        }
-      }
-      return false;
-    }
-
-    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
-      const words = text.split(' ');
-      let line = '';
-      let currY = y;
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0) {
-          ctx.fillText(line.trim(), x, currY);
-          line = words[n] + ' ';
-          currY += lineHeight;
-        } else {
-          line = testLine;
-        }
-      }
-      ctx.fillText(line.trim(), x, currY);
-      return currY;
-    }
-
-    // GENERATE & DOWNLOAD A4 LANDSCAPE CERTIFICATE PNG (1754 x 1240 px)
-    function downloadCertificatePNG() {
-      if (!activeCertPayload) return;
-      const p = activeCertPayload;
-      const canvas = document.getElementById('hd-cert-canvas');
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width;
-      const H = canvas.height;
-
-      const drawForegroundAndExport = (bgImg) => {
-        ctx.clearRect(0, 0, W, H);
-
-        if (bgImg) {
-          ctx.drawImage(bgImg, 0, 0, W, H);
-        } else {
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, W, H);
-
-          const gradTL = ctx.createLinearGradient(0, 0, 350, 350);
-          gradTL.addColorStop(0, 'rgba(30, 58, 138, 0.14)');
-          gradTL.addColorStop(1, 'rgba(14, 165, 233, 0)');
-          ctx.fillStyle = gradTL;
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(380, 0);
-          ctx.arc(0, 0, 380, 0, Math.PI / 2);
-          ctx.closePath();
-          ctx.fill();
-
-          const gradBR = ctx.createLinearGradient(W, H, W - 380, H - 380);
-          gradBR.addColorStop(0, 'rgba(217, 119, 6, 0.14)');
-          gradBR.addColorStop(1, 'rgba(30, 58, 138, 0)');
-          ctx.fillStyle = gradBR;
-          ctx.beginPath();
-          ctx.moveTo(W, H);
-          ctx.lineTo(W - 380, H);
-          ctx.arc(W, H, 380, Math.PI, Math.PI * 1.5);
-          ctx.closePath();
-          ctx.fill();
-        }
-
-        if (!bgImg || !p.hideDefaultChrome) {
-          ctx.strokeStyle = p.themeColor;
-          ctx.lineWidth = 14;
-          ctx.strokeRect(42, 42, W - 84, H - 84);
-
-          ctx.strokeStyle = '#D97706';
-          ctx.lineWidth = 4;
-          ctx.strokeRect(66, 66, W - 132, H - 132);
-
-          ctx.fillStyle = '#0B1F3A';
-          ctx.beginPath();
-          ctx.roundRect(W / 2 - 270, 108, 540, 42, 21);
-          ctx.fill();
-
-          ctx.fillStyle = '#FCD34D';
-          ctx.font = 'bold 18px Inter, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU INDONESIA', W / 2, 135);
-
-          ctx.fillStyle = '#0B1F3A';
-          ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
-          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 195);
-        }
-
-        const shiftY = bgImg ? Math.round((p.offsetY || 0) * 2.1) : 0;
-        const primaryTxt = bgImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
-        const bodyTxt = bgImg ? (p.textColor || '#334155') : '#334155';
-
-        ctx.textAlign = 'center';
-        ctx.fillStyle = p.themeColor;
-        ctx.font = '800 76px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText('SERTIFIKAT', W / 2, 295 + shiftY);
-
-        ctx.fillStyle = '#64748B';
-        ctx.font = '600 24px Inter, sans-serif';
-        ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, 340 + shiftY);
-
-        ctx.fillStyle = bodyTxt;
-        ctx.font = '500 26px Inter, sans-serif';
-        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 415 + shiftY);
-
-        ctx.fillStyle = primaryTxt;
-        ctx.font = '800 54px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText(p.ownerName, W / 2, 490 + shiftY);
-
-        const nameWidth = Math.min(ctx.measureText(p.ownerName).width + 100, 1200);
-        ctx.strokeStyle = '#F59E0B';
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.moveTo(W / 2 - nameWidth / 2, 512 + shiftY);
-        ctx.lineTo(W / 2 + nameWidth / 2, 512 + shiftY);
-        ctx.stroke();
-
-        ctx.fillStyle = '#1D4ED8';
-        ctx.font = '700 28px Inter, sans-serif';
-        ctx.fillText(`${p.school} — ${p.region}`, W / 2, 558 + shiftY);
-
-        ctx.fillStyle = bodyTxt;
-        ctx.font = '500 26px Inter, sans-serif';
-        ctx.fillText(`Atas partisipasi aktif sebagai ${p.role} dalam kegiatan ${p.category}:`, W / 2, 630 + shiftY);
-
-        ctx.fillStyle = primaryTxt;
-        ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
-        const nextY = wrapCanvasText(ctx, `"${p.eventTitle}"`, W / 2, 682 + shiftY, 1340, 42);
-
-        ctx.fillStyle = bodyTxt;
-        ctx.font = '500 25px Inter, sans-serif';
-        wrapCanvasText(
-          ctx,
-          `yang diselenggarakan oleh JSIT Wilayah Lampung pada tanggal ${p.dateRange} bertempat di ${p.location} dengan bobot pelatihan setara ${p.jp}.`,
-          W / 2,
-          nextY + 50,
-          1340,
-          36
-        );
-
-        // SIGNER BLOCK (ADJUSTABLE POSITION & SCALE)
-        const signerShiftX = Math.round((Number(p.signerOffsetX || 0) / 1000) * W);
-        const signerShiftY = Math.round((Number(p.signerOffsetY || 0) / 1000) * W);
-        const signerScale = Number(p.signerScale || 100) / 100;
-        const showIssuedDate = p.showIssuedDate !== false;
-
-        const signerCenterX = (W - 450) + signerShiftX;
-        const signerBaseY = 915 + signerShiftY;
-
-        ctx.save();
-        ctx.translate(signerCenterX, signerBaseY);
-        ctx.scale(signerScale, signerScale);
-
-        ctx.textAlign = 'center';
-        if (showIssuedDate) {
-          ctx.fillStyle = primaryTxt;
-          ctx.font = '500 23px Inter, sans-serif';
-          ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, 0, 0);
-        }
-
-        ctx.fillStyle = primaryTxt;
-        ctx.font = '600 23px Inter, sans-serif';
-        ctx.fillText(p.signerTitle, 0, showIssuedDate ? 35 : 15);
-
-        ctx.fillStyle = 'rgba(239, 246, 255, 0.92)';
-        ctx.strokeStyle = '#93C5FD';
-        ctx.lineWidth = 2;
-        const badgeY = showIssuedDate ? 65 : 48;
-        ctx.beginPath();
-        ctx.roundRect(-190, badgeY, 380, 44, 10);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = '#1E40AF';
-        ctx.font = 'italic 600 21px Inter, sans-serif';
-        ctx.fillText('TTD Elektronik Terverifikasi', 0, badgeY + 29);
-
-        ctx.fillStyle = primaryTxt;
-        ctx.font = '800 26px "Plus Jakarta Sans", sans-serif';
-        const sigNameY = badgeY + 84;
-        ctx.fillText(p.signerName, 0, sigNameY);
-
-        const sigWidth = ctx.measureText(p.signerName).width;
-        ctx.strokeStyle = primaryTxt;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.moveTo(-sigWidth / 2, sigNameY + 7);
-        ctx.lineTo(sigWidth / 2, sigNameY + 7);
-        ctx.stroke();
-        ctx.restore();
-
-        // QR CODE & SCAN VERIFICATION TEXT BLOCK (ADJUSTABLE POSITION & SCALE)
-        const qrShiftX = Math.round((Number(p.qrOffsetX || 0) / 1000) * W);
-        const qrShiftY = Math.round((Number(p.qrOffsetY || 0) / 1000) * W);
-        const qrScale = Number(p.qrScale || 100) / 100;
-        const showScanBg = p.showScanBg !== false;
-
-        const qrOriginX = 190 + qrShiftX;
-        const qrOriginY = 918 + qrShiftY;
-
-        const finalizeDownload = () => {
-          const link = document.createElement('a');
-          link.download = `E-Sertifikat_${p.ownerName.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          showToast('E-Sertifikat A4 Landscape (PNG) berhasil diunduh!');
-        };
-
-        const qrDataUrl = document.getElementById('cert-qr-img').src;
-        if (qrDataUrl && qrDataUrl.startsWith('data:image')) {
-          const qrImage = new Image();
-          qrImage.onload = function () {
-            ctx.save();
-            ctx.translate(qrOriginX, qrOriginY);
-            ctx.scale(qrScale, qrScale);
-
-            ctx.fillStyle = '#FFFFFF';
-            ctx.strokeStyle = '#CBD5E1';
-            ctx.lineWidth = 3;
-            ctx.fillRect(-6, -6, 186, 186);
-            ctx.strokeRect(-6, -6, 186, 186);
-            ctx.drawImage(qrImage, 0, 0, 174, 174);
-
-            if (showScanBg) {
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-              ctx.beginPath();
-              ctx.roundRect(195, 22, 410, 130, 14);
-              ctx.fill();
-            }
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#0B1F3A';
-            ctx.font = '800 24px Inter, sans-serif';
-            ctx.fillText('Scan Verifikasi', 212, 58);
-
-            ctx.fillStyle = '#1E40AF';
-            ctx.font = '700 21px Inter, sans-serif';
-            ctx.fillText('JSIT Wilayah Lampung', 212, 92);
-
-            ctx.fillStyle = '#475569';
-            ctx.font = '600 19px monospace';
-            ctx.fillText(`Kode: ${p.verCode}`, 212, 126);
-            ctx.restore();
-
-            finalizeDownload();
-          };
-          qrImage.src = qrDataUrl;
-        } else if (window.QRCode) {
-          QRCode.toDataURL(p.verificationUrl || buildVerificationUrl(p), {
-            width: 180,
-            margin: 1,
-            color: { dark: '#0B1F3A', light: '#FFFFFF' }
-          }, function (err, genUrl) {
-            if (!err && genUrl) {
-              document.getElementById('cert-qr-img').src = genUrl;
-              const qrImage = new Image();
-              qrImage.onload = function () {
-                ctx.save();
-                ctx.translate(qrOriginX, qrOriginY);
-                ctx.scale(qrScale, qrScale);
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.strokeStyle = '#CBD5E1';
-                ctx.lineWidth = 3;
-                ctx.fillRect(-6, -6, 186, 186);
-                ctx.strokeRect(-6, -6, 186, 186);
-                ctx.drawImage(qrImage, 0, 0, 174, 174);
-
-                if (showScanBg) {
-                  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-                  ctx.beginPath();
-                  ctx.roundRect(195, 22, 410, 130, 14);
-                  ctx.fill();
-                }
-
-                ctx.textAlign = 'left';
-                ctx.fillStyle = '#0B1F3A';
-                ctx.font = '800 24px Inter, sans-serif';
-                ctx.fillText('Scan Verifikasi', 212, 58);
-
-                ctx.fillStyle = '#1E40AF';
-                ctx.font = '700 21px Inter, sans-serif';
-                ctx.fillText('JSIT Wilayah Lampung', 212, 92);
-
-                ctx.fillStyle = '#475569';
-                ctx.font = '600 19px monospace';
-                ctx.fillText(`Kode: ${p.verCode}`, 212, 126);
-                ctx.restore();
-
-                finalizeDownload();
-              };
-              qrImage.src = genUrl;
-            } else {
-              finalizeDownload();
-            }
-          });
-        } else {
-          finalizeDownload();
-        }
-      };
-
-      if (p.customTemplateImg) {
-        const bgImage = new Image();
-        bgImage.onload = () => drawForegroundAndExport(bgImage);
-        bgImage.onerror = () => drawForegroundAndExport(null);
-        bgImage.src = p.customTemplateImg;
-      } else {
-        drawForegroundAndExport(null);
-      }
-    }
-
-    // GLOBAL CERTIFICATE SEARCH
-    function openGlobalCertModal() {
-      document.getElementById('global-cert-modal').classList.remove('hidden');
-      document.getElementById('global-cert-query').focus();
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeGlobalCertModal() {
-      document.getElementById('global-cert-modal').classList.add('hidden');
-    }
-
-    function searchGlobalCertificates() {
-      const q = document.getElementById('global-cert-query').value.trim().toLowerCase();
-      const resContainer = document.getElementById('global-cert-results');
-      if (q.length < 3) {
-        resContainer.innerHTML = `<p class="text-xs text-rose-600 text-center py-4 font-semibold">Masukkan minimal 3 huruf nama atau nomor HP.</p>`;
-        return;
-      }
-
-      const matches = [];
-      eventsData.forEach(ev => {
-        (ev.attendees || []).forEach(att => {
-          if (att.name.toLowerCase().includes(q) || (att.phone && att.phone.includes(q))) {
-            matches.push({ event: ev, attendee: att, released: isCertificateReleased(ev) });
+    function downloadVerifiedCertificateFromPage() {
+      const data = window.__verifiedCertReadyData;
+      if (!data) return;
+      activeCertPayload = { ...data };
+      if (window.QRCode) {
+        QRCode.toDataURL(data.verifyUrl, { width: 220, margin: 1, color: { dark: '#0B1F3A', light: '#FFFFFF' } }, (err, url) => {
+          if (!err && url) {
+            activeCertPayload.qrDataUrl = url;
           }
+          downloadCertificatePNG();
         });
-      });
-
-      if (matches.length === 0) {
-        resContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Tidak ditemukan data kehadiran dengan kata kunci tersebut.</p>`;
-        return;
+      } else {
+        downloadCertificatePNG();
       }
-
-      resContainer.innerHTML = matches.map(m => `
-        <div class="p-3.5 rounded-xl border border-blue-100 bg-blue-50/40 flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <span class="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold">${m.event.category}</span>
-            <p class="font-bold text-xs text-navy-900 mt-1 truncate">${m.attendee.name}</p>
-            <p class="text-[11px] text-slate-600 truncate">${m.event.title}</p>
-          </div>
-          ${m.released ? `
-            <button onclick="jumpToCert('${m.event.id}', '${m.attendee.name.replace(/'/g, "\\'")}')" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0">
-              Buka Sertifikat
-            </button>
-          ` : `
-            <span class="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-bold shrink-0">
-              Menunggu Jam Berakhir
-            </span>
-          `}
-        </div>
-      `).join('');
     }
 
-    function jumpToCert(eventId, name) {
-      closeGlobalCertModal();
-      openEventRoom(eventId, 'sertifikat');
-      document.getElementById('cert-lookup-input').value = name;
-      verifyAndGenerateCert();
+    function closeVerificationPage() {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      document.getElementById('verification-page').classList.add('hidden');
+      document.getElementById('portal-home-view').classList.remove('hidden');
     }
 
     function showToast(msg) {
-      const toast = document.getElementById('toast');
+      const toast = document.getElementById('toast-notification');
       document.getElementById('toast-message').textContent = msg;
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3500);
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
     }
 
-    window.addEventListener('hashchange', () => {
-      if (!openVerificationPageFromHash()) {
-        if (!activeEventId) backToCatalog();
+    window.addEventListener('hashchange', checkVerificationHash);
+    window.addEventListener('resize', () => {
+      if (activeCertPayload && !document.getElementById('cert-preview-wrapper').classList.contains('hidden')) {
+        applyCertificateLayoutStyles(activeCertPayload);
       }
     });
-
     document.addEventListener('DOMContentLoaded', () => {
-      initRegionDropdown();
-      loadPortalData();
-      openVerificationPageFromHash();
+      initApp();
       if (window.lucide) lucide.createIcons();
     });
   </script>

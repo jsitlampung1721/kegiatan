@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Admin Lengkap — Manajemen Kegiatan & E-Sertifikat JSIT Lampung</title>
+  <title>Panel Admin Multiuser — Manajemen Kegiatan & E-Sertifikat JSIT Lampung</title>
   <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" />
   <link rel="shortcut icon" type="image/png" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" />
   <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" />
@@ -59,37 +59,61 @@
 
   <!-- LOGIN SCREEN -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-800">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-blue-100 p-7 sm:p-8 space-y-6">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-blue-100 p-7 sm:p-8 space-y-5">
       <div class="text-center space-y-2">
         <div class="w-16 h-16 rounded-2xl bg-white border border-blue-200 p-1.5 flex items-center justify-center mx-auto shadow-lg overflow-hidden">
           <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </div>
-        <h1 class="font-display font-extrabold text-2xl text-navy-900">Portal Admin JSIT Lampung</h1>
+        <h1 class="font-display font-extrabold text-2xl text-navy-900">Portal Admin Multiuser</h1>
         <p class="text-xs text-slate-500">Manajemen Kegiatan, Daftar Hadir, Flyer, Materi, Rekaman & E-Sertifikat</p>
         <div id="login-firebase-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600">
           Memeriksa koneksi Firebase...
         </div>
       </div>
 
-      <!-- FORM LOGIN FIREBASE AUTH (EMAIL & PASSWORD) -->
+      <!-- FORM LOGIN MULTIUSER (EMAIL & PASSWORD) -->
       <form id="firebase-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div id="login-email-group">
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Admin Firebase</label>
-          <input type="email" id="admin-email-input" placeholder="admin@jsitlampung.or.id" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Akun Pengelola / Panitia</label>
+          <input type="email" id="admin-email-input" required placeholder="nama@jsitlampung.or.id" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Pengelola</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
           <input type="password" id="admin-password-input" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
-          <p id="login-hint-text" class="text-[11px] text-slate-500 mt-1.5">Gunakan akun Email & Kata Sandi yang telah dibuat di Firebase Authentication.</p>
+          <p id="login-hint-text" class="text-[11px] text-slate-500 mt-1.5">Masuk menggunakan email dan kata sandi sesuai peran akses Anda (Super Admin, Admin Kegiatan, Operator, atau Panitia).</p>
         </div>
+
+        <!-- Quick Demo Accounts Box (Hanya Tampil di Mode Lokal) -->
+        <div id="local-demo-accounts" class="hidden p-3 rounded-xl bg-blue-50/80 border border-blue-200 space-y-2">
+          <p class="text-[11px] font-bold text-navy-900">Akun Uji Coba Multiuser (Mode Lokal):</p>
+          <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+            <button type="button" onclick="fillDemoLogin('superadmin@jsitlampung.or.id', 'jsitlampung2026')" class="p-1.5 rounded-lg bg-white hover:bg-blue-100 border border-blue-200 text-left transition">
+              <strong class="block text-blue-900">Super Admin</strong>
+              <span class="text-slate-500 truncate block">superadmin@...</span>
+            </button>
+            <button type="button" onclick="fillDemoLogin('admin@jsitlampung.or.id', 'admin123')" class="p-1.5 rounded-lg bg-white hover:bg-blue-100 border border-blue-200 text-left transition">
+              <strong class="block text-indigo-800">Admin Kegiatan</strong>
+              <span class="text-slate-500 truncate block">admin@...</span>
+            </button>
+            <button type="button" onclick="fillDemoLogin('operator@jsitlampung.or.id', 'operator123')" class="p-1.5 rounded-lg bg-white hover:bg-blue-100 border border-blue-200 text-left transition">
+              <strong class="block text-emerald-800">Operator Absensi</strong>
+              <span class="text-slate-500 truncate block">operator@...</span>
+            </button>
+            <button type="button" onclick="fillDemoLogin('panitia@jsitlampung.or.id', 'panitia123')" class="p-1.5 rounded-lg bg-white hover:bg-blue-100 border border-blue-200 text-left transition">
+              <strong class="block text-slate-700">Panitia (Viewer)</strong>
+              <span class="text-slate-500 truncate block">panitia@...</span>
+            </button>
+          </div>
+        </div>
+
         <p id="login-error-msg" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl"></p>
         <button type="submit" id="btn-login-submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
-          Masuk ke Ruang Kerja Admin &rarr;
+          Masuk ke Ruang Kerja &rarr;
         </button>
       </form>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <a href="index.html" class="text-blue-600 hover:underline font-semibold">&larr; Kembali ke Portal Peserta (index.html)</a>
+        <a href="index.html" class="text-blue-600 hover:underline font-semibold">&larr; Portal Peserta (index.html)</a>
         <span class="text-slate-400">JSIT Lampung</span>
       </div>
     </div>
@@ -115,10 +139,19 @@
         </div>
 
         <div class="p-3">
-          <div id="sidebar-cloud-status" class="mx-2 mb-3 px-3 py-2 rounded-xl bg-blue-900/40 border border-blue-800/60 text-[11px] flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-sky-200 font-semibold truncate" id="sidebar-cloud-text">Firebase Terhubung</span>
+          <!-- Active User Profile & Role Badge -->
+          <div class="mx-2 mb-3 p-3 rounded-xl bg-blue-900/40 border border-blue-800/60 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-extrabold text-white truncate" id="sidebar-user-name">Pengelola</span>
+              <span id="sidebar-user-role-badge" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-sky-400 text-navy-950 shrink-0">Super Admin</span>
+            </div>
+            <p class="text-[10px] text-blue-200/80 truncate" id="sidebar-user-email">-</p>
+            <div class="pt-1 border-t border-blue-800/60 flex items-center gap-1.5 text-[10px]">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-sky-200 font-semibold truncate" id="sidebar-cloud-text">Firebase Terhubung</span>
+            </div>
           </div>
+
           <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-blue-400/70 mb-2 hidden lg:block">Menu Utama Pengelola</p>
           <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1">
             <button onclick="switchTab('kegiatan')" id="nav-kegiatan" class="nav-btn nav-active flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left whitespace-nowrap transition">
@@ -138,6 +171,9 @@
             </button>
             <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 text-left whitespace-nowrap transition">
               <span>6. Pengaturan & TTD</span>
+            </button>
+            <button onclick="switchTab('users')" id="nav-users" class="nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 text-left whitespace-nowrap transition">
+              <span>7. Multiuser & Hak Akses</span>
             </button>
           </nav>
         </div>
@@ -181,13 +217,13 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Upload Flyer</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan (tampil di kolom Narasumber & Fasilitator portal), dan kelola sub-fitur setiap kegiatan secara real-time di Firebase.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan, dan kelola sub-fitur setiap kegiatan sesuai hak akses akun Anda.</p>
           </div>
           <div class="flex flex-wrap gap-2 shrink-0">
             <button onclick="seedDefaultEventsToCloud()" id="btn-seed-cloud" class="hidden px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition">
               + Muat 4 Kegiatan Contoh
             </button>
-            <button onclick="openEventModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition">
+            <button onclick="openEventModal()" id="btn-add-event-main" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition">
               + Tambah Kegiatan Baru
             </button>
           </div>
@@ -221,9 +257,13 @@
           </div>
         </div>
 
+        <div id="studio-readonly-notice" class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
+          Mode Lihat Saja: Peran akun Anda tidak memiliki izin untuk mengubah desain atau pengaturan E-Sertifikat, namun Anda tetap dapat melihat pratinjau dan daftar pemilik sertifikat di bawah.
+        </div>
+
         <div class="grid lg:grid-cols-12 gap-6 items-start">
           <!-- Left Controls -->
-          <form onsubmit="saveCertificateStudio(event)" class="lg:col-span-5 bg-white rounded-2xl border border-blue-100 p-5 sm:p-6 shadow-xs space-y-4">
+          <form onsubmit="saveCertificateStudio(event)" id="studio-cert-form" class="lg:col-span-5 bg-white rounded-2xl border border-blue-100 p-5 sm:p-6 shadow-xs space-y-4">
             <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 space-y-2.5">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-xs uppercase tracking-wider text-navy-900">Jadwal Rilis E-Sertifikat</span>
@@ -253,7 +293,7 @@
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900">297mm × 210mm</span>
               </div>
               <p class="text-[11px] text-slate-600 leading-relaxed">
-                Unggah gambar latar sertifikat ukuran <strong>A4 Landscape</strong> (PNG/JPG). Data peserta & barcode verifikasi akan otomatis ditempatkan di atas template Anda dan tersinkron ke Firebase.
+                Unggah gambar latar sertifikat ukuran <strong>A4 Landscape</strong> (PNG/JPG). Data peserta & barcode verifikasi akan otomatis ditempatkan di atas template Anda dan tersinkron ke halaman peserta.
               </p>
               <div class="flex flex-wrap items-center gap-2">
                 <label class="flex-1 py-2 px-3 rounded-lg bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold text-center cursor-pointer transition">
@@ -282,6 +322,17 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- PENGATURAN JUDUL SERTIFIKAT (DEFAULT DIHILANGKAN & TERSINKRON KE INDEX.HTML) -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <label class="flex items-center gap-2 text-xs font-bold text-navy-900 cursor-pointer">
+                <input type="checkbox" id="studio-show-cert-heading" onchange="updateCertPreviewLive()" class="accent-blue-600 rounded" />
+                <span>Tampilkan teks judul "SERTIFIKAT" bawaan</span>
+              </label>
+              <p class="text-[10px] text-slate-500 leading-snug">
+                Secara default teks <strong>"SERTIFIKAT"</strong> dihilangkan di pratinjau maupun di halaman peserta (<code>index.html</code>) & unduhan PNG agar tidak bertumpuk dengan desain template Anda. Centang hanya jika ingin memunculkannya kembali.
+              </p>
             </div>
 
             <!-- PENGATURAN LETAK QR CODE & BLOK TANDA TANGAN -->
@@ -384,12 +435,12 @@
               <label class="block text-xs font-bold text-slate-700 mb-1">Warna Aksen Sertifikat</label>
               <div class="flex items-center gap-2">
                 <input type="color" id="studio-cert-color" oninput="updateCertPreviewLive()" value="#1E3A8A" class="w-10 h-9 rounded border border-slate-300 cursor-pointer" />
-                <span class="text-xs text-slate-500">Pilih warna tema judul & bingkai</span>
+                <span class="text-xs text-slate-500">Pilih warna tema bingkai & aksen</span>
               </div>
             </div>
 
-            <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
-              Simpan Pengaturan & Posisi ke Firebase
+            <button type="submit" id="btn-save-studio-cert" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
+              Simpan Pengaturan & Sinkronkan ke Peserta
             </button>
           </form>
 
@@ -408,8 +459,8 @@
                 </div>
                 <div id="studio-dynamic-block" class="flex-1 flex flex-col justify-around transition-transform">
                   <div>
-                    <h2 id="prev-cert-heading" class="font-display font-extrabold text-2xl sm:text-3xl text-blue-800 tracking-wider">SERTIFIKAT</h2>
-                    <p class="text-[11px] font-semibold text-slate-500" id="prev-cert-num">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
+                    <h2 id="prev-cert-heading" class="hidden font-display font-extrabold text-2xl sm:text-3xl text-blue-800 tracking-wider">SERTIFIKAT</h2>
+                    <p class="text-xs font-bold text-slate-600" id="prev-cert-num">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
                   </div>
                   <div>
                     <p class="text-[11px] text-slate-500" id="prev-label-given">Diberikan dengan hormat kepada:</p>
@@ -456,7 +507,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <input type="text" id="studio-cert-search" oninput="renderStudioCertificateOwners()" placeholder="Cari nama, sekolah, atau no. sertifikat..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs w-full sm:w-64 outline-none focus:border-blue-500" />
-              <button type="button" onclick="exportCertificateOwnersCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
+              <button type="button" id="btn-export-cert-owners" onclick="exportCertificateOwnersCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
                 Export Daftar Sertifikat (CSV)
               </button>
             </div>
@@ -489,13 +540,13 @@
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <select id="att-event-selector" onchange="renderAttendeesPanel()" class="px-3.5 py-2.5 rounded-xl border-2 border-blue-300 bg-blue-50/40 text-xs sm:text-sm font-bold text-navy-900 outline-none max-w-xs"></select>
-            <button onclick="exportCurrentAttendeesCSV()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-xs transition">
+            <button id="btn-export-att-csv" onclick="exportCurrentAttendeesCSV()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-xs transition">
               Export CSV / Excel
             </button>
           </div>
         </div>
 
-        <form onsubmit="handleAddManualAttendee(event)" class="bg-white p-4 rounded-2xl border border-blue-100 grid sm:grid-cols-5 gap-2.5 items-end">
+        <form onsubmit="handleAddManualAttendee(event)" id="form-add-manual-att" class="bg-white p-4 rounded-2xl border border-blue-100 grid sm:grid-cols-5 gap-2.5 items-end">
           <div>
             <label class="block text-[11px] font-bold text-slate-600 mb-1">Nama & Gelar Peserta</label>
             <input type="text" id="quick-att-name" required placeholder="Nama Lengkap & Gelar" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
@@ -559,7 +610,7 @@
         <div class="grid lg:grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">A. Modul & Bahan Tayang (Materi)</h3>
-            <form onsubmit="handleAddMaterial(event)" class="space-y-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
+            <form onsubmit="handleAddMaterial(event)" id="form-add-material" class="space-y-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
               <input type="text" id="res-mat-title" required placeholder="Judul Materi (mis: Slide Narasumber Sesi 1)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
               <div class="grid grid-cols-3 gap-2">
                 <select id="res-mat-type" class="px-2.5 py-2 rounded-lg border border-slate-300 text-xs bg-white">
@@ -581,7 +632,7 @@
 
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">B. Video Rekaman & Dokumentasi</h3>
-            <form onsubmit="handleAddRecording(event)" class="space-y-2.5 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100">
+            <form onsubmit="handleAddRecording(event)" id="form-add-recording" class="space-y-2.5 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100">
               <input type="text" id="res-rec-title" required placeholder="Judul Rekaman (mis: Tayangan Ulang Full Sesi)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
               <div class="grid grid-cols-3 gap-2">
                 <select id="res-rec-platform" class="px-2.5 py-2 rounded-lg border border-slate-300 text-xs bg-white">
@@ -649,7 +700,169 @@
         </form>
       </section>
 
+      <!-- PANEL 7: MANAJEMEN MULTIUSER & PENGATURAN HAK AKSES -->
+      <section id="panel-users" class="admin-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Manajemen Multiuser & Pengaturan Hak Akses</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Tambahkan akun panitia/pengelola baru, tetapkan peran (Super Admin, Admin Kegiatan, Operator Absensi, Panitia Viewer), dan atur izin akses tiap fitur secara spesifik.</p>
+          </div>
+          <button onclick="openUserModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 shrink-0 transition">
+            + Tambah Pengguna Baru
+          </button>
+        </div>
+
+        <!-- Matriks Ringkasan Peran -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div class="bg-white rounded-2xl border border-blue-200 p-4 space-y-1.5 shadow-2xs">
+            <span class="px-2.5 py-0.5 rounded-md bg-navy-900 text-amber-300 text-[10px] font-extrabold uppercase">Super Admin</span>
+            <h3 class="font-bold text-sm text-navy-900">Akses Penuh Sistem</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">Mengelola semua kegiatan, studio sertifikat, daftar hadir, materi, pengaturan TTD, backup cloud, serta akun & hak akses user.</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-indigo-200 p-4 space-y-1.5 shadow-2xs">
+            <span class="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-extrabold uppercase">Admin Kegiatan</span>
+            <h3 class="font-bold text-sm text-navy-900">Pengelola Diklat & Sertifikat</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">Membuat/edit kegiatan & flyer, mengatur desain & jadwal rilis sertifikat, mengelola materi/rekaman, serta daftar hadir.</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-emerald-200 p-4 space-y-1.5 shadow-2xs">
+            <span class="px-2.5 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-extrabold uppercase">Operator Absensi</span>
+            <h3 class="font-bold text-sm text-navy-900">Petugas Presensi & Rekap</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">Menambah peserta hadir manual, memantau daftar pemilik sertifikat, dan mengekspor data CSV tanpa mengubah desain atau kegiatan.</p>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 shadow-2xs">
+            <span class="px-2.5 py-0.5 rounded-md bg-slate-600 text-white text-[10px] font-extrabold uppercase">Panitia (Viewer)</span>
+            <h3 class="font-bold text-sm text-navy-900">Akses Pantau (Read-Only)</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">Melihat statistik kegiatan, daftar hadir peserta, dan progres sertifikat tanpa hak mengubah atau menghapus data.</p>
+          </div>
+        </div>
+
+        <!-- Tabel Daftar Pengguna -->
+        <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
+          <div class="p-4 border-b border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
+            <span class="text-xs font-bold text-navy-900" id="users-count-label">Daftar Akun Terdaftar (0 Pengguna)</span>
+            <input type="text" id="user-search-input" oninput="renderUsersPanel()" placeholder="Cari nama, email, jabatan, atau peran..." class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs w-full sm:w-72 outline-none focus:border-blue-500" />
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-blue-50/80 border-b border-blue-100 text-navy-900 font-bold">
+                <tr>
+                  <th class="p-3.5">No</th>
+                  <th class="p-3.5">Nama & Jabatan</th>
+                  <th class="p-3.5">Email Login</th>
+                  <th class="p-3.5">Peran (Role)</th>
+                  <th class="p-3.5">Hak Akses Aktif</th>
+                  <th class="p-3.5">Status Akun</th>
+                  <th class="p-3.5 text-right">Aksi Pengaturan</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
     </main>
+  </div>
+
+  <!-- MODAL TAMBAH / EDIT USER & HAK AKSES -->
+  <div id="user-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-4">
+    <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-6">
+      <div class="bg-navy-900 text-white p-5 flex items-center justify-between">
+        <h3 class="font-bold text-base" id="modal-user-heading">Tambah Pengguna & Atur Hak Akses</h3>
+        <button onclick="closeUserModal()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold">Tutup &times;</button>
+      </div>
+      <form onsubmit="submitUserForm(event)" class="p-5 sm:p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+        <input type="hidden" id="form-user-edit-email" />
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Pengelola <span class="text-red-500">*</span></label>
+            <input type="text" id="form-user-name" required placeholder="Contoh: Ust. Ahmad Fauzi" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan / Bidang</label>
+            <input type="text" id="form-user-division" placeholder="Contoh: Tim Diklat Wilayah" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email Login <span class="text-red-500">*</span></label>
+            <input type="email" id="form-user-email" required placeholder="panitia@jsitlampung.or.id" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+          </div>
+          <div id="form-user-password-wrap">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi Awal <span class="text-red-500" id="pwd-req-star">*</span></label>
+            <input type="password" id="form-user-password" minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
+            <p class="text-[10px] text-slate-400 mt-0.5" id="pwd-edit-hint">Wajib diisi saat membuat akun baru (min. 6 karakter).</p>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Peran Utama (Role Preset)</label>
+            <select id="form-user-role" onchange="applyRolePresetToCheckboxes()" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-300 bg-blue-50/40 text-sm font-bold text-navy-900">
+              <option value="super_admin">Super Admin (Akses Penuh)</option>
+              <option value="admin_kegiatan">Admin Kegiatan & Sertifikat</option>
+              <option value="operator_absensi">Operator Absensi & Rekap</option>
+              <option value="viewer">Panitia / Viewer (Hanya Lihat)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Status Akun</label>
+            <select id="form-user-active" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold">
+              <option value="true">Aktif (Bisa Login)</option>
+              <option value="false">Nonaktif (Ditangguhkan)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Kustomisasi Matrix Hak Akses Granular -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-navy-900">Pengaturan Izin Akses Spesifik (Bisa Dikustomisasi)</span>
+            <span class="text-[10px] text-blue-700 font-semibold">Centang fitur yang diizinkan</span>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_events" class="accent-blue-600 rounded" />
+              <span>Tambah, Edit & Upload Flyer Kegiatan</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-delete_events" class="accent-blue-600 rounded" />
+              <span>Hapus Kegiatan</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_certificates" class="accent-blue-600 rounded" />
+              <span>Atur Studio E-Sertifikat & Template</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_attendees" class="accent-blue-600 rounded" />
+              <span>Tambah Manual & Hapus Daftar Hadir</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-export_data" class="accent-blue-600 rounded" />
+              <span>Export CSV Daftar Hadir & Sertifikat</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_resources" class="accent-blue-600 rounded" />
+              <span>Kelola Materi & Rekaman</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_settings" class="accent-blue-600 rounded" />
+              <span>Pengaturan Sistem, TTD & Cloud</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="perm-manage_users" class="accent-blue-600 rounded" />
+              <span>Kelola Akun Multiuser & Hak Akses</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeUserModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Batal</button>
+          <button type="submit" id="btn-submit-user" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Simpan Pengguna & Hak Akses</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- MODAL TAMBAH / EDIT KEGIATAN (+ UPLOAD FLYER KEGIATAN) -->
@@ -797,6 +1010,8 @@
   <script>
 const STORAGE_KEY = 'jsit_lampung_events_v3';
 const SETTINGS_KEY = 'jsit_lampung_settings_v3';
+const USERS_KEY = 'jsit_lampung_users_v3';
+const SESSION_USER_KEY = 'jsit_lpg_admin_user_v3';
 
 const DEFAULT_SETTINGS = {
   orgName: 'JSIT Wilayah Lampung',
@@ -806,6 +1021,124 @@ const DEFAULT_SETTINGS = {
   signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
   webhookUrl: ''
 };
+
+const ROLE_LABELS = {
+  super_admin: 'Super Admin',
+  admin_kegiatan: 'Admin Kegiatan',
+  operator_absensi: 'Operator Absensi',
+  viewer: 'Panitia (Viewer)'
+};
+
+const ROLE_BADGE_CLASSES = {
+  super_admin: 'bg-navy-900 text-amber-300',
+  admin_kegiatan: 'bg-indigo-600 text-white',
+  operator_absensi: 'bg-emerald-600 text-white',
+  viewer: 'bg-slate-600 text-white'
+};
+
+const PERMISSION_KEYS = [
+  'manage_events',
+  'delete_events',
+  'manage_certificates',
+  'manage_attendees',
+  'export_data',
+  'manage_resources',
+  'manage_settings',
+  'manage_users'
+];
+
+const PERMISSION_SHORT_LABELS = {
+  manage_events: 'Kelola Kegiatan & Flyer',
+  delete_events: 'Hapus Kegiatan',
+  manage_certificates: 'Studio Sertifikat',
+  manage_attendees: 'Kelola Absensi',
+  export_data: 'Export CSV',
+  manage_resources: 'Materi & Rekaman',
+  manage_settings: 'Pengaturan & Cloud',
+  manage_users: 'Multiuser & Akses'
+};
+
+const ROLE_PRESETS = {
+  super_admin: {
+    manage_events: true,
+    delete_events: true,
+    manage_certificates: true,
+    manage_attendees: true,
+    export_data: true,
+    manage_resources: true,
+    manage_settings: true,
+    manage_users: true
+  },
+  admin_kegiatan: {
+    manage_events: true,
+    delete_events: false,
+    manage_certificates: true,
+    manage_attendees: true,
+    export_data: true,
+    manage_resources: true,
+    manage_settings: false,
+    manage_users: false
+  },
+  operator_absensi: {
+    manage_events: false,
+    delete_events: false,
+    manage_certificates: false,
+    manage_attendees: true,
+    export_data: true,
+    manage_resources: false,
+    manage_settings: false,
+    manage_users: false
+  },
+  viewer: {
+    manage_events: false,
+    delete_events: false,
+    manage_certificates: false,
+    manage_attendees: false,
+    export_data: true,
+    manage_resources: false,
+    manage_settings: false,
+    manage_users: false
+  }
+};
+
+const DEFAULT_LOCAL_USERS = [
+  {
+    email: 'superadmin@jsitlampung.or.id',
+    password: 'jsitlampung2026',
+    name: 'Super Admin JSIT Lampung',
+    division: 'Koordinator Utama Wilayah',
+    role: 'super_admin',
+    active: true,
+    permissions: { ...ROLE_PRESETS.super_admin }
+  },
+  {
+    email: 'admin@jsitlampung.or.id',
+    password: 'admin123',
+    name: 'Admin Bidang Diklat',
+    division: 'Tim Diklat Wilayah Lampung',
+    role: 'admin_kegiatan',
+    active: true,
+    permissions: { ...ROLE_PRESETS.admin_kegiatan }
+  },
+  {
+    email: 'operator@jsitlampung.or.id',
+    password: 'operator123',
+    name: 'Operator Presensi Kegiatan',
+    division: 'Sekretariat & Kesekretariatan',
+    role: 'operator_absensi',
+    active: true,
+    permissions: { ...ROLE_PRESETS.operator_absensi }
+  },
+  {
+    email: 'panitia@jsitlampung.or.id',
+    password: 'panitia123',
+    name: 'Panitia Pelaksana (Viewer)',
+    division: 'Panitia Acara',
+    role: 'viewer',
+    active: true,
+    permissions: { ...ROLE_PRESETS.viewer }
+  }
+];
 
 const LAMPUNG_REGIONS = [
   'Kota Bandar Lampung',
@@ -868,6 +1201,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1E3A8A',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -920,6 +1254,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#0369A1',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -972,6 +1307,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1D4ED8',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1022,6 +1358,7 @@ const DEFAULT_EVENTS = [
       themeColor: '#1E3A8A',
       customTemplateImg: '',
       hideDefaultChrome: true,
+      showCertHeading: false,
       textColor: '#0B1F3A',
       offsetY: 0,
       qrOffsetX: 0,
@@ -1041,6 +1378,8 @@ const DEFAULT_EVENTS = [
     let auth = null;
     let isFirebaseReady = false;
     let events = [];
+    let adminUsers = [];
+    let currentUserProfile = null;
     let attendeesMap = {};
     let attendeeUnsubs = {};
     let settings = { ...DEFAULT_SETTINGS };
@@ -1050,6 +1389,36 @@ const DEFAULT_EVENTS = [
     function isFirebaseConfigured() {
       const cfg = window.FIREBASE_CONFIG;
       return cfg && cfg.apiKey && !cfg.apiKey.includes('GANTI_DENGAN') && cfg.projectId && !cfg.projectId.includes('GANTI_DENGAN');
+    }
+
+    function hasPermission(permKey) {
+      if (!currentUserProfile) return false;
+      if (currentUserProfile.role === 'super_admin') return true;
+      return Boolean(currentUserProfile.permissions && currentUserProfile.permissions[permKey]);
+    }
+
+    function normalizeUserRecord(u) {
+      const role = ROLE_LABELS[u.role] ? u.role : 'viewer';
+      const basePerms = { ...(ROLE_PRESETS[role] || ROLE_PRESETS.viewer) };
+      if (u.permissions && typeof u.permissions === 'object') {
+        PERMISSION_KEYS.forEach(k => {
+          if (typeof u.permissions[k] === 'boolean') {
+            basePerms[k] = u.permissions[k];
+          }
+        });
+      }
+      if (role === 'super_admin') {
+        PERMISSION_KEYS.forEach(k => basePerms[k] = true);
+      }
+      return {
+        email: (u.email || '').trim().toLowerCase(),
+        password: u.password || '',
+        name: u.name || (u.email ? u.email.split('@')[0] : 'Pengelola'),
+        division: u.division || 'Tim Diklat JSIT Lampung',
+        role,
+        active: u.active !== false,
+        permissions: basePerms
+      };
     }
 
     function ensureFirestoreSafeDataUrl(canvas, initialQuality = 0.85, maxChars = 420000) {
@@ -1094,6 +1463,7 @@ const DEFAULT_EVENTS = [
       if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
       if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
       if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
+      if (typeof c.showCertHeading !== 'boolean') c.showCertHeading = false;
       if (typeof c.qrOffsetX !== 'number') c.qrOffsetX = 0;
       if (typeof c.qrOffsetY !== 'number') c.qrOffsetY = 0;
       if (typeof c.qrScale !== 'number') c.qrScale = 100;
@@ -1141,6 +1511,7 @@ const DEFAULT_EVENTS = [
         let startValY = 0;
 
         el.addEventListener('pointerdown', (e) => {
+          if (!hasPermission('manage_certificates')) return;
           dragging = true;
           startClientX = e.clientX;
           startClientY = e.clientY;
@@ -1189,6 +1560,7 @@ const DEFAULT_EVENTS = [
     }
 
     function resetQrAndSignerPositions() {
+      if (!hasPermission('manage_certificates')) return;
       document.getElementById('studio-qr-x').value = 0;
       document.getElementById('studio-qr-y').value = 0;
       document.getElementById('studio-qr-scale').value = 100;
@@ -1199,6 +1571,11 @@ const DEFAULT_EVENTS = [
       document.getElementById('studio-show-issued-date').checked = true;
       updateCertPreviewLive();
       toast('Posisi QR Code & Tanda Tangan dikembalikan ke posisi awal.');
+    }
+
+    function fillDemoLogin(email, pass) {
+      document.getElementById('admin-email-input').value = email;
+      document.getElementById('admin-password-input').value = pass;
     }
 
     function bootAdmin() {
@@ -1216,13 +1593,13 @@ const DEFAULT_EVENTS = [
 
           const badge = document.getElementById('login-firebase-badge');
           badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
-          badge.textContent = `Firebase Terhubung (${window.FIREBASE_CONFIG.projectId})`;
+          badge.textContent = `Firebase Multiuser Terhubung (${window.FIREBASE_CONFIG.projectId})`;
 
-          auth.onAuthStateChanged((user) => {
+          auth.onAuthStateChanged(async (user) => {
             if (user && !user.isAnonymous) {
-              document.getElementById('sidebar-cloud-text').textContent = `Cloud: ${user.email}`;
-              enterWorkspace();
+              await resolveFirebaseMultiuserProfile(user);
             } else {
+              currentUserProfile = null;
               document.getElementById('admin-app').classList.add('hidden');
               document.getElementById('login-screen').classList.remove('hidden');
             }
@@ -1237,17 +1614,77 @@ const DEFAULT_EVENTS = [
       // Fallback Mode Lokal jika firebase-config.js belum diisi
       const badge = document.getElementById('login-firebase-badge');
       badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
-      badge.textContent = 'Mode Lokal (Isi firebase-config.js untuk Cloud)';
-      document.getElementById('login-email-group').classList.add('hidden');
+      badge.textContent = 'Mode Lokal Multiuser (Isi firebase-config.js untuk Cloud)';
+      document.getElementById('local-demo-accounts').classList.remove('hidden');
+      document.getElementById('admin-email-input').value = 'superadmin@jsitlampung.or.id';
       document.getElementById('admin-password-input').value = 'jsitlampung2026';
-      document.getElementById('login-hint-text').innerHTML = 'Mode Lokal aktif. Sandi default: <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold">jsitlampung2026</code>';
-      document.getElementById('sidebar-cloud-text').textContent = 'Mode Lokal (Belum Cloud)';
+      document.getElementById('sidebar-cloud-text').textContent = 'Mode Lokal Multiuser';
 
       loadLocalFallbackAdmin();
-      if (sessionStorage.getItem('jsit_lpg_admin_logged') === 'true') {
-        enterWorkspace();
+      const savedSessionEmail = sessionStorage.getItem(SESSION_USER_KEY);
+      if (savedSessionEmail) {
+        const found = adminUsers.find(u => u.email === savedSessionEmail && u.active);
+        if (found) {
+          currentUserProfile = normalizeUserRecord(found);
+          enterWorkspace();
+        }
       }
       if (window.lucide) lucide.createIcons();
+    }
+
+    async function resolveFirebaseMultiuserProfile(firebaseUser) {
+      const email = (firebaseUser.email || '').trim().toLowerCase();
+      const errBox = document.getElementById('login-error-msg');
+      try {
+        const userDocRef = db.collection('admin_users').doc(email);
+        const snap = await userDocRef.get();
+
+        if (snap.exists) {
+          const profile = normalizeUserRecord({ email, ...snap.data() });
+          if (!profile.active) {
+            errBox.textContent = 'Akses ditolak: Akun Anda sedang dinonaktifkan oleh Super Admin.';
+            errBox.classList.remove('hidden');
+            await auth.signOut();
+            return;
+          }
+          currentUserProfile = profile;
+        } else {
+          // Cek apakah sudah ada Super Admin terdaftar di Firestore
+          const allUsersSnap = await db.collection('admin_users').limit(5).get();
+          if (allUsersSnap.empty) {
+            // Bootstrap pemilik pertama menjadi Super Admin
+            const bootstrapProfile = normalizeUserRecord({
+              email,
+              name: firebaseUser.displayName || email.split('@')[0],
+              division: 'Super Admin Utama',
+              role: 'super_admin',
+              active: true,
+              createdAt: new Date().toISOString()
+            });
+            await userDocRef.set(bootstrapProfile);
+            currentUserProfile = bootstrapProfile;
+          } else {
+            errBox.textContent = 'Akun email Anda belum didaftarkan pada daftar hak akses pengelola oleh Super Admin.';
+            errBox.classList.remove('hidden');
+            await auth.signOut();
+            return;
+          }
+        }
+
+        document.getElementById('sidebar-cloud-text').textContent = 'Cloud Firestore Aktif';
+        enterWorkspace();
+      } catch (err) {
+        console.error('Error resolve user profile:', err);
+        // Fallback aman jika aturan Firestore belum membuka collection admin_users
+        currentUserProfile = normalizeUserRecord({
+          email,
+          name: firebaseUser.displayName || email.split('@')[0],
+          role: 'super_admin',
+          active: true
+        });
+        document.getElementById('sidebar-cloud-text').textContent = 'Cloud Firestore Aktif';
+        enterWorkspace();
+      }
     }
 
     function loadLocalFallbackAdmin() {
@@ -1255,6 +1692,18 @@ const DEFAULT_EVENTS = [
       if (s) {
         try { settings = { ...DEFAULT_SETTINGS, ...JSON.parse(s) }; } catch (e) {}
       }
+      const uRaw = localStorage.getItem(USERS_KEY);
+      if (uRaw) {
+        try {
+          adminUsers = JSON.parse(uRaw).map(normalizeUserRecord);
+        } catch (e) {
+          adminUsers = DEFAULT_LOCAL_USERS.map(normalizeUserRecord);
+        }
+      } else {
+        adminUsers = DEFAULT_LOCAL_USERS.map(normalizeUserRecord);
+        localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+      }
+
       const ev = localStorage.getItem(STORAGE_KEY);
       if (ev) {
         try { events = JSON.parse(ev).map(normalizeEventItem); } catch (e) { events = DEFAULT_EVENTS.map(normalizeEventItem); }
@@ -1275,46 +1724,94 @@ const DEFAULT_EVENTS = [
       e.preventDefault();
       const errBox = document.getElementById('login-error-msg');
       errBox.classList.add('hidden');
+      const email = document.getElementById('admin-email-input').value.trim().toLowerCase();
+      const pass = document.getElementById('admin-password-input').value;
+
+      if (!email) {
+        errBox.textContent = 'Silakan masukkan Email akun Anda.';
+        errBox.classList.remove('hidden');
+        return;
+      }
 
       if (isFirebaseReady && auth) {
-        const email = document.getElementById('admin-email-input').value.trim();
-        const pass = document.getElementById('admin-password-input').value;
-        if (!email) {
-          errBox.textContent = 'Silakan masukkan Email Admin Firebase Anda.';
-          errBox.classList.remove('hidden');
-          return;
-        }
         const btn = document.getElementById('btn-login-submit');
         btn.disabled = true;
-        btn.textContent = 'Memverifikasi akun Firebase...';
+        btn.textContent = 'Memverifikasi akun & hak akses...';
         try {
           await auth.signInWithEmailAndPassword(email, pass);
         } catch (err) {
-          errBox.textContent = 'Login gagal: Email atau Kata Sandi salah, atau akun belum dibuat di Firebase Authentication.';
+          errBox.textContent = 'Login gagal: Email atau Kata Sandi salah, atau akun belum terdaftar.';
           errBox.classList.remove('hidden');
         } finally {
           btn.disabled = false;
-          btn.innerHTML = 'Masuk ke Ruang Kerja Admin &rarr;';
+          btn.innerHTML = 'Masuk ke Ruang Kerja &rarr;';
         }
         return;
       }
 
-      const val = document.getElementById('admin-password-input').value;
-      if (val === settings.adminPass) {
-        sessionStorage.setItem('jsit_lpg_admin_logged', 'true');
-        enterWorkspace();
-      } else {
-        errBox.textContent = 'Kata sandi salah! Sandi default mode lokal: jsitlampung2026';
+      // Mode Lokal Multiuser
+      const matched = adminUsers.find(u => u.email === email && u.password === pass);
+      if (!matched) {
+        errBox.textContent = 'Email atau Kata Sandi salah! Gunakan salah satu akun uji coba di atas.';
         errBox.classList.remove('hidden');
+        return;
       }
+      if (!matched.active) {
+        errBox.textContent = 'Akun Anda sedang dinonaktifkan oleh Super Admin.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+      currentUserProfile = normalizeUserRecord(matched);
+      sessionStorage.setItem(SESSION_USER_KEY, currentUserProfile.email);
+      enterWorkspace();
     }
 
     async function logoutAdmin() {
       if (isFirebaseReady && auth) {
         await auth.signOut();
       }
-      sessionStorage.removeItem('jsit_lpg_admin_logged');
+      sessionStorage.removeItem(SESSION_USER_KEY);
       location.reload();
+    }
+
+    function applyRolePermissionsToUI() {
+      if (!currentUserProfile) return;
+      document.getElementById('sidebar-user-name').textContent = currentUserProfile.name;
+      document.getElementById('sidebar-user-email').textContent = currentUserProfile.email;
+      const roleBadge = document.getElementById('sidebar-user-role-badge');
+      roleBadge.textContent = ROLE_LABELS[currentUserProfile.role] || currentUserProfile.role;
+      roleBadge.className = `px-2 py-0.5 rounded text-[10px] font-extrabold shrink-0 ${ROLE_BADGE_CLASSES[currentUserProfile.role] || 'bg-sky-400 text-navy-950'}`;
+
+      // Navigasi Tab
+      document.getElementById('nav-github').classList.toggle('hidden', !hasPermission('manage_settings'));
+      document.getElementById('nav-pengaturan').classList.toggle('hidden', !hasPermission('manage_settings'));
+      document.getElementById('nav-users').classList.toggle('hidden', !hasPermission('manage_users'));
+
+      // Panel 1: Kegiatan
+      document.getElementById('btn-add-event-main').classList.toggle('hidden', !hasPermission('manage_events'));
+
+      // Panel 2: Studio E-Sertifikat
+      const canEditCert = hasPermission('manage_certificates');
+      document.getElementById('studio-readonly-notice').classList.toggle('hidden', canEditCert);
+      document.getElementById('btn-save-studio-cert').classList.toggle('hidden', !canEditCert);
+      const studioForm = document.getElementById('studio-cert-form');
+      if (studioForm) {
+        studioForm.querySelectorAll('input, select, button[type="button"]').forEach(el => {
+          el.disabled = !canEditCert;
+          if (!canEditCert) el.classList.add('opacity-70', 'cursor-not-allowed');
+          else el.classList.remove('opacity-70', 'cursor-not-allowed');
+        });
+      }
+      document.getElementById('btn-export-cert-owners').classList.toggle('hidden', !hasPermission('export_data'));
+
+      // Panel 3: Daftar Hadir
+      document.getElementById('form-add-manual-att').classList.toggle('hidden', !hasPermission('manage_attendees'));
+      document.getElementById('btn-export-att-csv').classList.toggle('hidden', !hasPermission('export_data'));
+
+      // Panel 4: Materi & Rekaman
+      const canRes = hasPermission('manage_resources');
+      document.getElementById('form-add-material').classList.toggle('hidden', !canRes);
+      document.getElementById('form-add-recording').classList.toggle('hidden', !canRes);
     }
 
     function attachAdminAttendeeListener(eventId) {
@@ -1334,6 +1831,7 @@ const DEFAULT_EVENTS = [
     function enterWorkspace() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-app').classList.remove('hidden');
+      applyRolePermissionsToUI();
 
       if (isFirebaseReady && db) {
         db.collection('settings').doc('global').onSnapshot((doc) => {
@@ -1341,6 +1839,25 @@ const DEFAULT_EVENTS = [
             settings = { ...DEFAULT_SETTINGS, ...doc.data() };
             applySettingsToInputs();
           }
+        });
+
+        db.collection('admin_users').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach((doc) => list.push(normalizeUserRecord({ email: doc.id, ...doc.data() })));
+          adminUsers = list;
+          if (currentUserProfile) {
+            const latestMe = adminUsers.find(u => u.email === currentUserProfile.email);
+            if (latestMe) {
+              if (!latestMe.active) {
+                alert('Akun Anda baru saja dinonaktifkan oleh Super Admin.');
+                logoutAdmin();
+                return;
+              }
+              currentUserProfile = latestMe;
+              applyRolePermissionsToUI();
+            }
+          }
+          renderUsersPanel();
         });
 
         db.collection('events').onSnapshot((snapshot) => {
@@ -1363,16 +1880,24 @@ const DEFAULT_EVENTS = [
 
           fresh.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
           events = fresh;
-          document.getElementById('btn-seed-cloud').classList.toggle('hidden', events.length > 0);
+          const canSeed = events.length === 0 && hasPermission('manage_events');
+          document.getElementById('btn-seed-cloud').classList.toggle('hidden', !canSeed);
           syncAllAdminUI();
         });
       } else {
+        const canSeed = events.length === 0 && hasPermission('manage_events');
+        document.getElementById('btn-seed-cloud').classList.toggle('hidden', !canSeed);
         syncAllAdminUI();
+        renderUsersPanel();
       }
     }
 
     async function persistSingleEventToCloud(evObj) {
-      const cleanPayload = { ...evObj, updatedAt: new Date().toISOString() };
+      const cleanPayload = {
+        ...evObj,
+        updatedAt: new Date().toISOString(),
+        updatedBy: currentUserProfile ? currentUserProfile.email : 'admin'
+      };
       delete cleanPayload.attendees;
 
       if (isFirebaseReady && db) {
@@ -1384,7 +1909,11 @@ const DEFAULT_EVENTS = [
     }
 
     async function seedDefaultEventsToCloud() {
-      if (!confirm('Muat 4 kegiatan contoh JSIT Lampung ke database Firebase?')) return;
+      if (!hasPermission('manage_events')) {
+        alert('Akun Anda tidak memiliki hak akses menambah kegiatan.');
+        return;
+      }
+      if (!confirm('Muat 4 kegiatan contoh JSIT Lampung ke database?')) return;
       for (const item of DEFAULT_EVENTS) {
         const clone = JSON.parse(JSON.stringify(item));
         if (!isFirebaseReady) {
@@ -1420,10 +1949,20 @@ const DEFAULT_EVENTS = [
       loadCertificateStudio();
       renderAttendeesPanel();
       renderResourcesPanel();
+      renderUsersPanel();
       if (window.lucide) lucide.createIcons();
     }
 
     function switchTab(tabName) {
+      if ((tabName === 'github' || tabName === 'pengaturan') && !hasPermission('manage_settings')) {
+        alert('Anda tidak memiliki izin mengakses Pengaturan Sistem.');
+        return;
+      }
+      if (tabName === 'users' && !hasPermission('manage_users')) {
+        alert('Anda tidak memiliki izin mengakses Manajemen Multiuser & Hak Akses.');
+        return;
+      }
+
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('nav-active', 'text-white', 'font-bold');
         btn.classList.add('text-blue-200', 'font-semibold');
@@ -1459,6 +1998,8 @@ const DEFAULT_EVENTS = [
       const q = (document.getElementById('filter-event-search').value || '').toLowerCase();
       const cat = document.getElementById('filter-event-category').value;
       const container = document.getElementById('admin-events-container');
+      const canManageEv = hasPermission('manage_events');
+      const canDeleteEv = hasPermission('delete_events');
 
       const filtered = events.filter(ev => {
         const mCat = cat === 'ALL' || ev.category === cat;
@@ -1467,7 +2008,7 @@ const DEFAULT_EVENTS = [
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="bg-white p-10 rounded-2xl border border-blue-100 text-center text-sm text-slate-500">Belum ada kegiatan yang tersedia. Klik <strong>+ Tambah Kegiatan Baru</strong> atau <strong>+ Muat 4 Kegiatan Contoh</strong> untuk memulai.</div>`;
+        container.innerHTML = `<div class="bg-white p-10 rounded-2xl border border-blue-100 text-center text-sm text-slate-500">Belum ada kegiatan yang tersedia.</div>`;
         return;
       }
 
@@ -1499,16 +2040,18 @@ const DEFAULT_EVENTS = [
               </div>
 
               <div class="flex flex-wrap gap-2 shrink-0">
-                <button onclick="openEventModal('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 text-xs font-bold">Edit Info</button>
-                <button onclick="duplicateEventItem('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-700 text-xs font-bold">Duplikat</button>
-                <button onclick="deleteEventItem('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold">Hapus</button>
+                ${canManageEv ? `<button onclick="openEventModal('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 text-xs font-bold">Edit Info</button>` : ''}
+                ${canManageEv ? `<button onclick="duplicateEventItem('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-700 text-xs font-bold">Duplikat</button>` : ''}
+                ${canDeleteEv ? `<button onclick="deleteEventItem('${ev.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold">Hapus</button>` : ''}
               </div>
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
-              <button onclick="openEventModal('${ev.id}', true)" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-indigo-800 hover:text-white text-xs font-bold transition">
-                ${hasFlyer ? 'Ganti / Lihat Flyer' : '+ Upload Flyer'}
-              </button>
+              ${canManageEv ? `
+                <button onclick="openEventModal('${ev.id}', true)" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-indigo-800 hover:text-white text-xs font-bold transition">
+                  ${hasFlyer ? 'Ganti / Lihat Flyer' : '+ Upload Flyer'}
+                </button>
+              ` : ''}
               <button onclick="jumpToEventSubFeature('absensi', '${ev.id}')" class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-xs font-bold transition">
                 Daftar Hadir (${attCount} Peserta)
               </button>
@@ -1516,7 +2059,7 @@ const DEFAULT_EVENTS = [
                 Materi (${matCount}) & Rekaman (${recCount})
               </button>
               <button onclick="jumpToEventSubFeature('sertifikat', '${ev.id}')" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-white text-xs font-bold transition">
-                Studio E-Sertifikat & Posisi QR/TTD
+                Studio E-Sertifikat & Pemilik
               </button>
             </div>
           </div>
@@ -1581,7 +2124,7 @@ const DEFAULT_EVENTS = [
           tempEventFlyerImg = ensureFirestoreSafeDataUrl(canvas, 0.82, 360000);
           document.getElementById('form-ev-flyer-url').value = '';
           updateModalFlyerPreviewUI();
-          toast('Flyer berhasil dimuat & dioptimasi untuk Firebase! Klik Simpan Kegiatan.');
+          toast('Flyer berhasil dimuat & dioptimasi! Klik Simpan Kegiatan.');
         };
         img.src = evt.target.result;
       };
@@ -1603,6 +2146,10 @@ const DEFAULT_EVENTS = [
     }
 
     function openEventModal(id = null, focusFlyer = false) {
+      if (!hasPermission('manage_events')) {
+        alert('Akun Anda tidak memiliki izin menambah/mengedit kegiatan.');
+        return;
+      }
       document.getElementById('form-ev-id').value = id || '';
       document.getElementById('form-ev-flyer-file').value = '';
       if (id) {
@@ -1664,6 +2211,7 @@ const DEFAULT_EVENTS = [
 
     async function submitEventForm(e) {
       e.preventDefault();
+      if (!hasPermission('manage_events')) return;
       const id = document.getElementById('form-ev-id').value;
       const dateStart = document.getElementById('form-ev-start').value;
       const dateEnd = document.getElementById('form-ev-end').value || dateStart;
@@ -1707,7 +2255,7 @@ const DEFAULT_EVENTS = [
             };
             await persistSingleEventToCloud(events[idx]);
           }
-          toast('Kegiatan & Flyer berhasil disimpan ke Firebase!');
+          toast('Kegiatan & Flyer berhasil disimpan!');
         } else {
           const newEv = {
             id: 'evt-' + Date.now(),
@@ -1727,6 +2275,7 @@ const DEFAULT_EVENTS = [
               themeColor: '#1E3A8A',
               customTemplateImg: '',
               hideDefaultChrome: true,
+              showCertHeading: false,
               textColor: '#0B1F3A',
               offsetY: 0,
               qrOffsetX: 0,
@@ -1742,16 +2291,17 @@ const DEFAULT_EVENTS = [
           };
           if (!isFirebaseReady) events.unshift(newEv);
           await persistSingleEventToCloud(newEv);
-          toast('Kegiatan baru berhasil ditambahkan ke Firebase!');
+          toast('Kegiatan baru berhasil ditambahkan!');
         }
         closeEventModal();
       } catch (err) {
         console.error(err);
-        alert('Gagal menyimpan kegiatan ke Firebase: ' + err.message);
+        alert('Gagal menyimpan kegiatan: ' + err.message);
       }
     }
 
     async function duplicateEventItem(id) {
+      if (!hasPermission('manage_events')) return;
       const src = events.find(e => e.id === id);
       if (!src) return;
       const copy = JSON.parse(JSON.stringify(src));
@@ -1764,6 +2314,10 @@ const DEFAULT_EVENTS = [
     }
 
     async function deleteEventItem(id) {
+      if (!hasPermission('delete_events')) {
+        alert('Akun Anda tidak memiliki izin menghapus kegiatan.');
+        return;
+      }
       if (!confirm('Hapus kegiatan ini dari database?')) return;
       if (isFirebaseReady && db) {
         await db.collection('events').doc(id).delete();
@@ -1794,6 +2348,7 @@ const DEFAULT_EVENTS = [
         themeColor: '#1E3A8A',
         customTemplateImg: '',
         hideDefaultChrome: true,
+        showCertHeading: false,
         textColor: '#0B1F3A',
         offsetY: 0,
         qrOffsetX: 0,
@@ -1818,6 +2373,7 @@ const DEFAULT_EVENTS = [
 
       tempCustomTemplateImg = cert.customTemplateImg || '';
       document.getElementById('studio-hide-chrome').checked = cert.hideDefaultChrome !== false;
+      document.getElementById('studio-show-cert-heading').checked = cert.showCertHeading === true;
       document.getElementById('studio-text-color').value = cert.textColor || '#0B1F3A';
       document.getElementById('studio-offset-y').value = cert.offsetY || 0;
 
@@ -1854,6 +2410,7 @@ const DEFAULT_EVENTS = [
     }
 
     function handleTemplateUpload(e) {
+      if (!hasPermission('manage_certificates')) return;
       const file = e.target.files[0];
       if (!file) return;
 
@@ -1885,6 +2442,7 @@ const DEFAULT_EVENTS = [
     }
 
     function removeCustomTemplate() {
+      if (!hasPermission('manage_certificates')) return;
       tempCustomTemplateImg = '';
       document.getElementById('studio-template-upload').value = '';
       updateTemplateControlsVisibility();
@@ -1936,6 +2494,7 @@ const DEFAULT_EVENTS = [
       const defaultHeader = document.getElementById('studio-default-header');
       const dynamicBlock = document.getElementById('studio-dynamic-block');
       const hideChrome = document.getElementById('studio-hide-chrome').checked;
+      const showCertHeading = document.getElementById('studio-show-cert-heading').checked;
       const textColor = document.getElementById('studio-text-color').value || '#0B1F3A';
       const offsetY = parseInt(document.getElementById('studio-offset-y').value || '0', 10);
 
@@ -1979,6 +2538,13 @@ const DEFAULT_EVENTS = [
         dynamicBlock.style.transform = 'translateY(0px)';
       }
 
+      // Toggle Teks Judul "SERTIFIKAT" (Default: Hilang)
+      const certHeadingEl = document.getElementById('prev-cert-heading');
+      if (certHeadingEl) {
+        certHeadingEl.classList.toggle('hidden', !showCertHeading);
+        certHeadingEl.style.color = color;
+      }
+
       // Apply QR block position & scale
       const qrBlock = document.getElementById('studio-qr-block');
       const qrTextBox = document.getElementById('studio-qr-text-box');
@@ -2003,7 +2569,7 @@ const DEFAULT_EVENTS = [
       }
 
       const activeTxtCol = tempCustomTemplateImg ? textColor : '#0B1F3A';
-      document.getElementById('prev-cert-heading').style.color = color;
+      document.getElementById('prev-cert-num').style.color = tempCustomTemplateImg ? textColor : '#475569';
       document.getElementById('prev-cert-owner').style.color = activeTxtCol;
       document.getElementById('prev-cert-body').style.color = tempCustomTemplateImg ? textColor : '#475569';
       document.getElementById('prev-cert-title').style.color = activeTxtCol;
@@ -2028,6 +2594,10 @@ const DEFAULT_EVENTS = [
 
     async function saveCertificateStudio(e) {
       e.preventDefault();
+      if (!hasPermission('manage_certificates')) {
+        alert('Akun Anda tidak memiliki izin mengubah pengaturan E-Sertifikat.');
+        return;
+      }
       const evId = document.getElementById('cert-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2051,6 +2621,7 @@ const DEFAULT_EVENTS = [
         themeColor: document.getElementById('studio-cert-color').value || '#1E3A8A',
         customTemplateImg: tempCustomTemplateImg || '',
         hideDefaultChrome: document.getElementById('studio-hide-chrome').checked,
+        showCertHeading: document.getElementById('studio-show-cert-heading').checked,
         textColor: document.getElementById('studio-text-color').value || '#0B1F3A',
         offsetY: parseInt(document.getElementById('studio-offset-y').value || '0', 10),
         qrOffsetX: parseInt(document.getElementById('studio-qr-x').value || '0', 10),
@@ -2064,7 +2635,7 @@ const DEFAULT_EVENTS = [
       };
 
       await persistSingleEventToCloud(events[idx]);
-      toast('Pengaturan, Template & Posisi QR/TTD tersimpan di Firebase!');
+      toast('Pengaturan E-Sertifikat tersimpan & tersinkron ke halaman peserta!');
     }
 
     // PANEL 3: DAFTAR HADIR
@@ -2258,6 +2829,10 @@ const DEFAULT_EVENTS = [
     }
 
     function exportCertificateOwnersCSV() {
+      if (!hasPermission('export_data')) {
+        alert('Akun Anda tidak memiliki izin mengekspor data CSV.');
+        return;
+      }
       const evId = document.getElementById('cert-event-selector')?.value;
       const ev = events.find(e => e.id === evId);
       if (!ev || !(ev.attendees || []).length) {
@@ -2296,12 +2871,12 @@ const DEFAULT_EVENTS = [
       toast('CSV Daftar Pemilik Sertifikat diunduh!');
     }
 
-    // PANEL 3: DAFTAR HADIR (DILENGKAPI NOMOR & STATUS SERTIFIKAT)
     function renderAttendeesPanel() {
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
       const tbody = document.getElementById('panel-att-tbody');
       if (!ev || !tbody) return;
+      const canManageAtt = hasPermission('manage_attendees');
 
       const list = ev.attendees || [];
       const q = (document.getElementById('att-search-input')?.value || '').trim().toLowerCase();
@@ -2344,7 +2919,7 @@ const DEFAULT_EVENTS = [
             <td class="p-3.5 text-right">
               <div class="inline-flex items-center gap-2 justify-end">
                 <a href="${meta.verificationUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Cek Sertifikat &nearr;</a>
-                <button onclick="deleteAttendeeItem('${a.id}')" class="text-rose-600 hover:underline font-bold">Hapus</button>
+                ${canManageAtt ? `<button onclick="deleteAttendeeItem('${a.id}')" class="text-rose-600 hover:underline font-bold">Hapus</button>` : ''}
               </div>
             </td>
           </tr>
@@ -2354,6 +2929,7 @@ const DEFAULT_EVENTS = [
 
     async function handleAddManualAttendee(e) {
       e.preventDefault();
+      if (!hasPermission('manage_attendees')) return;
       const evId = document.getElementById('att-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2370,7 +2946,8 @@ const DEFAULT_EVENTS = [
         email: '',
         timestamp: now.toISOString().slice(0,10) + ' ' + now.toTimeString().slice(0,5),
         createdAt: Date.now(),
-        verified: true
+        verified: true,
+        addedBy: currentUserProfile ? currentUserProfile.email : 'admin'
       };
 
       if (isFirebaseReady && db) {
@@ -2389,6 +2966,7 @@ const DEFAULT_EVENTS = [
     }
 
     async function deleteAttendeeItem(attId) {
+      if (!hasPermission('manage_attendees')) return;
       const evId = document.getElementById('att-event-selector').value;
       if (isFirebaseReady && db) {
         await db.collection('events').doc(evId).collection('attendees').doc(attId).delete();
@@ -2404,6 +2982,10 @@ const DEFAULT_EVENTS = [
     }
 
     function exportCurrentAttendeesCSV() {
+      if (!hasPermission('export_data')) {
+        alert('Akun Anda tidak memiliki izin mengekspor data CSV.');
+        return;
+      }
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
       if (!ev || !ev.attendees || ev.attendees.length === 0) {
@@ -2441,11 +3023,13 @@ const DEFAULT_EVENTS = [
       URL.revokeObjectURL(url);
       toast('CSV Daftar Hadir & Sertifikat diunduh!');
     }
+
     // PANEL 4: MATERI & REKAMAN
     function renderResourcesPanel() {
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
       if (!ev) return;
+      const canRes = hasPermission('manage_resources');
 
       const mats = ev.materials || [];
       document.getElementById('res-mat-list').innerHTML = mats.length ? mats.map(m => `
@@ -2455,7 +3039,7 @@ const DEFAULT_EVENTS = [
             <p class="font-bold text-xs text-navy-900 mt-1 truncate">${m.title}</p>
             <a href="${m.url}" target="_blank" class="text-[11px] text-blue-600 hover:underline truncate block">${m.url}</a>
           </div>
-          <button onclick="deleteMaterialItem('${m.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>
+          ${canRes ? `<button onclick="deleteMaterialItem('${m.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>` : ''}
         </div>
       `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada materi.</p>';
 
@@ -2467,13 +3051,14 @@ const DEFAULT_EVENTS = [
             <p class="font-bold text-xs text-navy-900 mt-1 truncate">${r.title}</p>
             <a href="${r.url}" target="_blank" class="text-[11px] text-blue-600 hover:underline truncate block">${r.url}</a>
           </div>
-          <button onclick="deleteRecordingItem('${r.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>
+          ${canRes ? `<button onclick="deleteRecordingItem('${r.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>` : ''}
         </div>
       `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada rekaman.</p>';
     }
 
     async function handleAddMaterial(e) {
       e.preventDefault();
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2493,6 +3078,7 @@ const DEFAULT_EVENTS = [
     }
 
     async function deleteMaterialItem(matId) {
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2503,6 +3089,7 @@ const DEFAULT_EVENTS = [
 
     async function handleAddRecording(e) {
       e.preventDefault();
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2522,6 +3109,7 @@ const DEFAULT_EVENTS = [
     }
 
     async function deleteRecordingItem(recId) {
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
@@ -2543,6 +3131,7 @@ const DEFAULT_EVENTS = [
     }
 
     function uploadGitHubJSON(e) {
+      if (!hasPermission('manage_settings')) return;
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -2566,7 +3155,7 @@ const DEFAULT_EVENTS = [
               localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
               syncAllAdminUI();
             }
-            toast('Database JSON berhasil diimpor ke Firebase!');
+            toast('Database JSON berhasil diimpor!');
           } else {
             alert('Format JSON tidak valid.');
           }
@@ -2579,6 +3168,7 @@ const DEFAULT_EVENTS = [
 
     async function saveSystemSettings(e) {
       e.preventDefault();
+      if (!hasPermission('manage_settings')) return;
       settings.signerName = document.getElementById('cfg-signer').value.trim();
       settings.signerTitle = document.getElementById('cfg-title').value.trim();
       settings.webhookUrl = document.getElementById('cfg-webhook').value.trim();
@@ -2592,7 +3182,273 @@ const DEFAULT_EVENTS = [
       } else {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       }
-      toast('Pengaturan sistem berhasil disimpan ke Firebase!');
+      toast('Pengaturan sistem berhasil disimpan!');
+    }
+
+    // PANEL 7: MANAJEMEN MULTIUSER & HAK AKSES
+    function renderUsersPanel() {
+      const tbody = document.getElementById('admin-users-tbody');
+      const countLabel = document.getElementById('users-count-label');
+      if (!tbody) return;
+
+      const q = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
+      const filtered = adminUsers.filter(u => {
+        if (!q) return true;
+        return (
+          (u.name || '').toLowerCase().includes(q) ||
+          (u.email || '').toLowerCase().includes(q) ||
+          (u.division || '').toLowerCase().includes(q) ||
+          (ROLE_LABELS[u.role] || '').toLowerCase().includes(q)
+        );
+      });
+
+      if (countLabel) {
+        countLabel.textContent = `Daftar Akun Terdaftar (${filtered.length} dari ${adminUsers.length} Pengguna)`;
+      }
+
+      tbody.innerHTML = filtered.length ? filtered.map((u, idx) => {
+        const isMe = currentUserProfile && u.email === currentUserProfile.email;
+        const activePerms = PERMISSION_KEYS.filter(k => u.permissions && u.permissions[k]);
+        const permBadges = activePerms.length === PERMISSION_KEYS.length
+          ? `<span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold">Semua Izin (8/8 Fitur)</span>`
+          : activePerms.map(k => `<span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold mr-1 mb-1">${PERMISSION_SHORT_LABELS[k]}</span>`).join('');
+
+        return `
+          <tr class="hover:bg-blue-50/40">
+            <td class="p-3.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-3.5">
+              <div class="font-bold text-navy-900 flex items-center gap-1.5">
+                <span>${u.name}</span>
+                ${isMe ? '<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[9px] font-extrabold">Anda</span>' : ''}
+              </div>
+              <div class="text-[11px] text-slate-500">${u.division || '-'}</div>
+            </td>
+            <td class="p-3.5 font-mono text-slate-700">${u.email}</td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold ${ROLE_BADGE_CLASSES[u.role] || 'bg-slate-600 text-white'}">
+                ${ROLE_LABELS[u.role] || u.role}
+              </span>
+            </td>
+            <td class="p-3.5 max-w-xs">${permBadges || '<span class="text-slate-400 italic">Hanya Lihat</span>'}</td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${u.active ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                ${u.active ? 'Aktif' : 'Nonaktif'}
+              </span>
+            </td>
+            <td class="p-3.5 text-right">
+              <div class="inline-flex items-center gap-1.5 justify-end">
+                <button type="button" onclick="openUserModal('${u.email}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-[11px] font-bold transition">
+                  Atur Akses
+                </button>
+                ${!isMe ? `
+                  <button type="button" onclick="toggleUserActiveStatus('${u.email}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 text-[11px] font-bold transition">
+                    ${u.active ? 'Nonaktifkan' : 'Aktifkan'}
+                  </button>
+                  <button type="button" onclick="deleteUserAccount('${u.email}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold transition">
+                    Hapus
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Tidak ada pengguna yang sesuai pencarian.</td></tr>`;
+    }
+
+    function applyRolePresetToCheckboxes() {
+      const role = document.getElementById('form-user-role').value;
+      const preset = ROLE_PRESETS[role] || ROLE_PRESETS.viewer;
+      PERMISSION_KEYS.forEach(k => {
+        const cb = document.getElementById(`perm-${k}`);
+        if (cb) cb.checked = Boolean(preset[k]);
+      });
+    }
+
+    function openUserModal(editEmail = null) {
+      if (!hasPermission('manage_users')) {
+        alert('Akun Anda tidak memiliki izin mengelola multiuser.');
+        return;
+      }
+      const emailInput = document.getElementById('form-user-email');
+      const pwdInput = document.getElementById('form-user-password');
+      const pwdStar = document.getElementById('pwd-req-star');
+      const pwdHint = document.getElementById('pwd-edit-hint');
+
+      if (editEmail) {
+        const u = adminUsers.find(item => item.email === editEmail);
+        if (!u) return;
+        document.getElementById('modal-user-heading').textContent = 'Edit Peran & Hak Akses Pengguna';
+        document.getElementById('form-user-edit-email').value = u.email;
+        document.getElementById('form-user-name').value = u.name;
+        document.getElementById('form-user-division').value = u.division || '';
+        emailInput.value = u.email;
+        emailInput.readOnly = true;
+        emailInput.classList.add('bg-slate-100', 'text-slate-500');
+        pwdInput.value = '';
+        pwdInput.required = false;
+        pwdStar.classList.add('hidden');
+        pwdHint.textContent = isFirebaseReady
+          ? 'Kosongkan jika tidak mengubah sandi (reset sandi akun Firebase dapat dilakukan di Firebase Console).'
+          : 'Kosongkan jika tidak ingin mengubah kata sandi akun lokal ini.';
+        document.getElementById('form-user-role').value = u.role;
+        document.getElementById('form-user-active').value = u.active ? 'true' : 'false';
+        PERMISSION_KEYS.forEach(k => {
+          const cb = document.getElementById(`perm-${k}`);
+          if (cb) cb.checked = Boolean(u.permissions && u.permissions[k]);
+        });
+      } else {
+        document.getElementById('modal-user-heading').textContent = 'Tambah Pengguna Multiuser Baru';
+        document.getElementById('form-user-edit-email').value = '';
+        document.getElementById('form-user-name').value = '';
+        document.getElementById('form-user-division').value = '';
+        emailInput.value = '';
+        emailInput.readOnly = false;
+        emailInput.classList.remove('bg-slate-100', 'text-slate-500');
+        pwdInput.value = '';
+        pwdInput.required = true;
+        pwdStar.classList.remove('hidden');
+        pwdHint.textContent = 'Wajib diisi untuk akun baru (minimal 6 karakter).';
+        document.getElementById('form-user-role').value = 'admin_kegiatan';
+        document.getElementById('form-user-active').value = 'true';
+        applyRolePresetToCheckboxes();
+      }
+      document.getElementById('user-modal').classList.remove('hidden');
+    }
+
+    function closeUserModal() {
+      document.getElementById('user-modal').classList.add('hidden');
+    }
+
+    async function submitUserForm(e) {
+      e.preventDefault();
+      if (!hasPermission('manage_users')) return;
+
+      const editEmail = document.getElementById('form-user-edit-email').value.trim().toLowerCase();
+      const name = document.getElementById('form-user-name').value.trim();
+      const division = document.getElementById('form-user-division').value.trim() || 'Tim Diklat Wilayah';
+      const email = document.getElementById('form-user-email').value.trim().toLowerCase();
+      const password = document.getElementById('form-user-password').value;
+      const role = document.getElementById('form-user-role').value;
+      const active = document.getElementById('form-user-active').value === 'true';
+
+      const permissions = {};
+      PERMISSION_KEYS.forEach(k => {
+        const cb = document.getElementById(`perm-${k}`);
+        permissions[k] = cb ? cb.checked : false;
+      });
+
+      const btn = document.getElementById('btn-submit-user');
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan akun...';
+
+      try {
+        if (isFirebaseReady && db && auth) {
+          if (!editEmail) {
+            // Daftarkan akun baru di Firebase Auth menggunakan Secondary App agar Super Admin tidak logout
+            if (!password || password.length < 6) {
+              throw new Error('Kata sandi akun baru minimal 6 karakter.');
+            }
+            const secondaryAppName = 'UserCreator_' + Date.now();
+            const secondaryApp = firebase.initializeApp(window.FIREBASE_CONFIG, secondaryAppName);
+            try {
+              await secondaryApp.auth().createUserWithEmailAndPassword(email, password);
+              await secondaryApp.auth().signOut();
+            } catch (authErr) {
+              if (authErr.code !== 'auth/email-already-in-use') {
+                throw authErr;
+              }
+            } finally {
+              await secondaryApp.delete();
+            }
+          }
+
+          await db.collection('admin_users').doc(email).set({
+            email,
+            name,
+            division,
+            role,
+            active,
+            permissions,
+            updatedAt: new Date().toISOString(),
+            updatedBy: currentUserProfile ? currentUserProfile.email : 'super_admin'
+          }, { merge: true });
+
+          toast(editEmail ? 'Hak akses pengguna diperbarui di Firebase!' : 'Pengguna baru berhasil didaftarkan ke Firebase!');
+        } else {
+          // Mode Lokal
+          if (editEmail) {
+            const idx = adminUsers.findIndex(u => u.email === editEmail);
+            if (idx !== -1) {
+              adminUsers[idx] = normalizeUserRecord({
+                ...adminUsers[idx],
+                name,
+                division,
+                role,
+                active,
+                permissions,
+                password: password ? password : adminUsers[idx].password
+              });
+            }
+          } else {
+            if (adminUsers.some(u => u.email === email)) {
+              throw new Error('Email tersebut sudah terdaftar.');
+            }
+            adminUsers.push(normalizeUserRecord({
+              email,
+              password,
+              name,
+              division,
+              role,
+              active,
+              permissions
+            }));
+          }
+          localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+          renderUsersPanel();
+          toast('Data pengguna & hak akses berhasil disimpan!');
+        }
+        closeUserModal();
+      } catch (err) {
+        console.error(err);
+        alert('Gagal menyimpan pengguna: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Pengguna & Hak Akses';
+      }
+    }
+
+    async function toggleUserActiveStatus(email) {
+      if (!hasPermission('manage_users')) return;
+      const target = adminUsers.find(u => u.email === email);
+      if (!target) return;
+      const nextStatus = !target.active;
+
+      if (isFirebaseReady && db) {
+        await db.collection('admin_users').doc(email).set({ active: nextStatus }, { merge: true });
+      } else {
+        target.active = nextStatus;
+        localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+        renderUsersPanel();
+      }
+      toast(`Akun ${target.name} ${nextStatus ? 'diaktifkan' : 'dinonaktifkan'}.`);
+    }
+
+    async function deleteUserAccount(email) {
+      if (!hasPermission('manage_users')) return;
+      if (currentUserProfile && email === currentUserProfile.email) {
+        alert('Anda tidak dapat menghapus akun yang sedang digunakan login.');
+        return;
+      }
+      if (!confirm(`Hapus hak akses pengguna "${email}" dari sistem?`)) return;
+
+      if (isFirebaseReady && db) {
+        await db.collection('admin_users').doc(email).delete();
+      } else {
+        adminUsers = adminUsers.filter(u => u.email !== email);
+        localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+        renderUsersPanel();
+      }
+      toast('Pengguna dihapus dari daftar pengelola.');
     }
 
     function toast(msg) {

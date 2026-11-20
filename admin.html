@@ -363,8 +363,44 @@
                     <p class="text-xs font-extrabold text-navy-900 underline" id="prev-cert-signer">Muslimin, M.Pd.I.,Gr.</p>
                   </div>
                 </div>
-              </div>
+          </div>
             </div>
+          </div>
+        </div>
+
+        <!-- DAFTAR LENGKAP PEMILIK E-SERTIFIKAT KEGIATAN INI -->
+        <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
+          <div class="p-5 border-b border-blue-100 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-base sm:text-lg font-extrabold text-navy-900">Daftar Pemilik E-Sertifikat</h2>
+                <span id="studio-owners-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-100 text-blue-800">0 Pemilik</span>
+                <span id="studio-owners-release-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">MENUNGGU RILIS</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Daftar otomatis seluruh peserta yang berhak menerima E-Sertifikat beserta nomor sertifikat, status rilis, dan tautan verifikasi kepemilikannya.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="text" id="studio-cert-search" oninput="renderStudioCertificateOwners()" placeholder="Cari nama, sekolah, atau no. sertifikat..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs w-full sm:w-64 outline-none focus:border-blue-500" />
+              <button type="button" onclick="exportCertificateOwnersCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
+                Export Daftar Sertifikat (CSV)
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-blue-50/80 border-b border-blue-100 text-navy-900 font-bold">
+                <tr>
+                  <th class="p-3.5">No</th>
+                  <th class="p-3.5">Nomor Sertifikat & Kode</th>
+                  <th class="p-3.5">Nama Pemilik & Gelar</th>
+                  <th class="p-3.5">Asal Sekolah & Kab/Kota</th>
+                  <th class="p-3.5">Peran & JP</th>
+                  <th class="p-3.5">Status Sertifikat</th>
+                  <th class="p-3.5 text-right">Halaman Informasi Sertifikat</th>
+                </tr>
+              </thead>
+              <tbody id="studio-cert-owners-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -407,17 +443,22 @@
         </form>
 
         <div class="bg-white rounded-2xl border border-blue-100 overflow-hidden shadow-xs">
+          <div class="p-4 border-b border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
+            <span id="att-summary-label" class="text-xs font-bold text-navy-900">Menampilkan 0 peserta hadir</span>
+            <input type="text" id="att-search-input" oninput="renderAttendeesPanel()" placeholder="Cari nama peserta, sekolah, kab/kota, atau nomor sertifikat..." class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs w-full sm:w-72 outline-none focus:border-blue-500" />
+          </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-blue-50/80 border-b border-blue-100 text-navy-900 font-bold">
                 <tr>
                   <th class="p-3.5">No</th>
+                  <th class="p-3.5">Nomor Sertifikat</th>
                   <th class="p-3.5">Nama Lengkap & Gelar</th>
                   <th class="p-3.5">Asal Sekolah / Instansi</th>
                   <th class="p-3.5">Kabupaten / Kota</th>
                   <th class="p-3.5">Peran</th>
                   <th class="p-3.5">WhatsApp</th>
-                  <th class="p-3.5">Waktu Hadir</th>
+                  <th class="p-3.5">Status Sertifikat</th>
                   <th class="p-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
@@ -1711,6 +1752,7 @@ const DEFAULT_EVENTS = [
           if (!err && url) document.getElementById('studio-qr-img').src = url;
         });
       }
+      renderStudioCertificateOwners();
     }
 
     async function saveCertificateStudio(e) {
@@ -1747,27 +1789,288 @@ const DEFAULT_EVENTS = [
     }
 
     // PANEL 3: DAFTAR HADIR
+    function formatDateIndoAdmin(start, end) {
+      if (!start) return '-';
+      const opts = { day: 'numeric', month: 'short', year: 'numeric' };
+      const d1 = new Date(start).toLocaleDateString('id-ID', opts);
+      if (!end || start === end) return d1;
+      const d2 = new Date(end).toLocaleDateString('id-ID', opts);
+      return `${d1} – ${d2}`;
+    }
+
+    function getPortalIndexBaseUrl() {
+      const cleanUrl = window.location.href.split('#')[0].split('?')[0];
+      if (cleanUrl.endsWith('/')) return cleanUrl + 'index.html';
+      return cleanUrl.replace(/[^/]*$/, 'index.html');
+    }
+
+    function encodeCertPayloadBase64(obj) {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+    }
+
+    function evaluateEventCertificateRelease(ev, overrideCfg = null) {
+      const cert = overrideCfg || ev.certificate || {};
+      const mode = cert.releaseMode || (cert.enabled === false ? 'disabled' : 'after_end');
+      if (mode === 'disabled' || cert.enabled === false) {
+        return { released: false, mode: 'disabled', label: 'Ditahan Admin', badgeClass: 'bg-rose-100 text-rose-700' };
+      }
+      if (mode === 'manual_now') {
+        return { released: true, mode: 'manual_now', label: 'Sudah Rilis', badgeClass: 'bg-emerald-100 text-emerald-700' };
+      }
+      const endDateStr = cert.customEndDate || ev.dateEnd || ev.dateStart;
+      const endTimeStr = cert.customEndTime || ev.timeEnd || parseEndTimeFromText(ev.time) || '16:00';
+      if (!endDateStr) {
+        return { released: true, mode: 'after_end', label: 'Sudah Rilis', badgeClass: 'bg-emerald-100 text-emerald-700' };
+      }
+      const [y, m, d] = endDateStr.split('-').map(Number);
+      const [hh, mm] = endTimeStr.split(':').map(Number);
+      const targetTs = new Date(y, (m || 1) - 1, d || 1, hh || 16, mm || 0, 0).getTime();
+      const isReleased = Date.now() >= targetTs;
+      return isReleased
+        ? { released: true, mode: 'after_end', label: 'Sudah Rilis', badgeClass: 'bg-emerald-100 text-emerald-700' }
+        : { released: false, mode: 'after_end', label: 'Menunggu Rilis', badgeClass: 'bg-amber-100 text-amber-800' };
+    }
+
+    function buildAttendeeCertMeta(ev, attendee, descIndex, totalCount, overrideCfg = null) {
+      const certCfg = overrideCfg || ev.certificate || {};
+      const seqNum = String(totalCount - descIndex).padStart(3, '0');
+      const prefix = certCfg.prefix || 'SERT/JSIT-LPG/2026';
+      const certNumber = `${seqNum}/${prefix}`;
+      const verCode = `JSIT-${String(ev.id || '001').slice(-3).toUpperCase()}-${seqNum}`;
+      const jp = certCfg.jp || '8 JP';
+      const certRoleLabel = certCfg.roleLabel || 'Peserta';
+      const attendanceRole = attendee.role || certRoleLabel;
+      const signerName = certCfg.signerName || settings.signerName || 'Muslimin, M.Pd.I.,Gr.';
+      const signerTitle = certCfg.signerTitle || settings.signerTitle || 'Ketua JSIT Indonesia Wilayah Lampung';
+      const dateRange = formatDateIndoAdmin(ev.dateStart, ev.dateEnd);
+      const issuedDate = formatDateIndoAdmin(ev.dateEnd || ev.dateStart, '');
+      const relInfo = evaluateEventCertificateRelease(ev, certCfg);
+
+      const compactPayload = {
+        no: certNumber,
+        kab: attendee.region || 'Provinsi Lampung',
+        tgl: dateRange,
+        ins: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+        ttd: `${signerName} - ${signerTitle}`,
+        hal: ev.title || 'Kegiatan JSIT Lampung',
+        nama: attendee.name,
+        sek: attendee.school || '-',
+        sts: certRoleLabel,
+        jp: jp,
+        iss: issuedDate,
+        evId: ev.id || '',
+        attId: attendee.id || '',
+        code: verCode
+      };
+
+      const encoded = encodeCertPayloadBase64(compactPayload);
+      const verificationUrl = `${getPortalIndexBaseUrl()}#verifikasi?cert=${encodeURIComponent(verCode)}&v=${encodeURIComponent(encoded)}`;
+
+      return {
+        seqNum,
+        certNumber,
+        verCode,
+        jp,
+        certRoleLabel,
+        attendanceRole,
+        relInfo,
+        verificationUrl
+      };
+    }
+
+    function copyTextToClipboard(text, message = 'Tautan berhasil disalin!') {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => toast(message)).catch(() => {
+          const tmp = document.createElement('textarea');
+          tmp.value = text;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+          toast(message);
+        });
+      } else {
+        const tmp = document.createElement('textarea');
+        tmp.value = text;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        toast(message);
+      }
+    }
+
+    function renderStudioCertificateOwners() {
+      const evId = document.getElementById('cert-event-selector')?.value;
+      const ev = events.find(e => e.id === evId);
+      const tbody = document.getElementById('studio-cert-owners-tbody');
+      if (!ev || !tbody) return;
+
+      const draftCfg = {
+        ...(ev.certificate || {}),
+        releaseMode: document.getElementById('studio-cert-release-mode')?.value || 'after_end',
+        customEndDate: document.getElementById('studio-cert-end-date')?.value || ev.dateEnd || ev.dateStart,
+        customEndTime: document.getElementById('studio-cert-end-time')?.value || ev.timeEnd || parseEndTimeFromText(ev.time),
+        jp: document.getElementById('studio-cert-jp')?.value || '8 JP',
+        roleLabel: document.getElementById('studio-cert-role')?.value || 'Peserta',
+        prefix: document.getElementById('studio-cert-prefix')?.value || 'SERT/JSIT-LPG/2026',
+        signerName: document.getElementById('studio-cert-signer')?.value || settings.signerName,
+        signerTitle: document.getElementById('studio-cert-title')?.value || settings.signerTitle
+      };
+
+      const list = ev.attendees || [];
+      const relInfo = evaluateEventCertificateRelease(ev, draftCfg);
+      const countBadge = document.getElementById('studio-owners-count-badge');
+      const relBadge = document.getElementById('studio-owners-release-badge');
+      if (countBadge) countBadge.textContent = `${list.length} Pemilik Sertifikat`;
+      if (relBadge) {
+        relBadge.textContent = relInfo.label.toUpperCase();
+        relBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-extrabold ${relInfo.badgeClass}`;
+      }
+
+      const q = (document.getElementById('studio-cert-search')?.value || '').trim().toLowerCase();
+      const enriched = list.map((a, idx) => ({
+        attendee: a,
+        meta: buildAttendeeCertMeta(ev, a, idx, list.length, draftCfg)
+      })).filter(item => {
+        if (!q) return true;
+        return (
+          (item.attendee.name || '').toLowerCase().includes(q) ||
+          (item.attendee.school || '').toLowerCase().includes(q) ||
+          (item.attendee.region || '').toLowerCase().includes(q) ||
+          item.meta.certNumber.toLowerCase().includes(q) ||
+          item.meta.verCode.toLowerCase().includes(q)
+        );
+      });
+
+      tbody.innerHTML = enriched.length ? enriched.map((item, rowIdx) => {
+        const { attendee: a, meta } = item;
+        const safeUrl = meta.verificationUrl.replace(/'/g, "\\'");
+        const safeName = (a.name || '').replace(/'/g, "\\'");
+        return `
+          <tr class="hover:bg-blue-50/40">
+            <td class="p-3.5 font-bold text-slate-500">${rowIdx + 1}</td>
+            <td class="p-3.5">
+              <div class="font-mono font-bold text-navy-900">${meta.certNumber}</div>
+              <div class="text-[11px] text-slate-500">Kode: <span class="font-mono font-semibold">${meta.verCode}</span></div>
+            </td>
+            <td class="p-3.5 font-bold text-navy-900">${a.name}</td>
+            <td class="p-3.5">
+              <div class="text-slate-800 font-medium">${a.school || '-'}</div>
+              <div class="text-[11px] text-slate-500">${a.region || '-'}</div>
+            </td>
+            <td class="p-3.5 text-slate-700">${meta.certRoleLabel} • <span class="font-bold">${meta.jp}</span></td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${meta.relInfo.badgeClass}">${meta.relInfo.label}</span>
+            </td>
+            <td class="p-3.5 text-right">
+              <div class="inline-flex items-center gap-1.5 justify-end">
+                <a href="${meta.verificationUrl}" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition">
+                  Buka Info Sertifikat &nearr;
+                </a>
+                <button type="button" onclick="copyTextToClipboard('${safeUrl}', 'Tautan verifikasi ${safeName} disalin!')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition">
+                  Salin Link
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada pemilik E-Sertifikat yang sesuai pencarian pada kegiatan ini.</td></tr>`;
+    }
+
+    function exportCertificateOwnersCSV() {
+      const evId = document.getElementById('cert-event-selector')?.value;
+      const ev = events.find(e => e.id === evId);
+      if (!ev || !(ev.attendees || []).length) {
+        alert('Belum ada data pemilik sertifikat untuk diekspor.');
+        return;
+      }
+      const list = ev.attendees || [];
+      const headers = ['No', 'Nomor Sertifikat', 'Kode Validasi', 'Status Sertifikat', 'Nama Lengkap & Gelar', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran Sertifikat', 'Bobot JP', 'WhatsApp', 'Waktu Hadir', 'Tautan Verifikasi Sertifikat'];
+      const rows = list.map((a, idx) => {
+        const meta = buildAttendeeCertMeta(ev, a, idx, list.length);
+        return [
+          idx + 1,
+          meta.certNumber,
+          meta.verCode,
+          meta.relInfo.label,
+          a.name,
+          a.school,
+          a.region,
+          meta.certRoleLabel,
+          meta.jp,
+          a.phone,
+          a.timestamp || '-',
+          meta.verificationUrl
+        ];
+      });
+      const csvContent = '\uFEFF' + [headers, ...rows]
+        .map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Daftar_Pemilik_Sertifikat_${(ev.title || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast('CSV Daftar Pemilik Sertifikat diunduh!');
+    }
+
+    // PANEL 3: DAFTAR HADIR (DILENGKAPI NOMOR & STATUS SERTIFIKAT)
     function renderAttendeesPanel() {
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
       const tbody = document.getElementById('panel-att-tbody');
-      if (!ev) return;
+      if (!ev || !tbody) return;
 
       const list = ev.attendees || [];
-      tbody.innerHTML = list.length ? list.map((a, idx) => `
-        <tr class="hover:bg-blue-50/40">
-          <td class="p-3.5 font-bold text-slate-500">${idx + 1}</td>
-          <td class="p-3.5 font-bold text-navy-900">${a.name}</td>
-          <td class="p-3.5 text-slate-700">${a.school}</td>
-          <td class="p-3.5 text-slate-600">${a.region}</td>
-          <td class="p-3.5 text-slate-600">${a.role || 'Peserta'}</td>
-          <td class="p-3.5 font-mono text-slate-700">${a.phone}</td>
-          <td class="p-3.5 text-slate-400">${a.timestamp || '-'}</td>
-          <td class="p-3.5 text-right">
-            <button onclick="deleteAttendeeItem('${a.id}')" class="text-rose-600 hover:underline font-bold">Hapus</button>
-          </td>
-        </tr>
-      `).join('') : `<tr><td colspan="8" class="p-8 text-center text-slate-400">Belum ada peserta hadir pada kegiatan ini.</td></tr>`;
+      const q = (document.getElementById('att-search-input')?.value || '').trim().toLowerCase();
+      const enriched = list.map((a, idx) => ({
+        attendee: a,
+        meta: buildAttendeeCertMeta(ev, a, idx, list.length)
+      })).filter(item => {
+        if (!q) return true;
+        return (
+          (item.attendee.name || '').toLowerCase().includes(q) ||
+          (item.attendee.school || '').toLowerCase().includes(q) ||
+          (item.attendee.region || '').toLowerCase().includes(q) ||
+          item.meta.certNumber.toLowerCase().includes(q) ||
+          item.meta.verCode.toLowerCase().includes(q)
+        );
+      });
+
+      const summaryEl = document.getElementById('att-summary-label');
+      if (summaryEl) {
+        summaryEl.textContent = `Menampilkan ${enriched.length} dari ${list.length} peserta hadir (otomatis terdaftar sebagai pemilik E-Sertifikat)`;
+      }
+
+      tbody.innerHTML = enriched.length ? enriched.map((item, rowIdx) => {
+        const { attendee: a, meta } = item;
+        return `
+          <tr class="hover:bg-blue-50/40">
+            <td class="p-3.5 font-bold text-slate-500">${rowIdx + 1}</td>
+            <td class="p-3.5">
+              <div class="font-mono font-bold text-navy-900">${meta.certNumber}</div>
+              <div class="text-[11px] text-slate-400">${meta.verCode}</div>
+            </td>
+            <td class="p-3.5 font-bold text-navy-900">${a.name}</td>
+            <td class="p-3.5 text-slate-700">${a.school}</td>
+            <td class="p-3.5 text-slate-600">${a.region}</td>
+            <td class="p-3.5 text-slate-600">${meta.attendanceRole}</td>
+            <td class="p-3.5 font-mono text-slate-700">${a.phone}</td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${meta.relInfo.badgeClass}">${meta.relInfo.label}</span>
+            </td>
+            <td class="p-3.5 text-right">
+              <div class="inline-flex items-center gap-2 justify-end">
+                <a href="${meta.verificationUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Cek Sertifikat &nearr;</a>
+                <button onclick="deleteAttendeeItem('${a.id}')" class="text-rose-600 hover:underline font-bold">Hapus</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') : `<tr><td colspan="9" class="p-8 text-center text-slate-400">Belum ada peserta hadir pada kegiatan ini.</td></tr>`;
     }
 
     async function handleAddManualAttendee(e) {
@@ -1828,24 +2131,37 @@ const DEFAULT_EVENTS = [
         alert('Belum ada data kehadiran untuk diexport.');
         return;
       }
-      const headers = ['No', 'Nama Lengkap', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran', 'WhatsApp', 'Waktu Hadir'];
-      const rows = ev.attendees.map((a, i) => [
-        i + 1,
-        `"${(a.name || '').replace(/"/g, '""')}"`,
-        `"${(a.school || '').replace(/"/g, '""')}"`,
-        `"${(a.region || '').replace(/"/g, '""')}"`,
-        `"${(a.role || '').replace(/"/g, '""')}"`,
-        `"${(a.phone || '').replace(/"/g, '""')}"`,
-        `"${(a.timestamp || '').replace(/"/g, '""')}"`
-      ]);
-      const csv = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const a = document.createElement('a');
-      a.href = encodeURI(csv);
-      a.download = `Daftar_Hadir_${ev.id}.csv`;
-      a.click();
-      toast('CSV Daftar Hadir diunduh!');
+      const list = ev.attendees || [];
+      const headers = ['No', 'Nomor Sertifikat', 'Kode Validasi', 'Status Sertifikat', 'Nama Lengkap', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran', 'Bobot JP', 'WhatsApp', 'Waktu Hadir', 'Tautan Verifikasi Sertifikat'];
+      const rows = list.map((a, idx) => {
+        const meta = buildAttendeeCertMeta(ev, a, idx, list.length);
+        return [
+          idx + 1,
+          meta.certNumber,
+          meta.verCode,
+          meta.relInfo.label,
+          a.name,
+          a.school,
+          a.region,
+          meta.attendanceRole,
+          meta.jp,
+          a.phone,
+          a.timestamp || '-',
+          meta.verificationUrl
+        ];
+      });
+      const csvContent = '\uFEFF' + [headers, ...rows]
+        .map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Daftar_Hadir_dan_Sertifikat_${(ev.title || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast('CSV Daftar Hadir & Sertifikat diunduh!');
     }
-
     // PANEL 4: MATERI & REKAMAN
     function renderResourcesPanel() {
       const evId = document.getElementById('res-event-selector').value;

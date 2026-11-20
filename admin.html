@@ -35,6 +35,10 @@
               900: '#0B1F3A',
               800: '#12315B',
             }
+          },
+          boxShadow: {
+            '2xs': '0 1px 1px 0 rgb(0 0 0 / 0.03)',
+            'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
           }
         }
       }
@@ -79,7 +83,10 @@
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
-          <input type="password" id="admin-password-input" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+          <div class="relative">
+            <input type="password" id="admin-password-input" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-3 pr-16 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+            <button type="button" onclick="toggleLoginPasswordVisibility()" id="btn-toggle-pwd" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-blue-600 hover:text-blue-800">Lihat</button>
+          </div>
           <p id="login-hint-text" class="text-[11px] text-slate-500 mt-1.5">Masuk menggunakan email dan kata sandi sesuai peran akses Anda (Super Admin, Admin Kegiatan, Operator, atau Panitia).</p>
         </div>
 
@@ -217,7 +224,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Upload Flyer</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan, dan kelola sub-fitur setiap kegiatan sesuai hak akses akun Anda.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan, bagikan QR/link presensi, dan kelola sub-fitur setiap kegiatan.</p>
           </div>
           <div class="flex flex-wrap gap-2 shrink-0">
             <button onclick="seedDefaultEventsToCloud()" id="btn-seed-cloud" class="hidden px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition">
@@ -485,8 +492,7 @@
                     <img id="studio-qr-img" src="" alt="QR Verifikasi" class="w-12 h-12 rounded border border-slate-200 bg-white p-0.5 pointer-events-none" />
                     <div id="studio-qr-text-box" class="text-[9px] leading-tight text-slate-500 bg-white/85 px-1.5 py-1 rounded pointer-events-none">
                       <strong class="text-navy-900 block">Scan Verifikasi</strong>
-                      JSIT Wilayah Lampung<br/>
-                      Tim Diklat Wilayah
+                      <span id="prev-qr-org-sub">JSIT Wilayah Lampung - Tim Diklat Wilayah</span>
                     </div>
                   </div>
                   <div id="studio-signer-block" title="Klik & geser untuk menyesuaikan letak Tanda Tangan" class="draggable-cert-el text-center pr-2 origin-bottom rounded-lg ring-1 ring-dashed ring-amber-500/80 hover:ring-2 hover:ring-amber-600 p-1">
@@ -511,7 +517,7 @@
                 <span id="studio-owners-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-100 text-blue-800">0 Pemilik</span>
                 <span id="studio-owners-release-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">MENUNGGU RILIS</span>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">Daftar otomatis seluruh peserta yang berhak menerima E-Sertifikat beserta nomor sertifikat, status rilis, dan tautan verifikasi kepemilikannya.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Daftar otomatis seluruh peserta yang berhak menerima E-Sertifikat beserta nomor sertifikat, status rilis, dan tautan distribusi WhatsApp.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <input type="text" id="studio-cert-search" oninput="renderStudioCertificateOwners()" placeholder="Cari nama, sekolah, atau no. sertifikat..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs w-full sm:w-64 outline-none focus:border-blue-500" />
@@ -530,7 +536,7 @@
                   <th class="p-3.5">Asal Sekolah & Kab/Kota</th>
                   <th class="p-3.5">Peran & JP</th>
                   <th class="p-3.5">Status Sertifikat</th>
-                  <th class="p-3.5 text-right">Halaman Informasi Sertifikat</th>
+                  <th class="p-3.5 text-right">Distribusi & Verifikasi</th>
                 </tr>
               </thead>
               <tbody id="studio-cert-owners-tbody" class="divide-y divide-slate-100"></tbody>
@@ -544,10 +550,13 @@
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Daftar Hadir & Rekapitulasi Peserta</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Pantau peserta yang mengisi presensi secara real-time, tambah/edit data peserta, atau unduh laporan CSV/Excel.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Pantau peserta yang mengisi presensi secara real-time, tambah/import massal data peserta, atau unduh laporan CSV/Excel.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <select id="att-event-selector" onchange="renderAttendeesPanel()" class="px-3.5 py-2.5 rounded-xl border-2 border-blue-300 bg-blue-50/40 text-xs sm:text-sm font-bold text-navy-900 outline-none max-w-xs"></select>
+            <button id="btn-bulk-import-att" onclick="openBulkImportModal()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs transition">
+              + Import Massal (CSV/Excel)
+            </button>
             <button id="btn-export-att-csv" onclick="exportCurrentAttendeesCSV()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-xs transition">
               Export CSV / Excel
             </button>
@@ -564,10 +573,24 @@
             <span class="text-[10px] font-bold uppercase text-slate-400 block">Sekolah / Lembaga</span>
             <span class="text-lg font-extrabold text-blue-700" id="att-stat-schools">0 Instansi</span>
           </div>
-          <div class="bg-white rounded-xl border border-blue-100 p-3.5">
-            <span class="text-[10px] font-bold uppercase text-slate-400 block">Sebaran Wilayah</span>
-            <span class="text-lg font-extrabold text-sky-700" id="att-stat-regions">0 Kab/Kota</span>
+          <div class="bg-white rounded-xl border border-blue-100 p-3.5 flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Sebaran Wilayah</span>
+              <span class="text-lg font-extrabold text-sky-700" id="att-stat-regions">0 Kab/Kota</span>
+            </div>
+            <button type="button" onclick="toggleRegionBreakdown()" class="px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 text-[11px] font-bold border border-sky-200 transition">
+              Rincian
+            </button>
           </div>
+        </div>
+
+        <!-- Rincian Sebaran per Kab/Kota (Collapsible) -->
+        <div id="att-region-breakdown-box" class="hidden bg-white rounded-2xl border border-sky-200 p-4 space-y-2.5 shadow-2xs">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-navy-900">Rekapitulasi Peserta per Kabupaten / Kota</h3>
+            <button type="button" onclick="toggleRegionBreakdown()" class="text-xs font-bold text-slate-400 hover:text-slate-600">Tutup &times;</button>
+          </div>
+          <div id="att-region-breakdown-list" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 text-xs"></div>
         </div>
 
         <form onsubmit="handleAddManualAttendee(event)" id="form-add-manual-att" class="bg-white p-4 rounded-2xl border border-blue-100 grid sm:grid-cols-6 gap-2.5 items-end">
@@ -623,7 +646,7 @@
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Materi & Rekaman Kegiatan</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambahkan modul PDF/PPTX/Google Drive dan tautan video YouTube / Zoom untuk masing-masing kegiatan.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Tambahkan atau edit modul PDF/PPTX/Google Drive dan tautan video YouTube / Zoom untuk masing-masing kegiatan.</p>
           </div>
           <div class="md:w-80">
             <label class="block text-[11px] font-bold uppercase text-blue-700 mb-1">Pilih Kegiatan:</label>
@@ -634,7 +657,8 @@
         <div class="grid lg:grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">A. Modul & Bahan Tayang (Materi)</h3>
-            <form onsubmit="handleAddMaterial(event)" id="form-add-material" class="space-y-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
+            <form onsubmit="handleSaveMaterial(event)" id="form-add-material" class="space-y-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
+              <input type="hidden" id="res-mat-edit-id" />
               <input type="text" id="res-mat-title" required placeholder="Judul Materi (mis: Slide Narasumber Sesi 1)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
               <div class="grid grid-cols-3 gap-2">
                 <select id="res-mat-type" class="px-2.5 py-2 rounded-lg border border-slate-300 text-xs bg-white">
@@ -648,7 +672,8 @@
               </div>
               <div class="flex gap-2">
                 <input type="text" id="res-mat-desc" placeholder="Deskripsi singkat..." class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
-                <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">+ Tambah</button>
+                <button type="submit" id="btn-submit-mat" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">+ Tambah</button>
+                <button type="button" id="btn-cancel-mat-edit" onclick="cancelEditMaterial()" class="hidden px-3 py-2 rounded-lg bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
               </div>
             </form>
             <div id="res-mat-list" class="space-y-2.5"></div>
@@ -656,7 +681,8 @@
 
           <div class="bg-white rounded-2xl border border-blue-100 p-5 space-y-4 shadow-xs">
             <h3 class="font-bold text-base text-navy-900 border-b border-slate-100 pb-2">B. Video Rekaman & Dokumentasi</h3>
-            <form onsubmit="handleAddRecording(event)" id="form-add-recording" class="space-y-2.5 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100">
+            <form onsubmit="handleSaveRecording(event)" id="form-add-recording" class="space-y-2.5 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100">
+              <input type="hidden" id="res-rec-edit-id" />
               <input type="text" id="res-rec-title" required placeholder="Judul Rekaman (mis: Tayangan Ulang Full Sesi)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
               <div class="grid grid-cols-3 gap-2">
                 <select id="res-rec-platform" class="px-2.5 py-2 rounded-lg border border-slate-300 text-xs bg-white">
@@ -669,7 +695,8 @@
               </div>
               <div class="flex gap-2">
                 <input type="text" id="res-rec-notes" placeholder="Keterangan rekaman..." class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white" />
-                <button type="submit" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-xs font-bold hover:bg-sky-700">+ Tambah</button>
+                <button type="submit" id="btn-submit-rec" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-xs font-bold hover:bg-sky-700">+ Tambah</button>
+                <button type="button" id="btn-cancel-rec-edit" onclick="cancelEditRecording()" class="hidden px-3 py-2 rounded-lg bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
               </div>
             </form>
             <div id="res-rec-list" class="space-y-2.5"></div>
@@ -823,6 +850,72 @@ service cloud.firestore {
       </section>
 
     </main>
+  </div>
+
+  <!-- MODAL QR CODE & TAUTAN CEPAT KEGIATAN (UNTUK PROYEKTOR / MEJA REGISTRASI) -->
+  <div id="event-qr-modal" onclick="if(event.target===this) closeEventQrModal()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-4 flex items-center justify-center">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden my-auto">
+      <div class="bg-navy-900 text-white p-5 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-sky-300 block">Akses Cepat Peserta</span>
+          <h3 class="font-bold text-base">QR Code & Tautan Presensi</h3>
+        </div>
+        <button type="button" onclick="closeEventQrModal()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold">Tutup &times;</button>
+      </div>
+      <div class="p-6 text-center space-y-4">
+        <p id="qr-modal-event-title" class="font-display font-bold text-sm text-navy-900 leading-snug">Judul Kegiatan</p>
+        <div class="inline-block p-3 bg-white border-2 border-blue-200 rounded-2xl shadow-sm">
+          <img id="qr-modal-img" src="" alt="QR Code Kegiatan" class="w-52 h-52 mx-auto" />
+        </div>
+        <p class="text-[11px] text-slate-500">Arahkan kamera HP peserta untuk memindai QR Code di atas agar langsung masuk ke formulir <strong>Daftar Hadir</strong> kegiatan ini.</p>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 break-all" id="qr-modal-url-text"></div>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="button" onclick="copyEventQrLink()" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition">
+            Salin Link Presensi
+          </button>
+          <button type="button" onclick="downloadEventQrPoster()" class="py-2.5 px-3 rounded-xl bg-navy-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+            Unduh Gambar QR
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL IMPORT MASSAL PESERTA (CSV / PASTE EXCEL) -->
+  <div id="bulk-import-modal" onclick="if(event.target===this) closeBulkImportModal()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-8">
+      <div class="bg-navy-900 text-white p-5 flex items-center justify-between">
+        <h3 class="font-bold text-base">Import Massal Daftar Hadir Peserta (CSV / Excel)</h3>
+        <button type="button" onclick="closeBulkImportModal()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold">Tutup &times;</button>
+      </div>
+      <div class="p-5 sm:p-6 space-y-4">
+        <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-navy-900 space-y-1.5">
+          <p class="font-bold">Format Kolom (Pisahkan dengan koma <code>,</code> atau titik koma <code>;</code> atau Tab dari Excel):</p>
+          <code class="block p-2 rounded bg-white border border-blue-100 text-[11px] text-blue-800">Nama Lengkap &amp; Gelar, Asal Sekolah, Kabupaten/Kota, No WhatsApp, Peran</code>
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <label class="px-3 py-1.5 rounded-lg bg-navy-900 hover:bg-blue-800 text-white text-[11px] font-bold cursor-pointer transition">
+              <span>Pilih File .CSV...</span>
+              <input type="file" accept=".csv,.txt" onchange="handleBulkCsvFile(event)" class="hidden" />
+            </label>
+            <button type="button" onclick="downloadBulkCsvTemplate()" class="px-3 py-1.5 rounded-lg bg-white border border-blue-300 text-blue-800 text-[11px] font-bold hover:bg-blue-100 transition">
+              Unduh Template CSV
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Tempel Data Peserta di Sini (Satu baris per peserta):</label>
+          <textarea id="bulk-import-textarea" rows="7" placeholder="Ahmad Fauzi, S.Pd., SDIT Permata Bunda, Kota Bandar Lampung, 081234567890, Peserta&#10;Siti Aminah, M.Pd., SMPIT Insan Kamil, Kota Metro, 082198765432, Kepala Sekolah" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono outline-none focus:border-blue-600"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeBulkImportModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Batal</button>
+          <button type="button" id="btn-run-bulk-import" onclick="processBulkImportAttendees()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+            Import Semua Peserta ke Daftar Hadir
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL EDIT PESERTA DAFTAR HADIR -->
@@ -1499,6 +1592,8 @@ const DEFAULT_EVENTS = [
     let tempCustomTemplateImg = '';
     let tempEventFlyerImg = '';
     let latestSampleQrDataUrl = '';
+    let activeQrModalUrl = '';
+    let activeQrModalTitle = '';
 
     function escapeHtml(str) {
       return String(str ?? '')
@@ -1507,6 +1602,13 @@ const DEFAULT_EVENTS = [
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function sanitizeUrl(url) {
+      const s = String(url || '').trim();
+      if (!s) return '#';
+      if (/^https?:\/\//i.test(s) || /^data:image\//i.test(s)) return s;
+      return 'https://' + s;
     }
 
     function isFirebaseConfigured() {
@@ -1608,6 +1710,43 @@ const DEFAULT_EVENTS = [
       return item;
     }
 
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const words = String(text || '').split(' ');
+      const lines = [];
+      let currentLine = words[0] || '';
+      for (let i = 1; i < words.length; i++) {
+        const testLine = currentLine + ' ' + words[i];
+        if (ctx.measureText(testLine).width < maxWidth) {
+          currentLine = testLine;
+        } else {
+          lines.push(currentLine);
+          currentLine = words[i];
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    }
+
+    function formatWhatsAppLink(phone, messageText) {
+      let digits = String(phone || '').replace(/\D/g, '');
+      if (!digits) return '';
+      if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+      else if (!digits.startsWith('62')) digits = '62' + digits;
+      return `https://wa.me/${digits}?text=${encodeURIComponent(messageText)}`;
+    }
+
+    function toggleLoginPasswordVisibility() {
+      const inp = document.getElementById('admin-password-input');
+      const btn = document.getElementById('btn-toggle-pwd');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        btn.textContent = 'Sembunyi';
+      } else {
+        inp.type = 'password';
+        btn.textContent = 'Lihat';
+      }
+    }
+
     function setupPreviewDraggableElements() {
       const pairs = [
         { elId: 'studio-qr-block', xInputId: 'studio-qr-x', yInputId: 'studio-qr-y' },
@@ -1699,7 +1838,6 @@ const DEFAULT_EVENTS = [
       document.getElementById('edit-att-region').innerHTML = regionOptionsHTML;
       setupPreviewDraggableElements();
 
-      // Real-time sync antar tab saat menggunakan Mode Lokal
       window.addEventListener('storage', (e) => {
         if (!isFirebaseReady && (e.key === STORAGE_KEY || e.key === SETTINGS_KEY || e.key === USERS_KEY)) {
           loadLocalFallbackAdmin();
@@ -1736,7 +1874,6 @@ const DEFAULT_EVENTS = [
         }
       }
 
-      // Fallback Mode Lokal jika firebase-config.js belum diisi
       const badge = document.getElementById('login-firebase-badge');
       badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
       badge.textContent = 'Mode Lokal Multiuser (Isi firebase-config.js untuk Cloud)';
@@ -1842,6 +1979,8 @@ const DEFAULT_EVENTS = [
       document.getElementById('cfg-signer').value = settings.signerName || DEFAULT_SETTINGS.signerName;
       document.getElementById('cfg-title').value = settings.signerTitle || DEFAULT_SETTINGS.signerTitle;
       document.getElementById('cfg-webhook').value = settings.webhookUrl || '';
+      const qrOrgEl = document.getElementById('prev-qr-org-sub');
+      if (qrOrgEl) qrOrgEl.textContent = settings.orgSub || DEFAULT_SETTINGS.orgSub;
     }
 
     async function handleAdminLogin(e) {
@@ -1924,7 +2063,9 @@ const DEFAULT_EVENTS = [
       }
       document.getElementById('btn-export-cert-owners').classList.toggle('hidden', !hasPermission('export_data'));
 
-      document.getElementById('form-add-manual-att').classList.toggle('hidden', !hasPermission('manage_attendees'));
+      const canManageAtt = hasPermission('manage_attendees');
+      document.getElementById('form-add-manual-att').classList.toggle('hidden', !canManageAtt);
+      document.getElementById('btn-bulk-import-att').classList.toggle('hidden', !canManageAtt);
       document.getElementById('btn-export-att-csv').classList.toggle('hidden', !hasPermission('export_data'));
 
       const canRes = hasPermission('manage_resources');
@@ -1956,6 +2097,7 @@ const DEFAULT_EVENTS = [
           if (doc.exists) {
             settings = { ...DEFAULT_SETTINGS, ...doc.data() };
             applySettingsToInputs();
+            updateCertPreviewLive();
           }
         });
 
@@ -2111,6 +2253,45 @@ const DEFAULT_EVENTS = [
       }
     }
 
+    // MODAL QR CODE & LINK PRESENSI KEGIATAN
+    function openEventQrModal(eventId) {
+      const ev = events.find(e => e.id === eventId);
+      if (!ev) return;
+      const presensiUrl = `${getPortalIndexBaseUrl()}#kegiatan/${encodeURIComponent(ev.id)}/absensi`;
+      activeQrModalUrl = presensiUrl;
+      activeQrModalTitle = ev.title;
+      document.getElementById('qr-modal-event-title').textContent = ev.title;
+      document.getElementById('qr-modal-url-text').textContent = presensiUrl;
+
+      if (window.QRCode) {
+        QRCode.toDataURL(presensiUrl, { width: 320, margin: 2, color: { dark: '#0B1F3A', light: '#FFFFFF' } }, (err, url) => {
+          if (!err && url) {
+            document.getElementById('qr-modal-img').src = url;
+          }
+        });
+      }
+      document.getElementById('event-qr-modal').classList.remove('hidden');
+    }
+
+    function closeEventQrModal() {
+      document.getElementById('event-qr-modal').classList.add('hidden');
+    }
+
+    function copyEventQrLink() {
+      if (!activeQrModalUrl) return;
+      copyTextToClipboard(activeQrModalUrl, 'Tautan presensi kegiatan berhasil disalin!');
+    }
+
+    function downloadEventQrPoster() {
+      const imgSrc = document.getElementById('qr-modal-img')?.src;
+      if (!imgSrc) return;
+      const link = document.createElement('a');
+      link.href = imgSrc;
+      link.download = `QR-Presensi-${(activeQrModalTitle || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+      link.click();
+      toast('Gambar QR Code presensi berhasil diunduh!');
+    }
+
     // PANEL 1: KELOLA KEGIATAN & FLYER
     function renderEventsList() {
       const q = (document.getElementById('filter-event-search').value || '').toLowerCase();
@@ -2159,6 +2340,7 @@ const DEFAULT_EVENTS = [
               </div>
 
               <div class="flex flex-wrap gap-2 shrink-0">
+                <button onclick="openEventQrModal('${safeId}')" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-800 hover:text-white text-xs font-bold transition">QR &amp; Link Presensi</button>
                 ${canManageEv ? `<button onclick="openEventModal('${safeId}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 text-xs font-bold">Edit Info</button>` : ''}
                 ${canManageEv ? `<button onclick="duplicateEventItem('${safeId}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-700 text-xs font-bold">Duplikat</button>` : ''}
                 ${canDeleteEv ? `<button onclick="deleteEventItem('${safeId}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold">Hapus</button>` : ''}
@@ -2483,7 +2665,6 @@ const DEFAULT_EVENTS = [
       const ev = events.find(e => e.id === evId);
       if (!ev) return;
 
-      // Isi dropdown sampel peserta asli untuk pratinjau
       const sampleSel = document.getElementById('studio-sample-attendee');
       if (sampleSel) {
         const prevSample = sampleSel.value;
@@ -2725,7 +2906,6 @@ const DEFAULT_EVENTS = [
         issuedEl.textContent = `Bandar Lampung, ${formatDateIndoAdmin(ev.dateEnd || ev.dateStart, '')}`;
       }
 
-      // Gunakan peserta sampel jika dipilih admin, atau default
       const selectedSampleAttId = document.getElementById('studio-sample-attendee')?.value || '';
       const attList = ev.attendees || [];
       const sampleIdx = selectedSampleAttId ? attList.findIndex(a => a.id === selectedSampleAttId) : -1;
@@ -2799,6 +2979,7 @@ const DEFAULT_EVENTS = [
       const signerOffsetY = parseInt(document.getElementById('studio-signer-y').value || '0', 10);
       const signerScale = parseInt(document.getElementById('studio-signer-scale').value || '100', 10);
       const showIssuedDate = document.getElementById('studio-show-issued-date').checked;
+      const orgSubText = settings.orgSub || DEFAULT_SETTINGS.orgSub;
 
       const ownerName = document.getElementById('prev-cert-owner').textContent || 'Contoh Nama Peserta, S.Pd., M.Pd.';
       const schoolText = document.getElementById('prev-cert-school').textContent || 'SDIT Permata Bunda — Kota Bandar Lampung';
@@ -2867,11 +3048,15 @@ const DEFAULT_EVENTS = [
 
         ctx.fillStyle = txtCol;
         ctx.font = 'bold 31px sans-serif';
-        ctx.fillText(`"${ev.title}"`, W / 2, 686 + yShift);
+        const titleLines = wrapCanvasText(ctx, `"${ev.title}"`, W - 300);
+        titleLines.forEach((line, i) => {
+          ctx.fillText(line, W / 2, 686 + yShift + i * 40);
+        });
 
+        const afterTitleY = 686 + yShift + titleLines.length * 40 + 16;
         ctx.fillStyle = subTxtCol;
         ctx.font = '24px sans-serif';
-        ctx.fillText(`Diselenggarakan oleh JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung pada ${dateRange} (${jp})`, W / 2, 742 + yShift);
+        ctx.fillText(`Diselenggarakan oleh ${orgSubText} pada ${dateRange} (${jp})`, W / 2, afterTitleY);
 
         const qrScaleRatio = qrScale / 100;
         const qrBottomY = 1105 + Math.round(qrOffsetY * (W / 1000));
@@ -2930,8 +3115,8 @@ const DEFAULT_EVENTS = [
             ctx.fillText('Scan Barcode Verifikasi Keaslian', textStartX, qrBaseY + Math.round(38 * qrScaleRatio));
             ctx.fillStyle = '#475569';
             ctx.font = `${Math.round(18 * qrScaleRatio)}px sans-serif`;
-            ctx.fillText('JSIT Wilayah Lampung', textStartX, qrBaseY + Math.round(70 * qrScaleRatio));
-            ctx.fillText('Tim Diklat Wilayah Lampung', textStartX, qrBaseY + Math.round(98 * qrScaleRatio));
+            ctx.fillText(settings.orgName || 'JSIT Wilayah Lampung', textStartX, qrBaseY + Math.round(70 * qrScaleRatio));
+            ctx.fillText(orgSubText, textStartX, qrBaseY + Math.round(98 * qrScaleRatio));
             ctx.fillStyle = '#1D4ED8';
             ctx.font = `bold ${Math.round(18 * qrScaleRatio)}px monospace`;
             ctx.fillText(`Kode: ${verCode}`, textStartX, qrBaseY + Math.round(128 * qrScaleRatio));
@@ -3063,7 +3248,7 @@ const DEFAULT_EVENTS = [
         no: certNumber,
         kab: attendee.region || 'Provinsi Lampung',
         tgl: dateRange,
-        ins: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+        ins: settings.orgSub || DEFAULT_SETTINGS.orgSub,
         ttd: `${signerName} - ${signerTitle}`,
         hal: ev.title || 'Kegiatan JSIT Lampung',
         nama: attendee.name,
@@ -3079,6 +3264,9 @@ const DEFAULT_EVENTS = [
       const encoded = encodeCertPayloadBase64(compactPayload);
       const verificationUrl = `${getPortalIndexBaseUrl()}#verifikasi?cert=${encodeURIComponent(verCode)}&v=${encodeURIComponent(encoded)}`;
 
+      const waMsg = `Assalamu'alaikum Wr. Wb. Bapak/Ibu *${attendee.name}*,\n\nTerima kasih atas partisipasi Anda dalam kegiatan:\n*${ev.title}*\n\nBerikut informasi E-Sertifikat Anda:\n• Nomor Sertifikat: *${certNumber}*\n• Bobot: *${jp}*\n• Tautan Cek & Unduh E-Sertifikat:\n${verificationUrl}\n\nWassalamu'alaikum Wr. Wb.\n_${settings.orgSub || DEFAULT_SETTINGS.orgSub}_`;
+      const waUrl = formatWhatsAppLink(attendee.phone, waMsg);
+
       return {
         seqNum,
         certNumber,
@@ -3087,7 +3275,8 @@ const DEFAULT_EVENTS = [
         certRoleLabel,
         attendanceRole,
         relInfo,
-        verificationUrl
+        verificationUrl,
+        waUrl
       };
     }
 
@@ -3177,8 +3366,9 @@ const DEFAULT_EVENTS = [
             <td class="p-3.5 text-right">
               <div class="inline-flex items-center gap-1.5 justify-end">
                 <a href="${escapeHtml(meta.verificationUrl)}" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition">
-                  Buka Info Sertifikat &nearr;
+                  Buka Info &nearr;
                 </a>
+                ${meta.waUrl ? `<a href="${escapeHtml(meta.waUrl)}" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition">Kirim WA</a>` : ''}
                 <button type="button" data-url="${escapeHtml(meta.verificationUrl)}" data-name="${escapeHtml(a.name)}" onclick="copyTextToClipboard(this.dataset.url, 'Tautan verifikasi ' + this.dataset.name + ' disalin!')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition">
                   Salin Link
                 </button>
@@ -3232,6 +3422,143 @@ const DEFAULT_EVENTS = [
       toast('CSV Daftar Pemilik Sertifikat diunduh!');
     }
 
+    function toggleRegionBreakdown() {
+      const box = document.getElementById('att-region-breakdown-box');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    // BULK IMPORT PESERTA (CSV / EXCEL PASTE)
+    function openBulkImportModal() {
+      if (!hasPermission('manage_attendees')) return;
+      document.getElementById('bulk-import-textarea').value = '';
+      document.getElementById('bulk-import-modal').classList.remove('hidden');
+    }
+
+    function closeBulkImportModal() {
+      document.getElementById('bulk-import-modal').classList.add('hidden');
+    }
+
+    function downloadBulkCsvTemplate() {
+      const csv = '\uFEFFNama Lengkap & Gelar,Asal Sekolah,Kabupaten/Kota,No WhatsApp,Peran\n"Ahmad Fauzi, S.Pd.","SDIT Permata Bunda","Kota Bandar Lampung","081234567890","Peserta"\n"Siti Aminah, M.Pd.","SMPIT Insan Kamil","Kota Metro","082198765432","Kepala Sekolah"\n';
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Template-Import-Peserta-JSIT.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function handleBulkCsvFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        document.getElementById('bulk-import-textarea').value = evt.target.result || '';
+        toast('File CSV berhasil dimuat ke area teks!');
+      };
+      reader.readAsText(file);
+    }
+
+    function parseDelimitedLine(line, delimiter) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === delimiter && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    async function processBulkImportAttendees() {
+      if (!hasPermission('manage_attendees')) return;
+      const evId = document.getElementById('att-event-selector').value;
+      const idx = events.findIndex(e => e.id === evId);
+      if (idx === -1) return;
+
+      const raw = (document.getElementById('bulk-import-textarea').value || '').trim();
+      if (!raw) {
+        alert('Silakan tempel data peserta atau unggah file CSV terlebih dahulu.');
+        return;
+      }
+
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const btn = document.getElementById('btn-run-bulk-import');
+      btn.disabled = true;
+      btn.textContent = 'Mengimpor peserta...';
+
+      try {
+        const now = new Date();
+        const ts = now.toISOString().slice(0,10) + ' ' + now.toTimeString().slice(0,5);
+        let importedCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const delimiter = line.includes('\t') ? '\t' : (line.includes(';') ? ';' : ',');
+          const cols = parseDelimitedLine(line, delimiter);
+          if (!cols[0]) continue;
+          if (i === 0 && cols[0].toLowerCase().includes('nama lengkap')) continue;
+
+          const name = cols[0];
+          const school = cols[1] || 'Sekolah Islam Terpadu';
+          const rawRegion = cols[2] || 'Kota Bandar Lampung';
+          const matchedRegion = LAMPUNG_REGIONS.find(r => r.toLowerCase().includes(rawRegion.toLowerCase())) || rawRegion;
+          const phone = cols[3] || '-';
+          const role = cols[4] || 'Peserta';
+          const attId = 'att-' + Date.now() + '-' + i;
+
+          const newAtt = {
+            id: attId,
+            name,
+            school,
+            region: matchedRegion,
+            role,
+            phone,
+            email: '',
+            timestamp: ts,
+            createdAt: Date.now() + i,
+            verified: true,
+            addedBy: currentUserProfile ? currentUserProfile.email : 'admin_import'
+          };
+
+          if (isFirebaseReady && db) {
+            await db.collection('events').doc(evId).collection('attendees').doc(attId).set(newAtt);
+          } else {
+            if (!events[idx].attendees) events[idx].attendees = [];
+            events[idx].attendees.unshift(newAtt);
+          }
+          importedCount++;
+        }
+
+        if (!isFirebaseReady) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+          syncAllAdminUI();
+        }
+        closeBulkImportModal();
+        toast(`Berhasil mengimpor ${importedCount} peserta ke daftar hadir!`);
+      } catch (err) {
+        console.error(err);
+        alert('Gagal import peserta: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Import Semua Peserta ke Daftar Hadir';
+      }
+    }
+
     function renderAttendeesPanel() {
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
@@ -3241,11 +3568,27 @@ const DEFAULT_EVENTS = [
 
       const list = ev.attendees || [];
       const uniqueSchools = new Set(list.map(a => (a.school || '').trim().toLowerCase()).filter(Boolean)).size;
-      const uniqueRegions = new Set(list.map(a => (a.region || '').trim()).filter(Boolean)).size;
+      const regionCounts = {};
+      list.forEach(a => {
+        const reg = (a.region || 'Lainnya').trim();
+        regionCounts[reg] = (regionCounts[reg] || 0) + 1;
+      });
+      const uniqueRegions = Object.keys(regionCounts).length;
 
       document.getElementById('att-stat-total').textContent = `${list.length} Peserta`;
       document.getElementById('att-stat-schools').textContent = `${uniqueSchools} Instansi`;
       document.getElementById('att-stat-regions').textContent = `${uniqueRegions} Kab/Kota`;
+
+      const breakdownList = document.getElementById('att-region-breakdown-list');
+      if (breakdownList) {
+        const entries = Object.entries(regionCounts).sort((a, b) => b[1] - a[1]);
+        breakdownList.innerHTML = entries.length ? entries.map(([reg, count]) => `
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+            <span class="text-slate-700 font-medium truncate">${escapeHtml(reg)}</span>
+            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-extrabold shrink-0">${count}</span>
+          </div>
+        `).join('') : '<p class="col-span-full text-slate-400">Belum ada data peserta.</p>';
+      }
 
       const q = (document.getElementById('att-search-input')?.value || '').trim().toLowerCase();
       const enriched = list.map((a, idx) => ({
@@ -3287,7 +3630,8 @@ const DEFAULT_EVENTS = [
             </td>
             <td class="p-3.5 text-right">
               <div class="inline-flex items-center gap-2 justify-end">
-                <a href="${escapeHtml(meta.verificationUrl)}" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Cek Sertifikat &nearr;</a>
+                <a href="${escapeHtml(meta.verificationUrl)}" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Cek &nearr;</a>
+                ${meta.waUrl ? `<a href="${escapeHtml(meta.waUrl)}" target="_blank" rel="noopener" class="text-emerald-600 hover:underline font-bold">WA</a>` : ''}
                 ${canManageAtt ? `<button type="button" onclick="openEditAttendeeModal('${safeAttId}')" class="text-amber-700 hover:underline font-bold">Edit</button>` : ''}
                 ${canManageAtt ? `<button type="button" onclick="deleteAttendeeItem('${safeAttId}')" class="text-rose-600 hover:underline font-bold">Hapus</button>` : ''}
               </div>
@@ -3449,60 +3793,103 @@ const DEFAULT_EVENTS = [
       toast('CSV Daftar Hadir & Sertifikat diunduh!');
     }
 
-    // PANEL 4: MATERI & REKAMAN
+    // PANEL 4: MATERI & REKAMAN (LENGKAP DENGAN EDIT & HAPUS)
     function renderResourcesPanel() {
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
       if (!ev) return;
       const canRes = hasPermission('manage_resources');
 
-      const mats = ev.materials || [];
-      document.getElementById('res-mat-list').innerHTML = mats.length ? mats.map(m => `
-        <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+      const matList = document.getElementById('res-mat-list');
+      matList.innerHTML = (ev.materials || []).length ? ev.materials.map(m => `
+        <div class="p-3 rounded-xl border border-blue-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
-            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">${escapeHtml(m.type)}</span>
-            <p class="font-bold text-xs text-navy-900 mt-1 truncate">${escapeHtml(m.title)}</p>
-            <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener" class="text-[11px] text-blue-600 hover:underline truncate block">${escapeHtml(m.url)}</a>
+            <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-[10px]">${escapeHtml(m.type)}</span>
+            <strong class="text-navy-900 ml-1">${escapeHtml(m.title)}</strong>
+            <a href="${escapeHtml(sanitizeUrl(m.url))}" target="_blank" rel="noopener" class="block text-blue-600 truncate hover:underline mt-0.5">${escapeHtml(m.url)}</a>
           </div>
-          ${canRes ? `<button onclick="deleteMaterialItem('${escapeHtml(m.id)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>` : ''}
+          ${canRes ? `
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="startEditMaterial('${escapeHtml(m.id)}')" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold">Edit</button>
+              <button onclick="deleteMaterial('${escapeHtml(m.id)}')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 font-bold">Hapus</button>
+            </div>
+          ` : ''}
         </div>
-      `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada materi.</p>';
+      `).join('') : `<p class="text-xs text-slate-400">Belum ada materi untuk kegiatan ini.</p>`;
 
-      const recs = ev.recordings || [];
-      document.getElementById('res-rec-list').innerHTML = recs.length ? recs.map(r => `
-        <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+      const recList = document.getElementById('res-rec-list');
+      recList.innerHTML = (ev.recordings || []).length ? ev.recordings.map(r => `
+        <div class="p-3 rounded-xl border border-sky-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
-            <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-bold">${escapeHtml(r.platform)}</span>
-            <p class="font-bold text-xs text-navy-900 mt-1 truncate">${escapeHtml(r.title)}</p>
-            <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="text-[11px] text-blue-600 hover:underline truncate block">${escapeHtml(r.url)}</a>
+            <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-bold text-[10px]">${escapeHtml(r.platform)}</span>
+            <strong class="text-navy-900 ml-1">${escapeHtml(r.title)}</strong>
+            <a href="${escapeHtml(sanitizeUrl(r.url))}" target="_blank" rel="noopener" class="block text-sky-600 truncate hover:underline mt-0.5">${escapeHtml(r.url)}</a>
           </div>
-          ${canRes ? `<button onclick="deleteRecordingItem('${escapeHtml(r.id)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold shrink-0">Hapus</button>` : ''}
+          ${canRes ? `
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="startEditRecording('${escapeHtml(r.id)}')" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold">Edit</button>
+              <button onclick="deleteRecording('${escapeHtml(r.id)}')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 font-bold">Hapus</button>
+            </div>
+          ` : ''}
         </div>
-      `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada rekaman.</p>';
+      `).join('') : `<p class="text-xs text-slate-400">Belum ada video rekaman untuk kegiatan ini.</p>`;
     }
 
-    async function handleAddMaterial(e) {
+    function startEditMaterial(matId) {
+      const evId = document.getElementById('res-event-selector').value;
+      const ev = events.find(e => e.id === evId);
+      if (!ev) return;
+      const mat = (ev.materials || []).find(m => m.id === matId);
+      if (!mat) return;
+      document.getElementById('res-mat-edit-id').value = mat.id;
+      document.getElementById('res-mat-title').value = mat.title || '';
+      document.getElementById('res-mat-type').value = mat.type || 'PDF';
+      document.getElementById('res-mat-url').value = mat.url || '';
+      document.getElementById('res-mat-desc').value = mat.desc || '';
+      document.getElementById('btn-submit-mat').textContent = 'Simpan Edit';
+      document.getElementById('btn-cancel-mat-edit').classList.remove('hidden');
+    }
+
+    function cancelEditMaterial() {
+      document.getElementById('res-mat-edit-id').value = '';
+      document.getElementById('res-mat-title').value = '';
+      document.getElementById('res-mat-url').value = '';
+      document.getElementById('res-mat-desc').value = '';
+      document.getElementById('btn-submit-mat').textContent = '+ Tambah';
+      document.getElementById('btn-cancel-mat-edit').classList.add('hidden');
+    }
+
+    async function handleSaveMaterial(e) {
       e.preventDefault();
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
       if (!events[idx].materials) events[idx].materials = [];
-      events[idx].materials.push({
-        id: 'm-' + Date.now(),
+
+      const editId = document.getElementById('res-mat-edit-id').value;
+      const payload = {
+        id: editId || ('m-' + Date.now()),
         title: document.getElementById('res-mat-title').value.trim(),
         type: document.getElementById('res-mat-type').value,
         url: document.getElementById('res-mat-url').value.trim(),
         desc: document.getElementById('res-mat-desc').value.trim()
-      });
-      document.getElementById('res-mat-title').value = '';
-      document.getElementById('res-mat-url').value = '';
-      document.getElementById('res-mat-desc').value = '';
+      };
+
+      if (editId) {
+        const mIdx = events[idx].materials.findIndex(m => m.id === editId);
+        if (mIdx !== -1) events[idx].materials[mIdx] = payload;
+        toast('Materi diperbarui!');
+      } else {
+        events[idx].materials.push(payload);
+        toast('Materi ditambahkan!');
+      }
+
+      cancelEditMaterial();
       await persistSingleEventToCloud(events[idx]);
-      toast('Materi berhasil ditambahkan!');
     }
 
-    async function deleteMaterialItem(matId) {
+    async function deleteMaterial(matId) {
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
@@ -3512,28 +3899,61 @@ const DEFAULT_EVENTS = [
       toast('Materi dihapus.');
     }
 
-    async function handleAddRecording(e) {
+    function startEditRecording(recId) {
+      const evId = document.getElementById('res-event-selector').value;
+      const ev = events.find(e => e.id === evId);
+      if (!ev) return;
+      const rec = (ev.recordings || []).find(r => r.id === recId);
+      if (!rec) return;
+      document.getElementById('res-rec-edit-id').value = rec.id;
+      document.getElementById('res-rec-title').value = rec.title || '';
+      document.getElementById('res-rec-platform').value = rec.platform || 'YouTube';
+      document.getElementById('res-rec-url').value = rec.url || '';
+      document.getElementById('res-rec-notes').value = rec.notes || '';
+      document.getElementById('btn-submit-rec').textContent = 'Simpan Edit';
+      document.getElementById('btn-cancel-rec-edit').classList.remove('hidden');
+    }
+
+    function cancelEditRecording() {
+      document.getElementById('res-rec-edit-id').value = '';
+      document.getElementById('res-rec-title').value = '';
+      document.getElementById('res-rec-url').value = '';
+      document.getElementById('res-rec-notes').value = '';
+      document.getElementById('btn-submit-rec').textContent = '+ Tambah';
+      document.getElementById('btn-cancel-rec-edit').classList.add('hidden');
+    }
+
+    async function handleSaveRecording(e) {
       e.preventDefault();
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
       if (!events[idx].recordings) events[idx].recordings = [];
-      events[idx].recordings.push({
-        id: 'r-' + Date.now(),
+
+      const editId = document.getElementById('res-rec-edit-id').value;
+      const payload = {
+        id: editId || ('r-' + Date.now()),
         title: document.getElementById('res-rec-title').value.trim(),
         platform: document.getElementById('res-rec-platform').value,
         url: document.getElementById('res-rec-url').value.trim(),
         notes: document.getElementById('res-rec-notes').value.trim()
-      });
-      document.getElementById('res-rec-title').value = '';
-      document.getElementById('res-rec-url').value = '';
-      document.getElementById('res-rec-notes').value = '';
+      };
+
+      if (editId) {
+        const rIdx = events[idx].recordings.findIndex(r => r.id === editId);
+        if (rIdx !== -1) events[idx].recordings[rIdx] = payload;
+        toast('Rekaman diperbarui!');
+      } else {
+        events[idx].recordings.push(payload);
+        toast('Rekaman ditambahkan!');
+      }
+
+      cancelEditRecording();
       await persistSingleEventToCloud(events[idx]);
-      toast('Rekaman berhasil ditambahkan!');
     }
 
-    async function deleteRecordingItem(recId) {
+    async function deleteRecording(recId) {
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
@@ -3545,19 +3965,20 @@ const DEFAULT_EVENTS = [
 
     // PANEL 5 & 6: BACKUP & SETTINGS
     function downloadGitHubJSON() {
+      if (!hasPermission('manage_settings')) return;
       const payload = {
-        exportedAt: new Date().toISOString(),
-        settings,
+        updatedAt: new Date().toISOString(),
+        organization: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
         events
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `jsit-lampung-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = 'events-data.json';
       a.click();
       URL.revokeObjectURL(url);
-      toast('File backup JSON berhasil diunduh!');
+      toast('Backup events-data.json diunduh!');
     }
 
     function downloadFirebaseConfigTemplate() {
@@ -3569,41 +3990,39 @@ const DEFAULT_EVENTS = [
       a.download = 'firebase-config.js';
       a.click();
       URL.revokeObjectURL(url);
-      toast('Template firebase-config.js berhasil diunduh!');
+      toast('Template firebase-config.js diunduh!');
     }
 
     function uploadGitHubJSON(e) {
+      if (!hasPermission('manage_settings')) return;
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = async function(evt) {
         try {
           const parsed = JSON.parse(evt.target.result);
-          const importedEvents = Array.isArray(parsed) ? parsed : (parsed.events || []);
-          if (!importedEvents.length) {
-            alert('File JSON tidak berisi daftar kegiatan.');
-            return;
-          }
-          if (!confirm(`Restore ${importedEvents.length} kegiatan ke database?`)) return;
-          for (const rawEv of importedEvents) {
-            const norm = normalizeEventItem(rawEv);
-            const attList = norm.attendees || [];
-            await persistSingleEventToCloud(norm);
+          const list = Array.isArray(parsed) ? parsed : (parsed.events || []);
+          if (!list.length) throw new Error('File tidak berisi daftar kegiatan.');
+          for (const item of list) {
+            const norm = normalizeEventItem(item);
             if (isFirebaseReady && db) {
-              for (const att of attList) {
-                const attId = att.id || ('att-' + Date.now() + Math.random().toString(36).slice(2, 6));
-                await db.collection('events').doc(norm.id).collection('attendees').doc(attId).set({ ...att, id: attId });
+              await persistSingleEventToCloud(norm);
+              if (Array.isArray(norm.attendees)) {
+                for (const att of norm.attendees) {
+                  const attId = att.id || ('att-' + Date.now() + '-' + Math.random().toString(36).slice(2,6));
+                  await db.collection('events').doc(norm.id).collection('attendees').doc(attId).set({ ...att, id: attId });
+                }
               }
             }
           }
           if (!isFirebaseReady) {
-            events = importedEvents.map(normalizeEventItem);
+            events = list.map(normalizeEventItem);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
             syncAllAdminUI();
           }
-          toast(`Berhasil restore ${importedEvents.length} kegiatan!`);
+          toast('Database JSON berhasil di-restore!');
         } catch (err) {
-          alert('Format file JSON tidak valid: ' + err.message);
+          alert('Gagal membaca file JSON: ' + err.message);
         }
       };
       reader.readAsText(file);
@@ -3623,16 +4042,17 @@ const DEFAULT_EVENTS = [
       } else {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       }
+      applySettingsToInputs();
+      updateCertPreviewLive();
       toast('Pengaturan sistem berhasil disimpan!');
     }
 
-    // PANEL 7: MANAJEMEN MULTIUSER & HAK AKSES
+    // PANEL 7: MULTIUSER & HAK AKSES
     function renderUsersPanel() {
       const tbody = document.getElementById('admin-users-tbody');
-      const countLabel = document.getElementById('users-count-label');
       if (!tbody) return;
-
       const q = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
+
       const filtered = adminUsers.filter(u => {
         if (!q) return true;
         return (
@@ -3643,57 +4063,52 @@ const DEFAULT_EVENTS = [
         );
       });
 
-      if (countLabel) {
-        countLabel.textContent = `Daftar Akun Terdaftar (${filtered.length} dari ${adminUsers.length} Pengguna)`;
-      }
+      const countLbl = document.getElementById('users-count-label');
+      if (countLbl) countLbl.textContent = `Daftar Akun Terdaftar (${filtered.length} dari ${adminUsers.length} Pengguna)`;
 
       tbody.innerHTML = filtered.length ? filtered.map((u, idx) => {
-        const isSelf = currentUserProfile && currentUserProfile.email === u.email;
         const activePerms = PERMISSION_KEYS.filter(k => u.permissions && u.permissions[k]);
-        const permBadges = activePerms.slice(0, 3).map(k =>
-          `<span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-100 text-[10px] font-semibold">${PERMISSION_SHORT_LABELS[k]}</span>`
-        ).join(' ') + (activePerms.length > 3 ? ` <span class="text-[10px] font-bold text-slate-500">+${activePerms.length - 3} lainnya</span>` : '');
+        const permBadges = u.role === 'super_admin'
+          ? `<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-bold">Semua Akses Sistem (Full)</span>`
+          : (activePerms.length
+              ? activePerms.map(k => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${escapeHtml(PERMISSION_SHORT_LABELS[k])}</span>`).join(' ')
+              : `<span class="text-[10px] text-slate-400 italic">Hanya Lihat</span>`);
+
+        const isSelf = currentUserProfile && currentUserProfile.email === u.email;
         const safeEmail = escapeHtml(u.email);
 
         return `
           <tr class="hover:bg-blue-50/40">
             <td class="p-3.5 font-bold text-slate-500">${idx + 1}</td>
             <td class="p-3.5">
-              <div class="font-bold text-navy-900">${escapeHtml(u.name)} ${isSelf ? '<span class="ml-1 px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[9px]">Akun Anda</span>' : ''}</div>
+              <div class="font-bold text-navy-900">${escapeHtml(u.name)} ${isSelf ? '<span class="text-[10px] text-blue-600">(Anda)</span>' : ''}</div>
               <div class="text-[11px] text-slate-500">${escapeHtml(u.division || '-')}</div>
             </td>
             <td class="p-3.5 font-mono text-slate-700">${safeEmail}</td>
             <td class="p-3.5">
-              <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold ${ROLE_BADGE_CLASSES[u.role] || 'bg-slate-600 text-white'}">
-                ${ROLE_LABELS[u.role] || u.role}
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-extrabold ${ROLE_BADGE_CLASSES[u.role] || 'bg-slate-600 text-white'}">
+                ${escapeHtml(ROLE_LABELS[u.role] || u.role)}
               </span>
             </td>
             <td class="p-3.5 max-w-xs">
-              <div class="flex flex-wrap gap-1">${permBadges || '<span class="text-slate-400 italic">Tidak ada akses</span>'}</div>
+              <div class="flex flex-wrap gap-1">${permBadges}</div>
             </td>
             <td class="p-3.5">
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${u.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${u.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
                 ${u.active ? 'Aktif' : 'Nonaktif'}
               </span>
             </td>
             <td class="p-3.5 text-right">
-              <div class="inline-flex items-center gap-1.5 justify-end">
-                <button type="button" onclick="openUserModal('${safeEmail}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-[11px] font-bold transition">
-                  Edit Akses
+              <div class="inline-flex items-center gap-2 justify-end">
+                <button type="button" onclick="openUserModal('${safeEmail}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-[11px] font-bold transition">
+                  Atur Akses
                 </button>
-                ${!isSelf ? `
-                  <button type="button" onclick="toggleUserActiveStatus('${safeEmail}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 text-[11px] font-bold transition">
-                    ${u.active ? 'Nonaktifkan' : 'Aktifkan'}
-                  </button>
-                  <button type="button" onclick="deleteUserAccount('${safeEmail}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold transition">
-                    Hapus
-                  </button>
-                ` : ''}
+                ${!isSelf ? `<button type="button" onclick="deleteUserAccount('${safeEmail}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[11px] font-bold transition">Hapus</button>` : ''}
               </div>
             </td>
           </tr>
         `;
-      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada pengguna yang sesuai pencarian.</td></tr>`;
+      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Tidak ada akun pengguna yang sesuai pencarian.</td></tr>`;
     }
 
     function applyRolePresetToCheckboxes() {
@@ -3701,19 +4116,15 @@ const DEFAULT_EVENTS = [
       const preset = ROLE_PRESETS[role] || ROLE_PRESETS.viewer;
       PERMISSION_KEYS.forEach(k => {
         const cb = document.getElementById(`perm-${k}`);
-        if (cb) {
-          cb.checked = Boolean(preset[k]);
-          cb.disabled = (role === 'super_admin');
-        }
+        if (cb) cb.checked = Boolean(preset[k]);
       });
     }
 
     function openUserModal(editEmail = null) {
       if (!hasPermission('manage_users')) {
-        alert('Anda tidak memiliki izin mengelola akun pengguna.');
+        alert('Hanya Super Admin atau pengguna dengan izin Kelola Multiuser yang dapat mengatur akun.');
         return;
       }
-      document.getElementById('form-user-edit-email').value = editEmail || '';
       const emailInput = document.getElementById('form-user-email');
       const pwdInput = document.getElementById('form-user-password');
       const pwdStar = document.getElementById('pwd-req-star');
@@ -3722,39 +4133,42 @@ const DEFAULT_EVENTS = [
       if (editEmail) {
         const u = adminUsers.find(item => item.email === editEmail);
         if (!u) return;
-        document.getElementById('modal-user-heading').textContent = `Edit Hak Akses: ${u.name}`;
+        document.getElementById('modal-user-heading').textContent = 'Edit Pengguna & Kustomisasi Hak Akses';
+        document.getElementById('form-user-edit-email').value = u.email;
         document.getElementById('form-user-name').value = u.name;
         document.getElementById('form-user-division').value = u.division || '';
         emailInput.value = u.email;
-        emailInput.disabled = true;
+        emailInput.readOnly = true;
         emailInput.classList.add('bg-slate-100');
+
         pwdInput.value = '';
         pwdInput.required = false;
         pwdStar.classList.add('hidden');
         pwdHint.textContent = isFirebaseReady
-          ? 'Kosongkan jika tidak mengubah sandi (Reset sandi Firebase Auth melalui Firebase Console).'
-          : 'Kosongkan jika tidak ingin mengganti kata sandi akun lokal ini.';
+          ? 'Kata sandi Firebase dikelola via Firebase Console / Reset Password.'
+          : 'Kosongkan jika tidak ingin mengubah kata sandi akun lokal ini.';
 
         document.getElementById('form-user-role').value = u.role;
         document.getElementById('form-user-active').value = u.active ? 'true' : 'false';
+
         PERMISSION_KEYS.forEach(k => {
           const cb = document.getElementById(`perm-${k}`);
-          if (cb) {
-            cb.checked = Boolean(u.permissions && u.permissions[k]);
-            cb.disabled = (u.role === 'super_admin');
-          }
+          if (cb) cb.checked = Boolean(u.permissions && u.permissions[k]);
         });
       } else {
         document.getElementById('modal-user-heading').textContent = 'Tambah Pengguna & Atur Hak Akses';
+        document.getElementById('form-user-edit-email').value = '';
         document.getElementById('form-user-name').value = '';
         document.getElementById('form-user-division').value = '';
         emailInput.value = '';
-        emailInput.disabled = false;
+        emailInput.readOnly = false;
         emailInput.classList.remove('bg-slate-100');
+
         pwdInput.value = '';
         pwdInput.required = true;
         pwdStar.classList.remove('hidden');
-        pwdHint.textContent = 'Wajib diisi saat membuat akun baru (min. 6 karakter).';
+        pwdHint.textContent = 'Wajib diisi saat membuat akun baru (minimal 6 karakter).';
+
         document.getElementById('form-user-role').value = 'admin_kegiatan';
         document.getElementById('form-user-active').value = 'true';
         applyRolePresetToCheckboxes();
@@ -3766,46 +4180,59 @@ const DEFAULT_EVENTS = [
       document.getElementById('user-modal').classList.add('hidden');
     }
 
+    async function createFirebaseUserWithoutLoggingOutAdmin(email, password) {
+      const secondaryAppName = 'SecondaryAdminCreateApp';
+      let secApp = firebase.apps.find(a => a.name === secondaryAppName);
+      if (!secApp) {
+        secApp = firebase.initializeApp(window.FIREBASE_CONFIG, secondaryAppName);
+      }
+      const secAuth = secApp.auth();
+      const cred = await secAuth.createUserWithEmailAndPassword(email, password);
+      await secAuth.signOut();
+      return cred.user;
+    }
+
     async function submitUserForm(e) {
       e.preventDefault();
       if (!hasPermission('manage_users')) return;
 
-      const editEmail = document.getElementById('form-user-edit-email').value;
-      const email = editEmail || document.getElementById('form-user-email').value.trim().toLowerCase();
-      const name = document.getElementById('form-user-name').value.trim();
-      const division = document.getElementById('form-user-division').value.trim();
+      const editEmail = document.getElementById('form-user-edit-email').value.trim().toLowerCase();
+      const email = document.getElementById('form-user-email').value.trim().toLowerCase();
       const password = document.getElementById('form-user-password').value;
+      const name = document.getElementById('form-user-name').value.trim();
+      const division = document.getElementById('form-user-division').value.trim() || 'Tim Diklat JSIT Lampung';
       const role = document.getElementById('form-user-role').value;
       const active = document.getElementById('form-user-active').value === 'true';
 
       const permissions = {};
       PERMISSION_KEYS.forEach(k => {
-        permissions[k] = role === 'super_admin' ? true : Boolean(document.getElementById(`perm-${k}`)?.checked);
+        const cb = document.getElementById(`perm-${k}`);
+        permissions[k] = role === 'super_admin' ? true : Boolean(cb && cb.checked);
       });
 
       const btn = document.getElementById('btn-submit-user');
       btn.disabled = true;
-      btn.textContent = 'Menyimpan akun...';
+      btn.textContent = 'Menyimpan akun & hak akses...';
 
       try {
         if (isFirebaseReady && db) {
-          if (!editEmail && password) {
-            const secondaryAppName = 'secondary-user-creator';
-            let secApp = firebase.apps.find(a => a.name === secondaryAppName);
-            if (!secApp) {
-              secApp = firebase.initializeApp(window.FIREBASE_CONFIG, secondaryAppName);
+          if (!editEmail) {
+            if (!password || password.length < 6) {
+              alert('Kata sandi awal minimal 6 karakter.');
+              return;
             }
             try {
-              await secApp.auth().createUserWithEmailAndPassword(email, password);
-              await secApp.auth().signOut();
+              await createFirebaseUserWithoutLoggingOutAdmin(email, password);
             } catch (authErr) {
-              if (authErr.code !== 'auth/email-already-in-use') {
+              if (authErr.code === 'auth/email-already-in-use') {
+                // Email sudah ada di Firebase Auth, lanjut simpan hak akses Firestore
+              } else {
                 throw authErr;
               }
             }
           }
 
-          await db.collection('admin_users').doc(email).set({
+          const userDocPayload = {
             email,
             name,
             division,
@@ -3814,64 +4241,59 @@ const DEFAULT_EVENTS = [
             permissions,
             updatedAt: new Date().toISOString(),
             updatedBy: currentUserProfile ? currentUserProfile.email : 'super_admin'
-          }, { merge: true });
+          };
+          await db.collection('admin_users').doc(email).set(userDocPayload, { merge: true });
+          toast(`Hak akses pengguna ${name} tersimpan di Cloud!`);
         } else {
-          const existingIdx = adminUsers.findIndex(u => u.email === email);
-          if (!editEmail && existingIdx !== -1) {
-            alert('Email tersebut sudah terdaftar di daftar pengguna!');
-            btn.disabled = false;
-            btn.textContent = 'Simpan Pengguna & Hak Akses';
-            return;
-          }
-          const finalPassword = password || (existingIdx !== -1 ? adminUsers[existingIdx].password : 'jsitlampung2026');
-          const record = normalizeUserRecord({
-            email,
-            password: finalPassword,
-            name,
-            division,
-            role,
-            active,
-            permissions
-          });
-          if (existingIdx !== -1) {
-            adminUsers[existingIdx] = record;
+          if (editEmail) {
+            const idx = adminUsers.findIndex(u => u.email === editEmail);
+            if (idx !== -1) {
+              adminUsers[idx] = normalizeUserRecord({
+                ...adminUsers[idx],
+                name,
+                division,
+                role,
+                active,
+                permissions,
+                password: password ? password : adminUsers[idx].password
+              });
+            }
           } else {
-            adminUsers.push(record);
+            if (adminUsers.some(u => u.email === email)) {
+              alert('Email tersebut sudah terdaftar.');
+              return;
+            }
+            adminUsers.push(normalizeUserRecord({
+              email,
+              password,
+              name,
+              division,
+              role,
+              active,
+              permissions
+            }));
           }
           localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
           renderUsersPanel();
+          toast(`Akun & hak akses ${name} berhasil disimpan!`);
         }
-
         closeUserModal();
-        toast(editEmail ? 'Hak akses pengguna berhasil diperbarui!' : 'Pengguna baru berhasil ditambahkan!');
       } catch (err) {
-        console.error('Error save user:', err);
-        alert('Gagal menyimpan pengguna: ' + err.message);
+        console.error(err);
+        alert('Gagal menyimpan akun pengguna: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Simpan Pengguna & Hak Akses';
       }
     }
 
-    async function toggleUserActiveStatus(email) {
-      if (!hasPermission('manage_users')) return;
-      const target = adminUsers.find(u => u.email === email);
-      if (!target) return;
-      const nextStatus = !target.active;
-
-      if (isFirebaseReady && db) {
-        await db.collection('admin_users').doc(email).set({ active: nextStatus }, { merge: true });
-      } else {
-        target.active = nextStatus;
-        localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
-        renderUsersPanel();
-      }
-      toast(`Akun ${target.name} ${nextStatus ? 'diaktifkan' : 'dinonaktifkan'}.`);
-    }
-
     async function deleteUserAccount(email) {
       if (!hasPermission('manage_users')) return;
-      if (!confirm(`Hapus hak akses pengguna ${email}?`)) return;
+      if (currentUserProfile && currentUserProfile.email === email) {
+        alert('Anda tidak dapat menghapus akun Anda sendiri.');
+        return;
+      }
+      if (!confirm(`Hapus hak akses akun ${email} dari portal admin?`)) return;
 
       if (isFirebaseReady && db) {
         await db.collection('admin_users').doc(email).delete();
@@ -3880,7 +4302,7 @@ const DEFAULT_EVENTS = [
         localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
         renderUsersPanel();
       }
-      toast('Pengguna berhasil dihapus dari daftar akses.');
+      toast('Akun pengguna berhasil dihapus.');
     }
 
     function toast(msg) {
@@ -3890,7 +4312,7 @@ const DEFAULT_EVENTS = [
       setTimeout(() => box.classList.add('hidden'), 3200);
     }
 
-    document.addEventListener('DOMContentLoaded', bootAdmin);
+    window.addEventListener('DOMContentLoaded', bootAdmin);
   </script>
 </body>
 </html>

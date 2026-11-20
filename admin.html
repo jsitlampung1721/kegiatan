@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Admin Lengkap — Manajemen Kegiatan & E-Sertifikat JSIT Lampung</title>
+  <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w128" />
+  <link rel="shortcut icon" type="image/png" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w128" />
+  <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" />
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,11 +50,11 @@
   <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-800">
     <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-blue-100 p-7 sm:p-8 space-y-6">
       <div class="text-center space-y-2">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-700 to-sky-500 text-white flex items-center justify-center mx-auto shadow-lg">
-          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div class="w-16 h-16 rounded-2xl bg-white border border-blue-200 p-1.5 flex items-center justify-center mx-auto shadow-lg overflow-hidden">
+          <img src="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </div>
         <h1 class="font-display font-extrabold text-2xl text-navy-900">Portal Admin JSIT Lampung</h1>
-        <p class="text-xs text-slate-500">Manajemen Kegiatan, Daftar Hadir, Materi, Rekaman & E-Sertifikat</p>
+        <p class="text-xs text-slate-500">Manajemen Kegiatan, Daftar Hadir, Flyer, Materi, Rekaman & E-Sertifikat</p>
       </div>
 
       <form onsubmit="handleAdminLogin(event)" class="space-y-4">
@@ -80,8 +83,8 @@
       <div>
         <div class="p-5 border-b border-blue-900/60 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center text-white font-bold shadow">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <div class="w-10 h-10 rounded-xl bg-white border border-blue-300/40 p-1 flex items-center justify-center shadow overflow-hidden">
+              <img src="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
             </div>
             <div>
               <span class="font-display font-extrabold text-sm tracking-wide block">JSIT LAMPUNG</span>
@@ -95,7 +98,7 @@
           <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-blue-400/70 mb-2 hidden lg:block">Menu Utama Pengelola</p>
           <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1">
             <button onclick="switchTab('kegiatan')" id="nav-kegiatan" class="nav-btn nav-active flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left whitespace-nowrap transition">
-              <span>1. Kelola Kegiatan</span>
+              <span>1. Kelola Kegiatan & Flyer</span>
             </button>
             <button onclick="switchTab('sertifikat')" id="nav-sertifikat" class="nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 text-left whitespace-nowrap transition">
               <span>2. Studio E-Sertifikat</span>
@@ -149,12 +152,12 @@
         </div>
       </div>
 
-      <!-- PANEL 1: KELOLA KEGIATAN -->
+      <!-- PANEL 1: KELOLA KEGIATAN & FLYER -->
       <section id="panel-kegiatan" class="admin-panel space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
           <div>
-            <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Program Diklat</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, atur jam berakhir kegiatan (patokan rilis sertifikat otomatis), atau kelola sub-fitur setiap kegiatan.</p>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Upload Flyer</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan (tampil di kolom Narasumber & Fasilitator portal), dan kelola sub-fitur setiap kegiatan.</p>
           </div>
           <button onclick="openEventModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition shrink-0">
             + Tambah Kegiatan Baru
@@ -192,8 +195,6 @@
         <div class="grid lg:grid-cols-12 gap-6 items-start">
           <!-- Left Controls -->
           <form onsubmit="saveCertificateStudio(event)" class="lg:col-span-5 bg-white rounded-2xl border border-blue-100 p-5 sm:p-6 shadow-xs space-y-4">
-            
-            <!-- Jadwal & Mode Rilis Sertifikat -->
             <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 space-y-2.5">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-xs uppercase tracking-wider text-navy-900">Jadwal Rilis E-Sertifikat</span>
@@ -217,7 +218,6 @@
               <p class="text-[11px] text-blue-800 leading-snug" id="studio-release-summary-text">Peserta hanya dapat mengecek & mengunduh sertifikat setelah jam kegiatan berakhir.</p>
             </div>
 
-            <!-- Upload Custom Template A4 Landscape -->
             <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2.5">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-xs text-navy-900">Upload Desain Template A4 Landscape</span>
@@ -237,7 +237,6 @@
               </div>
               <p id="studio-template-info" class="text-[11px] font-semibold text-emerald-700 hidden"></p>
 
-              <!-- Overlay Fine-Tuning Controls (Shown when custom template is active) -->
               <div id="custom-template-controls" class="hidden pt-2 border-t border-amber-200/80 space-y-2">
                 <label class="flex items-center gap-2 text-[11px] font-semibold text-slate-700 cursor-pointer">
                   <input type="checkbox" id="studio-hide-chrome" onchange="updateCertPreviewLive()" checked class="accent-blue-600 rounded" />
@@ -468,7 +467,7 @@
         <div class="bg-white p-6 rounded-2xl border border-blue-100 shadow-xs space-y-4">
           <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Publikasi GitHub Pages & Backup Data</h1>
           <p class="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-            Setiap kali Anda menambah kegiatan, memperbarui materi/rekaman, atau mengunggah template sertifikat A4 Landscape di halaman Admin ini, unduh file <code class="bg-blue-50 text-blue-800 px-1.5 py-0.5 rounded font-bold">data-kegiatan.json</code> dan unggah ke folder utama repository GitHub Anda agar seluruh peserta otomatis mendapatkan data terbaru.
+            Setiap kali Anda menambah kegiatan, mengunggah flyer, memperbarui materi/rekaman, atau mengunggah template sertifikat A4 Landscape di halaman Admin ini, unduh file <code class="bg-blue-50 text-blue-800 px-1.5 py-0.5 rounded font-bold">data-kegiatan.json</code> dan unggah ke folder utama repository GitHub Anda agar seluruh peserta otomatis mendapatkan data terbaru.
           </p>
           <div class="flex flex-wrap gap-3 pt-2">
             <button onclick="downloadGitHubJSON()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
@@ -516,14 +515,14 @@
     </main>
   </div>
 
-  <!-- MODAL TAMBAH / EDIT KEGIATAN -->
+  <!-- MODAL TAMBAH / EDIT KEGIATAN (+ UPLOAD FLYER KEGIATAN) -->
   <div id="event-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/75 backdrop-blur-sm p-4">
     <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-6">
       <div class="bg-navy-900 text-white p-5 flex items-center justify-between">
         <h3 class="font-bold text-base" id="modal-event-heading">Tambah Kegiatan Baru</h3>
         <button onclick="closeEventModal()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold">Tutup &times;</button>
       </div>
-      <form onsubmit="submitEventForm(event)" class="p-5 sm:p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+      <form onsubmit="submitEventForm(event)" id="event-modal-form" class="p-5 sm:p-6 space-y-4 max-h-[82vh] overflow-y-auto">
         <input type="hidden" id="form-ev-id" />
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Judul Kegiatan / Perihal Sertifikat <span class="text-red-500">*</span></label>
@@ -607,6 +606,41 @@
             <input type="text" id="form-ev-speaker-role" placeholder="Ketua JSIT Indonesia Wilayah Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
           </div>
         </div>
+
+        <!-- UPLOAD FLYER KEGIATAN (Tampil di dalam kolom Narasumber & Fasilitator di Portal) -->
+        <div id="modal-flyer-section" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="font-bold text-xs uppercase tracking-wider text-indigo-950 block">Upload Flyer Kegiatan (Poster Resmi)</span>
+              <span class="text-[11px] text-slate-600">Flyer akan tampil rapi di dalam kolom <strong>Narasumber & Fasilitator</strong> pada halaman portal peserta.</span>
+            </div>
+            <span id="modal-flyer-status-pill" class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[10px] font-bold shrink-0">Belum Ada</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <!-- Pratinjau Mini Flyer -->
+            <div class="w-24 h-28 rounded-xl border border-indigo-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+              <img id="modal-flyer-preview-img" src="" alt="Preview Flyer" class="hidden w-full h-full object-contain" />
+              <span id="modal-flyer-placeholder" class="text-[10px] text-slate-400 text-center px-2">Pratinjau Flyer</span>
+            </div>
+
+            <div class="flex-1 w-full space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer transition shadow-2xs">
+                  <span>Pilih Gambar Flyer (JPG/PNG/WEBP)...</span>
+                  <input type="file" id="form-ev-flyer-file" accept="image/png,image/jpeg,image/webp" onchange="handleEventFlyerUpload(event)" class="hidden" />
+                </label>
+                <button type="button" id="btn-remove-event-flyer" onclick="removeEventFlyer()" class="hidden px-3 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold transition">
+                  Hapus Flyer
+                </button>
+              </div>
+              <div>
+                <input type="url" id="form-ev-flyer-url" oninput="handleEventFlyerUrlInput()" placeholder="Atau tempel link URL gambar flyer langsung (opsional)..." class="w-full px-3 py-1.5 rounded-lg border border-indigo-200 bg-white text-xs outline-none focus:border-indigo-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Kegiatan</label>
           <textarea id="form-ev-desc" rows="3" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"></textarea>
@@ -673,6 +707,7 @@ const DEFAULT_EVENTS = [
     mode: 'Offline / Tatap Muka',
     location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 250,
     pin: '',
     speakers: [
@@ -723,6 +758,7 @@ const DEFAULT_EVENTS = [
     mode: 'Hybrid (Offline & Zoom)',
     location: 'Hotel Emersia Bandar Lampung & Zoom Cloud Meeting',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 150,
     pin: '',
     speakers: [
@@ -770,6 +806,7 @@ const DEFAULT_EVENTS = [
     mode: 'Online (Zoom & YouTube Live)',
     location: 'Zoom Meeting & Channel YouTube JSIT Lampung Official',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 1000,
     pin: '',
     speakers: [
@@ -817,6 +854,7 @@ const DEFAULT_EVENTS = [
     mode: 'Offline / Lab Praktik',
     location: 'Gedung Diklat LPMP / Balai Guru Penggerak Lampung',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 120,
     pin: '',
     speakers: [
@@ -851,6 +889,7 @@ const DEFAULT_EVENTS = [
     let events = [];
     let settings = { ...DEFAULT_SETTINGS };
     let tempCustomTemplateImg = '';
+    let tempEventFlyerImg = '';
 
     function parseEndTimeFromText(timeStr) {
       if (!timeStr) return '23:59';
@@ -902,6 +941,7 @@ const DEFAULT_EVENTS = [
             if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
             if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
             item.certificate = c;
+            if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
             return item;
           });
           localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
@@ -1006,7 +1046,7 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    // PANEL 1: KELOLA KEGIATAN
+    // PANEL 1: KELOLA KEGIATAN & FLYER
     function renderEventsList() {
       const q = (document.getElementById('filter-event-search').value || '').toLowerCase();
       const cat = document.getElementById('filter-event-category').value;
@@ -1031,6 +1071,7 @@ const DEFAULT_EVENTS = [
         const relDate = getCertificateReleaseDate(ev);
         const relLabel = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + relDate.toTimeString().slice(0,5) + ' WIB';
         const hasCustomTpl = ev.certificate && ev.certificate.customTemplateImg;
+        const hasFlyer = Boolean(ev.flyerImg && ev.flyerImg.trim() !== '');
 
         return `
           <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-xs space-y-4">
@@ -1042,6 +1083,7 @@ const DEFAULT_EVENTS = [
                   <span class="px-2.5 py-0.5 rounded-md ${released ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[11px] font-bold">
                     E-Sertifikat: ${released ? 'SUDAH RILIS (' + (ev.certificate.jp || '8 JP') + ')' : 'RILIS ' + relLabel}
                   </span>
+                  ${hasFlyer ? `<span class="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-800 text-[11px] font-bold">Flyer Terpasang</span>` : ''}
                   ${hasCustomTpl ? `<span class="px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[11px] font-bold">Template Custom A4</span>` : ''}
                 </div>
                 <h3 class="font-display font-bold text-base sm:text-lg text-navy-900">${ev.title}</h3>
@@ -1056,6 +1098,9 @@ const DEFAULT_EVENTS = [
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+              <button onclick="openEventModal('${ev.id}', true)" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-indigo-800 hover:text-white text-xs font-bold transition">
+                ${hasFlyer ? 'Ganti / Lihat Flyer' : '+ Upload Flyer'}
+              </button>
               <button onclick="jumpToEventSubFeature('absensi', '${ev.id}')" class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-xs font-bold transition">
                 Daftar Hadir (${attCount} Peserta)
               </button>
@@ -1079,11 +1124,82 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    function openEventModal(id = null) {
+    function updateModalFlyerPreviewUI() {
+      const imgEl = document.getElementById('modal-flyer-preview-img');
+      const phEl = document.getElementById('modal-flyer-placeholder');
+      const btnRemove = document.getElementById('btn-remove-event-flyer');
+      const pill = document.getElementById('modal-flyer-status-pill');
+
+      if (tempEventFlyerImg) {
+        imgEl.src = tempEventFlyerImg;
+        imgEl.classList.remove('hidden');
+        phEl.classList.add('hidden');
+        btnRemove.classList.remove('hidden');
+        pill.textContent = 'Flyer Aktif';
+        pill.className = 'px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold shrink-0';
+      } else {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        phEl.classList.remove('hidden');
+        btnRemove.classList.add('hidden');
+        pill.textContent = 'Belum Ada';
+        pill.className = 'px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[10px] font-bold shrink-0';
+      }
+    }
+
+    function handleEventFlyerUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          const maxWidth = 960;
+          let targetW = img.width;
+          let targetH = img.height;
+          if (targetW > maxWidth) {
+            targetH = Math.round(targetH * (maxWidth / targetW));
+            targetW = maxWidth;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = targetW;
+          canvas.height = targetH;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, targetW, targetH);
+          ctx.drawImage(img, 0, 0, targetW, targetH);
+
+          tempEventFlyerImg = canvas.toDataURL('image/jpeg', 0.85);
+          document.getElementById('form-ev-flyer-url').value = '';
+          updateModalFlyerPreviewUI();
+          toast('Flyer berhasil dimuat! Klik Simpan Kegiatan untuk menerapkan.');
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleEventFlyerUrlInput() {
+      const urlVal = document.getElementById('form-ev-flyer-url').value.trim();
+      tempEventFlyerImg = urlVal;
+      updateModalFlyerPreviewUI();
+    }
+
+    function removeEventFlyer() {
+      tempEventFlyerImg = '';
+      document.getElementById('form-ev-flyer-file').value = '';
+      document.getElementById('form-ev-flyer-url').value = '';
+      updateModalFlyerPreviewUI();
+      toast('Flyer dihapus dari form.');
+    }
+
+    function openEventModal(id = null, focusFlyer = false) {
       document.getElementById('form-ev-id').value = id || '';
+      document.getElementById('form-ev-flyer-file').value = '';
       if (id) {
         const ev = events.find(e => e.id === id);
-        document.getElementById('modal-event-heading').textContent = 'Edit Informasi Kegiatan';
+        document.getElementById('modal-event-heading').textContent = focusFlyer ? 'Upload / Edit Flyer & Info Kegiatan' : 'Edit Informasi Kegiatan';
         document.getElementById('form-ev-title').value = ev.title;
         document.getElementById('form-ev-category').value = ev.category;
         document.getElementById('form-ev-status').value = ev.status;
@@ -1099,6 +1215,9 @@ const DEFAULT_EVENTS = [
         document.getElementById('form-ev-speaker').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].name : '';
         document.getElementById('form-ev-speaker-role').value = (ev.speakers && ev.speakers[0]) ? ev.speakers[0].role : '';
         document.getElementById('form-ev-desc').value = ev.description || '';
+
+        tempEventFlyerImg = ev.flyerImg || '';
+        document.getElementById('form-ev-flyer-url').value = tempEventFlyerImg.startsWith('http') ? tempEventFlyerImg : '';
       } else {
         document.getElementById('modal-event-heading').textContent = 'Tambah Kegiatan Baru';
         document.getElementById('form-ev-id').value = '';
@@ -1116,8 +1235,19 @@ const DEFAULT_EVENTS = [
         document.getElementById('form-ev-speaker').value = '';
         document.getElementById('form-ev-speaker-role').value = '';
         document.getElementById('form-ev-desc').value = '';
+
+        tempEventFlyerImg = '';
+        document.getElementById('form-ev-flyer-url').value = '';
       }
+      updateModalFlyerPreviewUI();
       document.getElementById('event-modal').classList.remove('hidden');
+
+      if (focusFlyer) {
+        setTimeout(() => {
+          const flyerSec = document.getElementById('modal-flyer-section');
+          if (flyerSec) flyerSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
+      }
     }
 
     function closeEventModal() {
@@ -1145,6 +1275,7 @@ const DEFAULT_EVENTS = [
         pin: document.getElementById('form-ev-pin').value.trim(),
         location: document.getElementById('form-ev-location').value.trim(),
         zoomUrl: document.getElementById('form-ev-zoom').value.trim(),
+        flyerImg: tempEventFlyerImg || '',
         speakers: document.getElementById('form-ev-speaker').value.trim() ? [{
           name: document.getElementById('form-ev-speaker').value.trim(),
           role: document.getElementById('form-ev-speaker-role').value.trim() || 'Narasumber JSIT Lampung'
@@ -1166,7 +1297,7 @@ const DEFAULT_EVENTS = [
             }
           };
         }
-        toast('Kegiatan berhasil diperbarui!');
+        toast('Kegiatan & Flyer berhasil diperbarui!');
       } else {
         events.unshift({
           id: 'evt-' + Date.now(),
@@ -1289,7 +1420,6 @@ const DEFAULT_EVENTS = [
             alert('Peringatan: Gambar yang diunggah berorientasi Portrait/Kotak. Untuk hasil terbaik tanpa terpotong, gunakan desain A4 Landscape (297mm × 210mm, rasio 1.41:1).');
           }
 
-          // Standardize onto exact A4 Landscape resolution (1754 x 1240 px @ 150 DPI)
           const canvas = document.createElement('canvas');
           canvas.width = 1754;
           canvas.height = 1240;

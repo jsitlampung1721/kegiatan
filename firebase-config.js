@@ -5,10 +5,10 @@
 // Project Settings (Ikon Gear) -> General -> Your apps -> SDK setup and configuration
 
 window.FIREBASE_CONFIG = {
-  apiKey: "GANTI_DENGAN_API_KEY_ANDA",
-  authDomain: "GANTI_DENGAN_PROJECT_ID.firebaseapp.com",
-  projectId: "GANTI_DENGAN_PROJECT_ID",
-  storageBucket: "GANTI_DENGAN_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "GANTI_DENGAN_SENDER_ID",
-  appId: "GANTI_DENGAN_APP_ID"
+  apiKey: "AIzaSyDMRhRSmsB4iHm36YOC_0fTSXVnTy_46Ws",
+  authDomain: "kegiatan-jsit-lampung.firebaseapp.com",
+  projectId: "kegiatan-jsit-lampung",
+  storageBucket: "kegiatan-jsit-lampung.firebasestorage.app",
+  messagingSenderId: "1009523364158",
+  appId: "1:1009523364158:web:e3e8c87b0dc45523c49c6f"
 };

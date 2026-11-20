@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Manajemen Kegiatan & Diklat — JSIT Wilayah Lampung</title>
   <meta name="description" content="Portal resmi manajemen kegiatan, seminar, webinar, pelatihan, workshop, bimtek, daftar hadir, materi, rekaman, dan e-sertifikat JSIT Wilayah Lampung." />
+  <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w128" />
+  <link rel="shortcut icon" type="image/png" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w128" />
+  <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" />
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -104,14 +107,10 @@
   <!-- Top Navbar -->
   <header class="sticky top-0 z-40 glass-nav border-b border-blue-100 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <!-- Left Brand: Topi Toga Logo = Login Admin Button, Title = Home -->
+      <!-- Left Brand: Logo JSIT Lampung = Login Admin Button, Title = Home -->
       <div class="flex items-center gap-3">
-        <a href="admin.html" title="Login Pengelola / Admin JSIT Lampung" aria-label="Login Admin JSIT Lampung" class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 flex items-center justify-center text-white shadow-md shadow-blue-600/20 hover:scale-105 hover:ring-2 hover:ring-sky-400 transition-all cursor-pointer">
-          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M2 7l10-4 10 4-10 4-10-4z" fill="rgba(255,255,255,0.25)"/>
-            <path d="M6 10.5v5.5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5" />
-            <path d="M22 10v6" stroke-linecap="round"/>
-          </svg>
+        <a href="admin.html" title="Login Pengelola / Admin JSIT Lampung" aria-label="Login Admin JSIT Lampung" class="w-10 h-10 rounded-xl bg-white border border-blue-200 flex items-center justify-center overflow-hidden p-1 shadow-md shadow-blue-600/15 hover:scale-105 hover:ring-2 hover:ring-sky-400 transition-all cursor-pointer">
+          <img src="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </a>
         <a href="#" onclick="backToCatalog(); return false;" class="group">
           <div class="flex items-center gap-1.5">
@@ -375,7 +374,7 @@
         <!-- Dedicated Page Tab Panels -->
         <div class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-7">
           
-          <!-- TAB 1: INFO & NARASUMBER -->
+          <!-- TAB 1: INFO & NARASUMBER (+ RUANG FLYER DI DALAM KOLOM NARASUMBER & FASILITATOR) -->
           <div id="tab-content-info" class="room-tab-panel space-y-6">
             <div class="grid md:grid-cols-3 gap-6">
               <div class="md:col-span-2 space-y-5">
@@ -386,11 +385,51 @@
                   <p id="room-description" class="text-sm text-slate-700 leading-relaxed"></p>
                 </div>
 
+                <!-- NARASUMBER, FASILITATOR & RUANG FLYER KEGIATAN -->
                 <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-xs">
                   <h4 class="text-sm font-bold text-navy-900 uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <i data-lucide="mic-2" class="w-4 h-4 text-blue-600"></i> Narasumber & Fasilitator
                   </h4>
-                  <div id="room-speakers-list" class="grid sm:grid-cols-2 gap-3"></div>
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                    <!-- Daftar Narasumber & Fasilitator -->
+                    <div id="room-speakers-list" class="lg:col-span-7 grid sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
+
+                    <!-- Kolom Ruang Flyer (Proporsional & Kompak di dalam Kolom Narasumber) -->
+                    <div id="room-flyer-box" class="lg:col-span-5">
+                      <div class="rounded-xl border border-blue-100 bg-blue-50/40 p-2.5 flex flex-col items-center text-center">
+                        <div class="w-full flex items-center justify-between mb-2 px-0.5">
+                          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1">
+                            <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i> Flyer Kegiatan
+                          </span>
+                          <button type="button" id="btn-expand-flyer" onclick="openFlyerLightbox()" class="hidden text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                            <i data-lucide="maximize-2" class="w-3 h-3"></i> Perbesar
+                          </button>
+                        </div>
+
+                        <!-- Saat Flyer Tersedia -->
+                        <div id="room-flyer-filled" class="hidden w-full space-y-2">
+                          <div onclick="openFlyerLightbox()" title="Klik untuk memperbesar flyer" class="w-full rounded-lg overflow-hidden border border-blue-200/80 bg-white shadow-2xs cursor-zoom-in group">
+                            <img id="room-flyer-image" src="" alt="Flyer Kegiatan JSIT Lampung" class="w-full max-h-48 object-contain mx-auto bg-slate-50 group-hover:scale-[1.02] transition-transform duration-200" />
+                          </div>
+                          <div class="flex items-center gap-1.5 w-full">
+                            <button type="button" onclick="openFlyerLightbox()" class="flex-1 py-1.5 px-2 rounded-lg bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold transition">
+                              Lihat Penuh
+                            </button>
+                            <a id="room-flyer-download" href="#" download="Flyer_Kegiatan_JSIT_Lampung.jpg" class="flex-1 py-1.5 px-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition text-center">
+                              Unduh Flyer
+                            </a>
+                          </div>
+                        </div>
+
+                        <!-- Saat Flyer Belum Diunggah Admin -->
+                        <div id="room-flyer-empty" class="w-full py-5 px-3 rounded-lg border border-dashed border-blue-200 bg-white/80 flex flex-col items-center justify-center gap-1 text-slate-400">
+                          <i data-lucide="image-plus" class="w-5 h-5 text-blue-300"></i>
+                          <p class="text-[11px] font-semibold text-slate-500">Ruang Flyer Kegiatan</p>
+                          <p class="text-[10px] text-slate-400 leading-tight">Flyer tampil di sini setelah diunggah admin.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -430,9 +469,8 @@
             </div>
           </div>
 
-          <!-- TAB 2: DAFTAR HADIR (PRESENSI DIGITAL — TANPA AUTO GENERATE SERTIFIKAT) -->
+          <!-- TAB 2: DAFTAR HADIR (PRESENSI DIGITAL) -->
           <div id="tab-content-absensi" class="room-tab-panel hidden space-y-6">
-            <!-- Confirmation Banner After Attendance Submitted -->
             <div id="attendance-success-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-xs">
               <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="check-circle-2" class="w-5 h-5"></i>
@@ -446,7 +484,6 @@
             </div>
 
             <div class="grid lg:grid-cols-12 gap-6">
-              <!-- Form Presensi -->
               <div class="lg:col-span-6 bg-white rounded-2xl p-5 sm:p-6 border border-blue-100 shadow-xs">
                 <div class="flex items-center gap-2.5 mb-4">
                   <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
@@ -504,7 +541,6 @@
                     <input type="text" id="att-pin-input" placeholder="Masukkan kode PIN dari panitia" class="w-full px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50 focus:border-blue-600 text-sm outline-none" />
                   </div>
 
-                  <!-- Digital Signature Pad -->
                   <div>
                     <div class="flex items-center justify-between mb-1">
                       <label class="text-xs font-bold text-slate-700">Tanda Tangan Digital</label>
@@ -522,7 +558,6 @@
                 </form>
               </div>
 
-              <!-- Live Attendees List -->
               <div class="lg:col-span-6 bg-white rounded-2xl p-5 border border-blue-100 shadow-xs space-y-3">
                 <div class="flex items-center justify-between gap-2">
                   <h4 class="font-bold text-navy-900 text-sm flex items-center gap-2">
@@ -557,9 +592,8 @@
             <div id="room-recordings-list" class="space-y-5"></div>
           </div>
 
-          <!-- TAB 5: E-SERTIFIKAT KEGIATAN (RILIS SETELAH JAM KEGIATAN BERAKHIR + A4 LANDSCAPE + QR VERIFIKASI) -->
+          <!-- TAB 5: E-SERTIFIKAT KEGIATAN -->
           <div id="tab-content-sertifikat" class="room-tab-panel hidden space-y-6">
-            <!-- Locked / Not Released Yet Banner -->
             <div id="cert-disabled-banner" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 sm:p-8 text-center space-y-3 shadow-xs">
               <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
                 <i data-lucide="clock" class="w-7 h-7"></i>
@@ -579,7 +613,6 @@
               </div>
             </div>
 
-            <!-- Active Certificate Lookup & Preview -->
             <div id="cert-active-section" class="space-y-6">
               <div class="bg-white border border-blue-200 rounded-2xl p-5 shadow-xs">
                 <h4 class="font-bold text-navy-900 text-sm mb-1 flex items-center gap-2">
@@ -596,7 +629,6 @@
                 <p id="cert-lookup-msg" class="text-xs mt-2 hidden"></p>
               </div>
 
-              <!-- Certificate Preview & Download Box -->
               <div id="cert-result-box" class="hidden space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl">
                   <div class="flex items-center gap-2 text-emerald-800 text-xs font-semibold">
@@ -616,10 +648,8 @@
                   </div>
                 </div>
 
-                <!-- True A4 Landscape Certificate Container (297mm x 210mm Aspect Ratio) -->
                 <div class="overflow-x-auto pb-2">
                   <div id="certificate-print-area" class="bg-white border-8 border-double border-blue-900 rounded-xl p-5 sm:p-8 shadow-xl relative overflow-hidden text-center w-full max-w-4xl mx-auto aspect-[297/210] flex flex-col justify-between bg-cover bg-center">
-                    <!-- Corner Ornaments (Hidden when custom template chrome is disabled) -->
                     <div id="cert-corner-tl" class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-800 to-sky-500 opacity-15 rounded-br-full pointer-events-none"></div>
                     <div id="cert-corner-br" class="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-blue-800 to-amber-500 opacity-15 rounded-tl-full pointer-events-none"></div>
                     
@@ -685,10 +715,7 @@
   <!-- ===================================================================== -->
   <section id="certificate-verification-page" class="hidden flex-1 py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-b from-blue-50/80 via-slate-50 to-blue-50/60">
     <div class="max-w-2xl mx-auto space-y-5">
-      
-      <!-- Top Verification Card -->
       <div class="bg-white rounded-3xl border border-blue-100 shadow-xl overflow-hidden">
-        <!-- Header Banner -->
         <div class="hero-pattern text-white p-6 sm:p-7 text-center relative">
           <div class="edu-grid-bg absolute inset-0 pointer-events-none"></div>
           <div class="relative z-10 space-y-2.5">
@@ -703,11 +730,8 @@
           </div>
         </div>
 
-        <!-- Certificate Details List -->
         <div class="p-5 sm:p-7 space-y-4">
           <div class="divide-y divide-slate-100 border border-slate-200/80 rounded-2xl overflow-hidden bg-slate-50/40">
-            
-            <!-- 1. No. Sertifikat -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="file-badge" class="w-5 h-5"></i>
@@ -718,7 +742,6 @@
               </div>
             </div>
 
-            <!-- 2. Kabupaten/Kota -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="map-pin" class="w-5 h-5"></i>
@@ -729,7 +752,6 @@
               </div>
             </div>
 
-            <!-- 3. Tanggal -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -740,7 +762,6 @@
               </div>
             </div>
 
-            <!-- 4. Instansi -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-800 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="building-2" class="w-5 h-5"></i>
@@ -751,7 +772,6 @@
               </div>
             </div>
 
-            <!-- 5. Ditandatangani -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="pen-tool" class="w-5 h-5"></i>
@@ -762,7 +782,6 @@
               </div>
             </div>
 
-            <!-- 6. Perihal -->
             <div class="p-4 flex items-start gap-3.5 bg-white">
               <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="book-open-check" class="w-5 h-5"></i>
@@ -773,7 +792,6 @@
               </div>
             </div>
 
-            <!-- 7. Ditujukan Kepada Pemilik Sertifikat & Status -->
             <div class="p-4 flex items-start gap-3.5 bg-blue-50/50">
               <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                 <i data-lucide="user-check" class="w-5 h-5"></i>
@@ -787,10 +805,8 @@
                 </div>
               </div>
             </div>
-
           </div>
 
-          <!-- Action Buttons: Unduh Sertifikat (PNG) & Salin Tautan Verifikasi -->
           <div class="pt-2 grid sm:grid-cols-2 gap-3">
             <button onclick="downloadCertificatePNG()" class="w-full py-3.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition">
               <i data-lucide="download" class="w-4 h-4"></i>
@@ -810,9 +826,31 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
+
+  <!-- MODAL LIGHTBOX FLYER KEGIATAN -->
+  <div id="flyer-lightbox-modal" onclick="if(event.target===this) closeFlyerLightbox()" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/85 backdrop-blur-sm p-4 flex items-center justify-center">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden my-6">
+      <div class="bg-navy-900 text-white px-5 py-3.5 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 min-w-0">
+          <i data-lucide="image" class="w-4 h-4 text-sky-300 shrink-0"></i>
+          <h3 class="font-bold text-xs sm:text-sm truncate" id="lightbox-flyer-title">Flyer Kegiatan</h3>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a id="lightbox-flyer-download" href="#" download="Flyer_Kegiatan_JSIT_Lampung.jpg" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold inline-flex items-center gap-1 transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh
+          </a>
+          <button onclick="closeFlyerLightbox()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/25 flex items-center justify-center text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-100 flex items-center justify-center max-h-[80vh] overflow-auto">
+        <img id="lightbox-flyer-img" src="" alt="Flyer Kegiatan Penuh" class="max-w-full max-h-[74vh] object-contain rounded-lg shadow-md bg-white" />
+      </div>
+    </div>
+  </div>
 
   <!-- GLOBAL CERTIFICATE SEARCH MODAL -->
   <div id="global-cert-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/70 backdrop-blur-sm p-4">
@@ -853,8 +891,8 @@
   <footer class="bg-navy-950 text-blue-200/80 border-t border-blue-900/50 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-sky-400">
-          <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+        <div class="w-9 h-9 rounded-lg bg-white border border-blue-400/30 p-1 flex items-center justify-center overflow-hidden">
+          <img src="https://drive.google.com/thumbnail?id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1GKQVARGxoBCmrcqcN8Z0v6aaPNftPQNG';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </div>
         <div>
           <p class="font-bold text-white">JSIT Wilayah Lampung — Tim Diklat Wilayah Lampung</p>
@@ -917,6 +955,7 @@ const DEFAULT_EVENTS = [
     mode: 'Offline / Tatap Muka',
     location: 'Aula Islamic Center Rajabasa, Bandar Lampung',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 250,
     pin: '',
     speakers: [
@@ -967,6 +1006,7 @@ const DEFAULT_EVENTS = [
     mode: 'Hybrid (Offline & Zoom)',
     location: 'Hotel Emersia Bandar Lampung & Zoom Cloud Meeting',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 150,
     pin: '',
     speakers: [
@@ -1014,6 +1054,7 @@ const DEFAULT_EVENTS = [
     mode: 'Online (Zoom & YouTube Live)',
     location: 'Zoom Meeting & Channel YouTube JSIT Lampung Official',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 1000,
     pin: '',
     speakers: [
@@ -1061,6 +1102,7 @@ const DEFAULT_EVENTS = [
     mode: 'Offline / Lab Praktik',
     location: 'Gedung Diklat LPMP / Balai Guru Penggerak Lampung',
     zoomUrl: 'https://zoom.us/join',
+    flyerImg: '',
     quota: 120,
     pin: '',
     speakers: [
@@ -1236,6 +1278,7 @@ const DEFAULT_EVENTS = [
             if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
             if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
             item.certificate = c;
+            if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
             return item;
           });
           localStorage.setItem(STORAGE_KEY, JSON.stringify(eventsData));
@@ -1589,6 +1632,47 @@ const DEFAULT_EVENTS = [
       releaseCountdownInterval = setInterval(tick, 1000);
     }
 
+    function renderRoomFlyer(ev) {
+      const flyerUrl = (ev.flyerImg || '').trim();
+      const filledWrap = document.getElementById('room-flyer-filled');
+      const emptyWrap = document.getElementById('room-flyer-empty');
+      const imgEl = document.getElementById('room-flyer-image');
+      const dlBtn = document.getElementById('room-flyer-download');
+      const expandBtn = document.getElementById('btn-expand-flyer');
+
+      if (flyerUrl) {
+        imgEl.src = flyerUrl;
+        dlBtn.href = flyerUrl;
+        const safeTitle = (ev.title || 'Kegiatan').replace(/[^a-z0-9]/gi, '_').slice(0, 40);
+        dlBtn.download = `Flyer_${safeTitle}.jpg`;
+        filledWrap.classList.remove('hidden');
+        expandBtn.classList.remove('hidden');
+        emptyWrap.classList.add('hidden');
+      } else {
+        imgEl.src = '';
+        filledWrap.classList.add('hidden');
+        expandBtn.classList.add('hidden');
+        emptyWrap.classList.remove('hidden');
+      }
+    }
+
+    function openFlyerLightbox() {
+      const ev = eventsData.find(item => item.id === activeEventId);
+      if (!ev || !ev.flyerImg) return;
+      document.getElementById('lightbox-flyer-title').textContent = `Flyer: ${ev.title}`;
+      document.getElementById('lightbox-flyer-img').src = ev.flyerImg;
+      const dl = document.getElementById('lightbox-flyer-download');
+      dl.href = ev.flyerImg;
+      const safeTitle = (ev.title || 'Kegiatan').replace(/[^a-z0-9]/gi, '_').slice(0, 40);
+      dl.download = `Flyer_${safeTitle}.jpg`;
+      document.getElementById('flyer-lightbox-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeFlyerLightbox() {
+      document.getElementById('flyer-lightbox-modal').classList.add('hidden');
+    }
+
     function openEventPage(eventId, resetTab = true, targetTab = 'info', updateHash = true) {
       const ev = eventsData.find(item => item.id === eventId);
       if (!ev) return;
@@ -1635,6 +1719,9 @@ const DEFAULT_EVENTS = [
           </div>
         </div>
       `).join('') : '<p class="text-xs text-slate-500">Tim Narasumber JSIT Wilayah Lampung</p>';
+
+      // Render Flyer inside Narasumber & Fasilitator Box
+      renderRoomFlyer(ev);
 
       const pinWrapper = document.getElementById('att-pin-wrapper');
       if (ev.pin && ev.pin.trim() !== '') {
@@ -1719,7 +1806,6 @@ const DEFAULT_EVENTS = [
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // SUBMIT ATTENDANCE — DOES NOT AUTO-CREATE OR JUMP TO CERTIFICATE
     async function submitAttendance(e) {
       e.preventDefault();
       const evIndex = eventsData.findIndex(item => item.id === activeEventId);
@@ -1795,7 +1881,6 @@ const DEFAULT_EVENTS = [
       document.getElementById('room-quota-text').textContent = `${ev.attendees.length} / ${ev.quota || 100} Peserta`;
       renderRoomAttendees();
 
-      // Show confirmation banner on Daftar Hadir tab WITHOUT creating certificate automatically
       bannerTitle.textContent = `Daftar Hadir Berhasil Disimpan — ${name}`;
       bannerDesc.innerHTML = `Terima kasih, data kehadiran Anda telah tercatat. E-Sertifikat tidak langsung dibuat otomatis, dan dapat dicek serta diunduh di tab <strong>E-Sertifikat</strong> setelah jam kegiatan berakhir pada <strong>${releaseSchedule}</strong>.`;
       banner.classList.remove('hidden');
@@ -1998,7 +2083,6 @@ const DEFAULT_EVENTS = [
       const qrDataUrl = await generateQRDataURL(activeVerificationUrl);
       activeCertPayload.qrDataUrl = qrDataUrl;
 
-      // Apply Custom Template A4 Landscape or Default Styling
       const printArea = document.getElementById('certificate-print-area');
       const innerBorder = document.getElementById('cert-inner-border');
       const defaultKop = document.getElementById('cert-default-kop');
@@ -2080,7 +2164,6 @@ const DEFAULT_EVENTS = [
         } catch (e) {}
       }
 
-      // Cross-check with live eventsData if available on this browser / GitHub JSON
       let matchedEvent = null;
       let matchedAttendee = null;
       if (data && data.evId) {
@@ -2105,7 +2188,6 @@ const DEFAULT_EVENTS = [
       const issuedDate = (data && data.iss) || tanggalKegiatan;
       const verCode = (data && data.code) || certParam || 'VERIFIED';
 
-      // Populate Verification Page UI
       document.getElementById('ver-cert-number').textContent = noSertifikat;
       document.getElementById('ver-cert-region').textContent = kabupatenKota;
       document.getElementById('ver-cert-date').textContent = tanggalKegiatan;
@@ -2115,7 +2197,6 @@ const DEFAULT_EVENTS = [
       document.getElementById('ver-cert-owner').textContent = `${namaPemilik} - ${asalSekolah}`;
       document.getElementById('ver-cert-role-status').textContent = `Status sebagai ${roleStatus}`;
 
-      // Prepare activeCertPayload so "Unduh Sertifikat (PNG)" works directly from this page
       const certCfg = (matchedEvent && matchedEvent.certificate) || {};
       activeVerificationUrl = window.location.href;
       const qrDataUrl = await generateQRDataURL(activeVerificationUrl);
@@ -2188,14 +2269,13 @@ const DEFAULT_EVENTS = [
       });
     }
 
-    // High-DPI A4 Landscape PNG Generator (1754 x 1240 px = 297mm x 210mm) with Custom Template & QR Barcode
     async function downloadCertificatePNG() {
       if (!activeCertPayload) return;
       const p = activeCertPayload;
       const canvas = document.getElementById('hd-cert-canvas');
       const ctx = canvas.getContext('2d');
-      const W = canvas.width;  // 1754 (A4 Landscape width)
-      const H = canvas.height; // 1240 (A4 Landscape height)
+      const W = canvas.width;
+      const H = canvas.height;
 
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, W, H);
@@ -2205,13 +2285,11 @@ const DEFAULT_EVENTS = [
       const qrImg = await loadImageAsync(qrDataUrl);
 
       if (tplImg) {
-        // Draw uploaded A4 Landscape template full-bleed
         ctx.drawImage(tplImg, 0, 0, W, H);
       }
 
       const drawDefaultChrome = !tplImg || !p.hideDefaultChrome;
       if (drawDefaultChrome) {
-        // Decorative Corner Ornaments
         ctx.fillStyle = '#0B1F3A';
         ctx.beginPath();
         ctx.moveTo(0, 0); ctx.lineTo(380, 0); ctx.lineTo(0, 380); ctx.closePath();
@@ -2222,7 +2300,6 @@ const DEFAULT_EVENTS = [
         ctx.moveTo(W, H); ctx.lineTo(W - 380, H); ctx.lineTo(W, H - 380); ctx.closePath();
         ctx.fill();
 
-        // Outer & Inner A4 Landscape Frame
         ctx.strokeStyle = p.themeColor || '#1E3A8A';
         ctx.lineWidth = 14;
         ctx.strokeRect(52, 52, W - 104, H - 104);
@@ -2247,7 +2324,6 @@ const DEFAULT_EVENTS = [
 
       ctx.textAlign = 'center';
 
-      // Title
       ctx.fillStyle = p.themeColor || '#1E3A8A';
       ctx.font = '800 82px Plus Jakarta Sans, sans-serif';
       ctx.fillText('SERTIFIKAT', W / 2, 335 + yShift);
@@ -2260,7 +2336,6 @@ const DEFAULT_EVENTS = [
       ctx.font = '500 27px Inter, sans-serif';
       ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 462 + yShift);
 
-      // Participant Name
       ctx.fillStyle = primaryTextColor;
       ctx.font = '800 58px Plus Jakarta Sans, sans-serif';
       ctx.fillText(p.name, W / 2, 548 + yShift);
@@ -2277,7 +2352,6 @@ const DEFAULT_EVENTS = [
       ctx.font = '700 29px Inter, sans-serif';
       ctx.fillText(p.school, W / 2, 616 + yShift);
 
-      // Body
       ctx.fillStyle = secondaryTextColor;
       ctx.font = '500 26px Inter, sans-serif';
       ctx.fillText(`Atas partisipasi aktif sebagai ${p.roleLabel || 'Peserta'} dalam kegiatan ${p.category}:`, W / 2, 692 + yShift);
@@ -2291,7 +2365,6 @@ const DEFAULT_EVENTS = [
       ctx.font = '500 24px Inter, sans-serif';
       ctx.fillText(`Diselenggarakan pada ${p.dateRange} • Bobot Pelatihan: ${p.jp}`, W / 2, 802 + yShift);
 
-      // Right Signature Block
       ctx.textAlign = 'center';
       ctx.fillStyle = '#475569';
       ctx.font = '500 23px Inter, sans-serif';
@@ -2306,7 +2379,6 @@ const DEFAULT_EVENTS = [
       ctx.font = '800 27px Plus Jakarta Sans, sans-serif';
       ctx.fillText(p.signerName, W - 450, 1086);
 
-      // Left Scannable QR Code Verification Stamp
       if (qrImg) {
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(190, 918, 174, 174);

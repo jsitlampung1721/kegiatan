@@ -1200,8 +1200,9 @@ const DEFAULT_EVENTS = [
       if (!initialRouteHandled) {
         initialRouteHandled = true;
         handleInitialRoute();
+      } else if ((window.location.hash || '').startsWith('#verifikasi')) {
+        openVerificationPageFromHash(window.location.hash);
       }
-    }
 
     async function initApp() {
       populateRegionSelect();

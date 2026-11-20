@@ -48,6 +48,11 @@
       color: #FFFFFF !important;
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
+    .draggable-cert-el {
+      cursor: move;
+      user-select: none;
+      touch-action: none;
+    }
   </style>
 </head>
 <body class="min-h-screen antialiased">
@@ -203,12 +208,12 @@
         <div id="admin-events-container" class="space-y-4"></div>
       </section>
 
-      <!-- PANEL 2: ATUR & STUDIO E-SERTIFIKAT (A4 LANDSCAPE + CUSTOM TEMPLATE UPLOAD) -->
+      <!-- PANEL 2: ATUR & STUDIO E-SERTIFIKAT (A4 LANDSCAPE + CUSTOM TEMPLATE UPLOAD + POSISI QR & TTD) -->
       <section id="panel-sertifikat" class="admin-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Studio Custom E-Sertifikat (A4 Landscape)</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Atur jadwal rilis otomatis saat jam kegiatan berakhir, unggah desain template A4 Landscape (297mm × 210mm), dan cek barcode verifikasi.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Atur jadwal rilis otomatis, unggah desain template A4 Landscape (297mm × 210mm), serta sesuaikan letak QR Code Verifikasi & Blok Tanda Tangan.</p>
           </div>
           <div class="md:w-80">
             <label class="block text-[11px] font-bold uppercase text-blue-700 mb-1">Pilih Kegiatan:</label>
@@ -272,9 +277,78 @@
                     <input type="color" id="studio-text-color" value="#0B1F3A" oninput="updateCertPreviewLive()" class="w-full h-8 rounded border border-slate-300 cursor-pointer" />
                   </div>
                   <div>
-                    <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Geser Posisi Teks (Atas/Bawah)</label>
-                    <input type="range" id="studio-offset-y" min="-90" max="90" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600 mt-1.5" />
+                    <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Geser Teks Nama & Acara (Atas/Bawah)</label>
+                    <input type="range" id="studio-offset-y" min="-110" max="110" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600 mt-1.5" />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PENGATURAN LETAK QR CODE & BLOK TANDA TANGAN -->
+            <div class="p-3.5 rounded-xl bg-sky-50/80 border border-sky-200 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-xs text-navy-900">Atur Letak QR Verifikasi & Tanda Tangan</span>
+                <button type="button" onclick="resetQrAndSignerPositions()" class="px-2 py-1 rounded bg-white hover:bg-sky-100 border border-sky-300 text-[10px] font-bold text-sky-800 transition">
+                  Reset Posisi
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-600 leading-snug">
+                Geser langsung elemen QR atau TTD pada gambar pratinjau di sebelah kanan, atau gunakan pengatur presisi di bawah ini:
+              </p>
+
+              <!-- 1. Posisi QR Code & Teks Scan Verifikasi -->
+              <div class="p-2.5 rounded-lg bg-white border border-sky-100 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-blue-900">1. Letak QR Code & Teks Scan Verifikasi</span>
+                  <span id="badge-qr-pos" class="font-mono text-[10px] text-slate-500">X:0, Y:0</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-600">Geser Kiri / Kanan (X)</label>
+                    <input type="range" id="studio-qr-x" min="-220" max="650" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-600">Geser Atas / Bawah (Y)</label>
+                    <input type="range" id="studio-qr-y" min="-560" max="140" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 pt-0.5">
+                  <div class="flex-1">
+                    <label class="block text-[10px] font-semibold text-slate-600">Ukuran QR & Teks (<span id="badge-qr-scale">100%</span>)</label>
+                    <input type="range" id="studio-qr-scale" min="65" max="145" step="5" value="100" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                  <label class="flex items-center gap-1.5 text-[10px] font-semibold text-slate-700 cursor-pointer pt-3 shrink-0">
+                    <input type="checkbox" id="studio-qr-bg" checked onchange="updateCertPreviewLive()" class="accent-blue-600 rounded" />
+                    <span>Latar putih teks</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 2. Posisi Teks Penandatangan -->
+              <div class="p-2.5 rounded-lg bg-white border border-sky-100 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-blue-900">2. Letak Teks Ketua, TTD Elektronik & Nama</span>
+                  <span id="badge-signer-pos" class="font-mono text-[10px] text-slate-500">X:0, Y:0</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-600">Geser Kiri / Kanan (X)</label>
+                    <input type="range" id="studio-signer-x" min="-650" max="220" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-600">Geser Atas / Bawah (Y)</label>
+                    <input type="range" id="studio-signer-y" min="-560" max="140" value="0" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 pt-0.5">
+                  <div class="flex-1">
+                    <label class="block text-[10px] font-semibold text-slate-600">Ukuran Teks TTD (<span id="badge-signer-scale">100%</span>)</label>
+                    <input type="range" id="studio-signer-scale" min="70" max="140" step="5" value="100" oninput="updateCertPreviewLive()" class="w-full accent-blue-600" />
+                  </div>
+                  <label class="flex items-center gap-1.5 text-[10px] font-semibold text-slate-700 cursor-pointer pt-3 shrink-0">
+                    <input type="checkbox" id="studio-show-issued-date" checked onchange="updateCertPreviewLive()" class="accent-blue-600 rounded" />
+                    <span>Tampil tanggal</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -315,15 +389,15 @@
             </div>
 
             <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
-              Simpan Pengaturan & Template ke Firebase
+              Simpan Pengaturan & Posisi ke Firebase
             </button>
           </form>
 
           <!-- Live A4 Landscape Preview -->
-          <div class="lg:col-span-7 space-y-3">
-            <div class="flex items-center justify-between">
+          <div class="lg:col-span-7 space-y-3 lg:sticky lg:top-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pratinjau A4 Landscape (297mm × 210mm)</span>
-              <span class="text-xs text-blue-700 font-semibold">Termasuk Barcode QR Verifikasi</span>
+              <span class="text-xs text-blue-700 font-semibold">Tip: Klik & geser langsung QR atau TTD di pratinjau</span>
             </div>
 
             <div id="studio-preview-box" class="bg-white border-8 border-double border-blue-900 rounded-2xl p-5 sm:p-6 shadow-lg text-center aspect-[297/210] flex flex-col justify-between relative overflow-hidden bg-cover bg-center">
@@ -348,22 +422,23 @@
                     dengan bobot pelatihan setara <strong class="text-blue-800" id="prev-cert-jp">16 JP</strong>.
                   </p>
                 </div>
-                <div class="grid grid-cols-2 items-end pt-1">
-                  <div class="flex items-center gap-2 text-left pl-2">
-                    <img id="studio-qr-img" src="" alt="QR Verifikasi" class="w-12 h-12 rounded border border-slate-200 bg-white p-0.5" />
-                    <div class="text-[9px] leading-tight text-slate-500 bg-white/80 px-1.5 py-1 rounded">
+                <div class="grid grid-cols-2 items-end pt-1 relative z-20">
+                  <div id="studio-qr-block" title="Klik & geser untuk menyesuaikan letak QR Code & Teks Scan Verifikasi" class="draggable-cert-el flex items-center gap-2 text-left pl-2 origin-bottom-left rounded-lg ring-1 ring-dashed ring-blue-400/70 hover:ring-2 hover:ring-blue-600 p-1">
+                    <img id="studio-qr-img" src="" alt="QR Verifikasi" class="w-12 h-12 rounded border border-slate-200 bg-white p-0.5 pointer-events-none" />
+                    <div id="studio-qr-text-box" class="text-[9px] leading-tight text-slate-500 bg-white/85 px-1.5 py-1 rounded pointer-events-none">
                       <strong class="text-navy-900 block">Scan Verifikasi</strong>
                       JSIT Wilayah Lampung<br/>
                       Tim Diklat Wilayah
                     </div>
                   </div>
-                  <div class="text-center pr-2">
-                    <p class="text-[10px] text-slate-500" id="prev-cert-title">Ketua JSIT Indonesia Wilayah Lampung</p>
-                    <div class="my-1 px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[9px] italic text-blue-800 inline-block">TTD Elektronik Terverifikasi</div>
-                    <p class="text-xs font-extrabold text-navy-900 underline" id="prev-cert-signer">Muslimin, M.Pd.I.,Gr.</p>
+                  <div id="studio-signer-block" title="Klik & geser untuk menyesuaikan letak Tanda Tangan" class="draggable-cert-el text-center pr-2 origin-bottom rounded-lg ring-1 ring-dashed ring-amber-500/80 hover:ring-2 hover:ring-amber-600 p-1">
+                    <p class="text-[9px] text-slate-500 pointer-events-none" id="prev-cert-issued">Bandar Lampung, 29 Nov 2026</p>
+                    <p class="text-[10px] text-slate-600 font-semibold pointer-events-none" id="prev-cert-title">Ketua JSIT Indonesia Wilayah Lampung</p>
+                    <div class="my-1 px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[9px] italic text-blue-800 inline-block pointer-events-none">TTD Elektronik Terverifikasi</div>
+                    <p class="text-xs font-extrabold text-navy-900 underline pointer-events-none" id="prev-cert-signer">Muslimin, M.Pd.I.,Gr.</p>
                   </div>
                 </div>
-          </div>
+              </div>
             </div>
           </div>
         </div>
@@ -794,7 +869,15 @@ const DEFAULT_EVENTS = [
       customTemplateImg: '',
       hideDefaultChrome: true,
       textColor: '#0B1F3A',
-      offsetY: 0
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
     },
     attendees: []
   },
@@ -838,7 +921,15 @@ const DEFAULT_EVENTS = [
       customTemplateImg: '',
       hideDefaultChrome: true,
       textColor: '#0B1F3A',
-      offsetY: 0
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
     },
     attendees: []
   },
@@ -882,7 +973,15 @@ const DEFAULT_EVENTS = [
       customTemplateImg: '',
       hideDefaultChrome: true,
       textColor: '#0B1F3A',
-      offsetY: 0
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
     },
     attendees: []
   },
@@ -924,7 +1023,15 @@ const DEFAULT_EVENTS = [
       customTemplateImg: '',
       hideDefaultChrome: true,
       textColor: '#0B1F3A',
-      offsetY: 0
+      offsetY: 0,
+      qrOffsetX: 0,
+      qrOffsetY: 0,
+      qrScale: 100,
+      showScanBg: true,
+      signerOffsetX: 0,
+      signerOffsetY: 0,
+      signerScale: 100,
+      showIssuedDate: true
     },
     attendees: []
   }
@@ -987,6 +1094,14 @@ const DEFAULT_EVENTS = [
       if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
       if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
       if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
+      if (typeof c.qrOffsetX !== 'number') c.qrOffsetX = 0;
+      if (typeof c.qrOffsetY !== 'number') c.qrOffsetY = 0;
+      if (typeof c.qrScale !== 'number') c.qrScale = 100;
+      if (typeof c.showScanBg !== 'boolean') c.showScanBg = true;
+      if (typeof c.signerOffsetX !== 'number') c.signerOffsetX = 0;
+      if (typeof c.signerOffsetY !== 'number') c.signerOffsetY = 0;
+      if (typeof c.signerScale !== 'number') c.signerScale = 100;
+      if (typeof c.showIssuedDate !== 'boolean') c.showIssuedDate = true;
       item.certificate = c;
       if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
       if (!Array.isArray(item.materials)) item.materials = [];
@@ -1000,8 +1115,95 @@ const DEFAULT_EVENTS = [
       return item;
     }
 
+    function setupPreviewDraggableElements() {
+      const pairs = [
+        {
+          elId: 'studio-qr-block',
+          xInputId: 'studio-qr-x',
+          yInputId: 'studio-qr-y'
+        },
+        {
+          elId: 'studio-signer-block',
+          xInputId: 'studio-signer-x',
+          yInputId: 'studio-signer-y'
+        }
+      ];
+
+      pairs.forEach(({ elId, xInputId, yInputId }) => {
+        const el = document.getElementById(elId);
+        if (!el || el.dataset.dragReady) return;
+        el.dataset.dragReady = '1';
+
+        let dragging = false;
+        let startClientX = 0;
+        let startClientY = 0;
+        let startValX = 0;
+        let startValY = 0;
+
+        el.addEventListener('pointerdown', (e) => {
+          dragging = true;
+          startClientX = e.clientX;
+          startClientY = e.clientY;
+          startValX = parseInt(document.getElementById(xInputId).value || '0', 10);
+          startValY = parseInt(document.getElementById(yInputId).value || '0', 10);
+          el.setPointerCapture(e.pointerId);
+          e.preventDefault();
+        });
+
+        el.addEventListener('pointermove', (e) => {
+          if (!dragging) return;
+          const previewBox = document.getElementById('studio-preview-box');
+          const boxW = (previewBox && previewBox.clientWidth) ? previewBox.clientWidth : 600;
+          const scaleFactor = 1000 / boxW;
+
+          const dxUnits = Math.round((e.clientX - startClientX) * scaleFactor);
+          const dyUnits = Math.round((e.clientY - startClientY) * scaleFactor);
+
+          const xEl = document.getElementById(xInputId);
+          const yEl = document.getElementById(yInputId);
+          const minX = parseInt(xEl.min, 10);
+          const maxX = parseInt(xEl.max, 10);
+          const minY = parseInt(yEl.min, 10);
+          const maxY = parseInt(yEl.max, 10);
+
+          xEl.value = Math.max(minX, Math.min(maxX, startValX + dxUnits));
+          yEl.value = Math.max(minY, Math.min(maxY, startValY + dyUnits));
+          updateCertPreviewLive();
+        });
+
+        const endDrag = (e) => {
+          if (!dragging) return;
+          dragging = false;
+          try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+        };
+        el.addEventListener('pointerup', endDrag);
+        el.addEventListener('pointercancel', endDrag);
+      });
+
+      window.addEventListener('resize', () => {
+        const certPanel = document.getElementById('panel-sertifikat');
+        if (certPanel && !certPanel.classList.contains('hidden')) {
+          updateCertPreviewLive();
+        }
+      });
+    }
+
+    function resetQrAndSignerPositions() {
+      document.getElementById('studio-qr-x').value = 0;
+      document.getElementById('studio-qr-y').value = 0;
+      document.getElementById('studio-qr-scale').value = 100;
+      document.getElementById('studio-qr-bg').checked = true;
+      document.getElementById('studio-signer-x').value = 0;
+      document.getElementById('studio-signer-y').value = 0;
+      document.getElementById('studio-signer-scale').value = 100;
+      document.getElementById('studio-show-issued-date').checked = true;
+      updateCertPreviewLive();
+      toast('Posisi QR Code & Tanda Tangan dikembalikan ke posisi awal.');
+    }
+
     function bootAdmin() {
       document.getElementById('quick-att-region').innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+      setupPreviewDraggableElements();
 
       if (window.firebase && isFirebaseConfigured()) {
         try {
@@ -1171,7 +1373,7 @@ const DEFAULT_EVENTS = [
 
     async function persistSingleEventToCloud(evObj) {
       const cleanPayload = { ...evObj, updatedAt: new Date().toISOString() };
-      delete cleanPayload.attendees; // Disimpan di subkoleksi terpisah agar aman & skalabel
+      delete cleanPayload.attendees;
 
       if (isFirebaseReady && db) {
         await db.collection('events').doc(evObj.id).set(cleanPayload, { merge: true });
@@ -1314,7 +1516,7 @@ const DEFAULT_EVENTS = [
                 Materi (${matCount}) & Rekaman (${recCount})
               </button>
               <button onclick="jumpToEventSubFeature('sertifikat', '${ev.id}')" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-white text-xs font-bold transition">
-                Studio E-Sertifikat & Upload Template
+                Studio E-Sertifikat & Posisi QR/TTD
               </button>
             </div>
           </div>
@@ -1526,7 +1728,15 @@ const DEFAULT_EVENTS = [
               customTemplateImg: '',
               hideDefaultChrome: true,
               textColor: '#0B1F3A',
-              offsetY: 0
+              offsetY: 0,
+              qrOffsetX: 0,
+              qrOffsetY: 0,
+              qrScale: 100,
+              showScanBg: true,
+              signerOffsetX: 0,
+              signerOffsetY: 0,
+              signerScale: 100,
+              showIssuedDate: true
             },
             attendees: []
           };
@@ -1585,7 +1795,15 @@ const DEFAULT_EVENTS = [
         customTemplateImg: '',
         hideDefaultChrome: true,
         textColor: '#0B1F3A',
-        offsetY: 0
+        offsetY: 0,
+        qrOffsetX: 0,
+        qrOffsetY: 0,
+        qrScale: 100,
+        showScanBg: true,
+        signerOffsetX: 0,
+        signerOffsetY: 0,
+        signerScale: 100,
+        showIssuedDate: true
       };
 
       document.getElementById('studio-cert-release-mode').value = cert.releaseMode || (cert.enabled === false ? 'disabled' : 'after_end');
@@ -1602,6 +1820,16 @@ const DEFAULT_EVENTS = [
       document.getElementById('studio-hide-chrome').checked = cert.hideDefaultChrome !== false;
       document.getElementById('studio-text-color').value = cert.textColor || '#0B1F3A';
       document.getElementById('studio-offset-y').value = cert.offsetY || 0;
+
+      document.getElementById('studio-qr-x').value = cert.qrOffsetX || 0;
+      document.getElementById('studio-qr-y').value = cert.qrOffsetY || 0;
+      document.getElementById('studio-qr-scale').value = cert.qrScale || 100;
+      document.getElementById('studio-qr-bg').checked = cert.showScanBg !== false;
+
+      document.getElementById('studio-signer-x').value = cert.signerOffsetX || 0;
+      document.getElementById('studio-signer-y').value = cert.signerOffsetY || 0;
+      document.getElementById('studio-signer-scale').value = cert.signerScale || 100;
+      document.getElementById('studio-show-issued-date').checked = cert.showIssuedDate !== false;
 
       updateTemplateControlsVisibility();
       updateCertPreviewLive();
@@ -1711,6 +1939,24 @@ const DEFAULT_EVENTS = [
       const textColor = document.getElementById('studio-text-color').value || '#0B1F3A';
       const offsetY = parseInt(document.getElementById('studio-offset-y').value || '0', 10);
 
+      const qrX = parseInt(document.getElementById('studio-qr-x').value || '0', 10);
+      const qrY = parseInt(document.getElementById('studio-qr-y').value || '0', 10);
+      const qrScale = parseInt(document.getElementById('studio-qr-scale').value || '100', 10);
+      const showScanBg = document.getElementById('studio-qr-bg').checked;
+
+      const signerX = parseInt(document.getElementById('studio-signer-x').value || '0', 10);
+      const signerY = parseInt(document.getElementById('studio-signer-y').value || '0', 10);
+      const signerScale = parseInt(document.getElementById('studio-signer-scale').value || '100', 10);
+      const showIssuedDate = document.getElementById('studio-show-issued-date').checked;
+
+      document.getElementById('badge-qr-pos').textContent = `X:${qrX}, Y:${qrY}`;
+      document.getElementById('badge-qr-scale').textContent = `${qrScale}%`;
+      document.getElementById('badge-signer-pos').textContent = `X:${signerX}, Y:${signerY}`;
+      document.getElementById('badge-signer-scale').textContent = `${signerScale}%`;
+
+      const boxW = (previewBox && previewBox.clientWidth) ? previewBox.clientWidth : 600;
+      const unitPx = boxW / 1000;
+
       if (tempCustomTemplateImg) {
         previewBox.style.backgroundImage = `url('${tempCustomTemplateImg}')`;
         if (hideChrome) {
@@ -1723,7 +1969,7 @@ const DEFAULT_EVENTS = [
           innerFrame.classList.add('border', 'border-amber-400/80');
           defaultHeader.classList.remove('invisible');
         }
-        dynamicBlock.style.transform = `translateY(${offsetY}px)`;
+        dynamicBlock.style.transform = `translateY(${Math.round(offsetY * (boxW / 835))}px)`;
       } else {
         previewBox.style.backgroundImage = 'none';
         previewBox.style.borderWidth = '8px';
@@ -1733,10 +1979,35 @@ const DEFAULT_EVENTS = [
         dynamicBlock.style.transform = 'translateY(0px)';
       }
 
+      // Apply QR block position & scale
+      const qrBlock = document.getElementById('studio-qr-block');
+      const qrTextBox = document.getElementById('studio-qr-text-box');
+      if (qrBlock) {
+        qrBlock.style.transform = `translate(${(qrX * unitPx).toFixed(1)}px, ${(qrY * unitPx).toFixed(1)}px) scale(${(qrScale / 100).toFixed(2)})`;
+      }
+      if (qrTextBox) {
+        qrTextBox.className = showScanBg
+          ? 'text-[9px] leading-tight text-slate-600 bg-white/85 px-1.5 py-1 rounded pointer-events-none'
+          : 'text-[9px] leading-tight text-slate-700 px-1.5 py-1 rounded pointer-events-none';
+      }
+
+      // Apply Signer block position & scale
+      const signerBlock = document.getElementById('studio-signer-block');
+      const issuedEl = document.getElementById('prev-cert-issued');
+      if (signerBlock) {
+        signerBlock.style.transform = `translate(${(signerX * unitPx).toFixed(1)}px, ${(signerY * unitPx).toFixed(1)}px) scale(${(signerScale / 100).toFixed(2)})`;
+      }
+      if (issuedEl) {
+        issuedEl.classList.toggle('hidden', !showIssuedDate);
+        issuedEl.textContent = `Bandar Lampung, ${formatDateIndoAdmin(ev.dateEnd || ev.dateStart, '')}`;
+      }
+
+      const activeTxtCol = tempCustomTemplateImg ? textColor : '#0B1F3A';
       document.getElementById('prev-cert-heading').style.color = color;
-      document.getElementById('prev-cert-owner').style.color = tempCustomTemplateImg ? textColor : '#0B1F3A';
+      document.getElementById('prev-cert-owner').style.color = activeTxtCol;
       document.getElementById('prev-cert-body').style.color = tempCustomTemplateImg ? textColor : '#475569';
-      document.getElementById('prev-cert-signer').style.color = tempCustomTemplateImg ? textColor : '#0B1F3A';
+      document.getElementById('prev-cert-title').style.color = activeTxtCol;
+      document.getElementById('prev-cert-signer').style.color = activeTxtCol;
 
       document.getElementById('prev-cert-num').textContent = `Nomor: 001/${prefix}`;
       document.getElementById('prev-cert-role').textContent = role;
@@ -1781,11 +2052,19 @@ const DEFAULT_EVENTS = [
         customTemplateImg: tempCustomTemplateImg || '',
         hideDefaultChrome: document.getElementById('studio-hide-chrome').checked,
         textColor: document.getElementById('studio-text-color').value || '#0B1F3A',
-        offsetY: parseInt(document.getElementById('studio-offset-y').value || '0', 10)
+        offsetY: parseInt(document.getElementById('studio-offset-y').value || '0', 10),
+        qrOffsetX: parseInt(document.getElementById('studio-qr-x').value || '0', 10),
+        qrOffsetY: parseInt(document.getElementById('studio-qr-y').value || '0', 10),
+        qrScale: parseInt(document.getElementById('studio-qr-scale').value || '100', 10),
+        showScanBg: document.getElementById('studio-qr-bg').checked,
+        signerOffsetX: parseInt(document.getElementById('studio-signer-x').value || '0', 10),
+        signerOffsetY: parseInt(document.getElementById('studio-signer-y').value || '0', 10),
+        signerScale: parseInt(document.getElementById('studio-signer-scale').value || '100', 10),
+        showIssuedDate: document.getElementById('studio-show-issued-date').checked
       };
 
       await persistSingleEventToCloud(events[idx]);
-      toast('Pengaturan & Template E-Sertifikat A4 Landscape tersimpan di Firebase!');
+      toast('Pengaturan, Template & Posisi QR/TTD tersimpan di Firebase!');
     }
 
     // PANEL 3: DAFTAR HADIR

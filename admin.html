@@ -15,6 +15,12 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
+  <!-- Firebase SDK (Compat v10.14.1) & Konfigurasi Terpusat -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="./firebase-config.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -55,15 +61,24 @@
         </div>
         <h1 class="font-display font-extrabold text-2xl text-navy-900">Portal Admin JSIT Lampung</h1>
         <p class="text-xs text-slate-500">Manajemen Kegiatan, Daftar Hadir, Flyer, Materi, Rekaman & E-Sertifikat</p>
+        <div id="login-firebase-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600">
+          Memeriksa koneksi Firebase...
+        </div>
       </div>
 
-      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+      <!-- FORM LOGIN FIREBASE AUTH (EMAIL & PASSWORD) -->
+      <form id="firebase-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div id="login-email-group">
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Admin Firebase</label>
+          <input type="email" id="admin-email-input" placeholder="admin@jsitlampung.or.id" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+        </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Pengelola</label>
-          <input type="password" id="admin-password-input" value="jsitlampung2026" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
-          <p class="text-[11px] text-slate-500 mt-1.5">Sandi default sudah terisi (<code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold">jsitlampung2026</code>), klik tombol di bawah untuk masuk.</p>
+          <input type="password" id="admin-password-input" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 text-sm outline-none" />
+          <p id="login-hint-text" class="text-[11px] text-slate-500 mt-1.5">Gunakan akun Email & Kata Sandi yang telah dibuat di Firebase Authentication.</p>
         </div>
-        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
+        <p id="login-error-msg" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl"></p>
+        <button type="submit" id="btn-login-submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
           Masuk ke Ruang Kerja Admin &rarr;
         </button>
       </form>
@@ -95,6 +110,10 @@
         </div>
 
         <div class="p-3">
+          <div id="sidebar-cloud-status" class="mx-2 mb-3 px-3 py-2 rounded-xl bg-blue-900/40 border border-blue-800/60 text-[11px] flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-sky-200 font-semibold truncate" id="sidebar-cloud-text">Firebase Terhubung</span>
+          </div>
           <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-blue-400/70 mb-2 hidden lg:block">Menu Utama Pengelola</p>
           <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1">
             <button onclick="switchTab('kegiatan')" id="nav-kegiatan" class="nav-btn nav-active flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left whitespace-nowrap transition">
@@ -110,7 +129,7 @@
               <span>4. Materi & Rekaman</span>
             </button>
             <button onclick="switchTab('github')" id="nav-github" class="nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 text-left whitespace-nowrap transition">
-              <span>5. Sync GitHub & Backup</span>
+              <span>5. Cloud Sync & Backup</span>
             </button>
             <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-blue-200 hover:bg-white/10 text-left whitespace-nowrap transition">
               <span>6. Pengaturan & TTD</span>
@@ -157,11 +176,16 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-blue-100 shadow-xs">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Kelola Kegiatan & Upload Flyer</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan (tampil di kolom Narasumber & Fasilitator portal), dan kelola sub-fitur setiap kegiatan.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Tambah kegiatan baru, unggah flyer kegiatan (tampil di kolom Narasumber & Fasilitator portal), dan kelola sub-fitur setiap kegiatan secara real-time di Firebase.</p>
           </div>
-          <button onclick="openEventModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition shrink-0">
-            + Tambah Kegiatan Baru
-          </button>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button onclick="seedDefaultEventsToCloud()" id="btn-seed-cloud" class="hidden px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition">
+              + Muat 4 Kegiatan Contoh
+            </button>
+            <button onclick="openEventModal()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition">
+              + Tambah Kegiatan Baru
+            </button>
+          </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
@@ -224,7 +248,7 @@
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200/80 text-amber-900">297mm × 210mm</span>
               </div>
               <p class="text-[11px] text-slate-600 leading-relaxed">
-                Unggah gambar latar sertifikat ukuran <strong>A4 Landscape</strong> (PNG/JPG, rekomendasi 1754×1240 px atau 3508×2480 px). Data peserta & barcode verifikasi akan otomatis ditempatkan di atas template Anda.
+                Unggah gambar latar sertifikat ukuran <strong>A4 Landscape</strong> (PNG/JPG). Data peserta & barcode verifikasi akan otomatis ditempatkan di atas template Anda dan tersinkron ke Firebase.
               </p>
               <div class="flex flex-wrap items-center gap-2">
                 <label class="flex-1 py-2 px-3 rounded-lg bg-navy-900 hover:bg-blue-800 text-white text-xs font-bold text-center cursor-pointer transition">
@@ -291,7 +315,7 @@
             </div>
 
             <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
-              Simpan Pengaturan & Template Sertifikat
+              Simpan Pengaturan & Template ke Firebase
             </button>
           </form>
 
@@ -350,7 +374,7 @@
         <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Daftar Hadir & Rekapitulasi Peserta</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Pantau peserta yang mengisi presensi, tambah peserta manual, atau unduh laporan CSV/Excel.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Pantau peserta yang mengisi presensi secara real-time, tambah peserta manual, atau unduh laporan CSV/Excel.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <select id="att-event-selector" onchange="renderAttendeesPanel()" class="px-3.5 py-2.5 rounded-xl border-2 border-blue-300 bg-blue-50/40 text-xs sm:text-sm font-bold text-navy-900 outline-none max-w-xs"></select>
@@ -462,23 +486,24 @@
         </div>
       </section>
 
-      <!-- PANEL 5: SYNC GITHUB & BACKUP -->
+      <!-- PANEL 5: CLOUD SYNC & BACKUP -->
       <section id="panel-github" class="admin-panel hidden space-y-6">
         <div class="bg-white p-6 rounded-2xl border border-blue-100 shadow-xs space-y-4">
-          <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Publikasi GitHub Pages & Backup Data</h1>
-          <p class="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-            Setiap kali Anda menambah kegiatan, mengunggah flyer, memperbarui materi/rekaman, atau mengunggah template sertifikat A4 Landscape di halaman Admin ini, unduh file <code class="bg-blue-50 text-blue-800 px-1.5 py-0.5 rounded font-bold">data-kegiatan.json</code> dan unggah ke folder utama repository GitHub Anda agar seluruh peserta otomatis mendapatkan data terbaru.
-          </p>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-navy-900">Status Firebase Cloud & Backup Database</h1>
+          <div id="cloud-info-card" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-1">
+            <p class="font-bold text-sm">Sinkronisasi Otomatis Aktif (Cloud Firestore)</p>
+            <p>Semua perubahan kegiatan, flyer, daftar hadir, materi, rekaman, dan template E-Sertifikat langsung tersimpan di Firebase dan otomatis tampil di halaman peserta tanpa perlu unggah ulang JSON ke GitHub.</p>
+          </div>
           <div class="flex flex-wrap gap-3 pt-2">
             <button onclick="downloadGitHubJSON()" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition">
-              Download data-kegiatan.json (Untuk GitHub)
+              Download Backup JSON (Arsip Offline)
             </button>
             <label class="px-5 py-3 rounded-xl bg-navy-900 hover:bg-slate-800 text-white font-bold text-sm cursor-pointer transition">
-              <span>Import / Restore File JSON</span>
+              <span>Import / Restore JSON ke Firebase</span>
               <input type="file" accept=".json" onchange="uploadGitHubJSON(event)" class="hidden" />
             </label>
-            <button onclick="resetDefaultData()" class="px-4 py-3 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs transition">
-              Reset ke Data Contoh Awal
+            <button onclick="seedDefaultEventsToCloud()" class="px-4 py-3 rounded-xl border border-blue-200 text-blue-700 hover:bg-blue-50 font-bold text-xs transition">
+              Tambahkan 4 Kegiatan Contoh ke Firebase
             </button>
           </div>
         </div>
@@ -488,10 +513,6 @@
       <section id="panel-pengaturan" class="admin-panel hidden space-y-6">
         <form onsubmit="saveSystemSettings(event)" class="bg-white p-6 rounded-2xl border border-blue-100 shadow-xs max-w-2xl space-y-4">
           <h1 class="text-xl font-extrabold text-navy-900">Pengaturan Sistem & Pejabat Default</h1>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi Admin</label>
-            <input type="text" id="cfg-pass" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-          </div>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Nama Penandatangan Default</label>
@@ -503,11 +524,11 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Webhook Google Apps Script (Opsional untuk Sync Absensi Cloud)</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Webhook Google Apps Script (Opsional untuk Backup Spreadsheet)</label>
             <input type="url" id="cfg-webhook" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
           </div>
           <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm">
-            Simpan Pengaturan
+            Simpan Pengaturan ke Firebase
           </button>
         </form>
       </section>
@@ -607,7 +628,7 @@
           </div>
         </div>
 
-        <!-- UPLOAD FLYER KEGIATAN (Tampil di dalam kolom Narasumber & Fasilitator di Portal) -->
+        <!-- UPLOAD FLYER KEGIATAN -->
         <div id="modal-flyer-section" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3">
           <div class="flex items-center justify-between gap-2">
             <div>
@@ -618,7 +639,6 @@
           </div>
 
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <!-- Pratinjau Mini Flyer -->
             <div class="w-24 h-28 rounded-xl border border-indigo-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
               <img id="modal-flyer-preview-img" src="" alt="Preview Flyer" class="hidden w-full h-full object-contain" />
               <span id="modal-flyer-placeholder" class="text-[10px] text-slate-400 text-center px-2">Pratinjau Flyer</span>
@@ -660,9 +680,7 @@
 
   <script>
 const STORAGE_KEY = 'jsit_lampung_events_v3';
-const LEGACY_STORAGE_KEY = 'jsit_lampung_events_v2';
 const SETTINGS_KEY = 'jsit_lampung_settings_v3';
-const LEGACY_SETTINGS_KEY = 'jsit_lampung_settings_v2';
 
 const DEFAULT_SETTINGS = {
   orgName: 'JSIT Wilayah Lampung',
@@ -670,8 +688,6 @@ const DEFAULT_SETTINGS = {
   adminPass: 'jsitlampung2026',
   signerName: 'Muslimin, M.Pd.I.,Gr.',
   signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
-  signatureImg: '',
-  logoImg: '',
   webhookUrl: ''
 };
 
@@ -721,8 +737,7 @@ const DEFAULT_EVENTS = [
       { id: 'm-103', title: 'Template Modul Ajar & Rubrik Asesmen Terpadu', type: 'DOCX', url: 'https://drive.google.com', desc: 'Format siap edit untuk praktik penyusunan perangkat ajar.' }
     ],
     recordings: [
-      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' },
-      { id: 'r-102', title: 'Album Dokumentasi Foto & Galeri Bimtek', platform: 'Google Drive', url: 'https://drive.google.com', notes: 'Dokumentasi kegiatan hari pertama dan kedua.' }
+      { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' }
     ],
     certificate: {
       enabled: true,
@@ -740,11 +755,7 @@ const DEFAULT_EVENTS = [
       textColor: '#0B1F3A',
       offsetY: 0
     },
-    attendees: [
-      { id: 'att-1', name: 'Siti Aminah, S.Pd.', school: 'SDIT Permata Bunda 1', region: 'Kota Bandar Lampung', role: 'Guru Kelas', phone: '081272001101', email: 'siti.aminah@example.com', timestamp: '2026-11-18 09:15', verified: true },
-      { id: 'att-2', name: 'Muhammad Rizki Pratama, M.Pd.', school: 'SMPIT Baitul Jannah', region: 'Kota Bandar Lampung', role: 'Wakasek Kurikulum', phone: '081369002202', email: 'rizki.pratama@example.com', timestamp: '2026-11-18 10:22', verified: true },
-      { id: 'att-3', name: 'Nurul Hidayah, S.Pd.I.', school: 'SDIT Cahaya Madani', region: 'Kota Metro', role: 'Kepala Sekolah', phone: '085269003303', email: 'nurul.hidayah@example.com', timestamp: '2026-11-19 08:40', verified: true }
-    ]
+    attendees: []
   },
   {
     id: 'evt-jsit-002',
@@ -767,8 +778,7 @@ const DEFAULT_EVENTS = [
     ],
     description: 'Workshop strategis untuk memperkuat tata kelola sekolah Islam terpadu, penyusunan Rencana Kerja Jangka Menengah (RKJM), supervisi akademik efektif, serta penguatan budaya mutu sekolah.',
     materials: [
-      { id: 'm-201', title: 'Instrumen Audit Mutu Internal Sekolah Islam Terpadu', type: 'PDF', url: 'https://drive.google.com', desc: 'Checklist evaluasi diri sekolah berbasis standar JSIT.' },
-      { id: 'm-202', title: 'Workbook Penyusunan RKJM & KPI Kepala Sekolah', type: 'XLSX', url: 'https://drive.google.com', desc: 'Lembar kerja praktis perencanaan strategis sekolah.' }
+      { id: 'm-201', title: 'Instrumen Audit Mutu Internal Sekolah Islam Terpadu', type: 'PDF', url: 'https://drive.google.com', desc: 'Checklist evaluasi diri sekolah berbasis standar JSIT.' }
     ],
     recordings: [
       { id: 'r-201', title: 'Rekaman Hari 1: Kepemimpinan Visioner Kepala Sekolah SIT', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Sesi pemaparan & studi kasus manajemen mutu.' }
@@ -789,10 +799,7 @@ const DEFAULT_EVENTS = [
       textColor: '#0B1F3A',
       offsetY: 0
     },
-    attendees: [
-      { id: 'att-4', name: 'Ahmad Zulkarnain, S.Pd.', school: 'SMAIT Insan Kamil', region: 'Kab. Pringsewu', role: 'Kepala Sekolah', phone: '082181004404', email: 'zulkarnain@example.com', timestamp: '2026-11-19 08:12', verified: true },
-      { id: 'att-5', name: 'Dewi Kartika Sari, S.Si.', school: 'SMPIT Fitrah Insani', region: 'Kab. Pesawaran', role: 'Kepala Sekolah', phone: '081279005505', email: 'dewi.kartika@example.com', timestamp: '2026-11-19 08:25', verified: true }
-    ]
+    attendees: []
   },
   {
     id: 'evt-jsit-003',
@@ -815,8 +822,7 @@ const DEFAULT_EVENTS = [
     ],
     description: 'Webinar terbuka bagi guru, pengurus komite, dan orang tua siswa SIT se-Lampung untuk membangun ketahanan karakter anak, adab bermedia digital, serta pendampingan bijak pemanfaatan AI.',
     materials: [
-      { id: 'm-301', title: 'E-Booklet Panduan Orang Tua Mendampingi Anak di Era AI', type: 'PDF', url: 'https://drive.google.com', desc: 'Ringkasan praktis pengasuhan digital Islami.' },
-      { id: 'm-302', title: 'Slide Presentasi Psikologi Perkembangan Remaja Digital', type: 'PPTX', url: 'https://drive.google.com', desc: 'Materi sesi utama psikolog pendidikan.' }
+      { id: 'm-301', title: 'E-Booklet Panduan Orang Tua Mendampingi Anak di Era AI', type: 'PDF', url: 'https://drive.google.com', desc: 'Ringkasan praktis pengasuhan digital Islami.' }
     ],
     recordings: [
       { id: 'r-301', title: 'Full Replay Webinar Parenting Islami JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=LXb3EKWsInQ', notes: 'Rekaman lengkap beserta sesi tanya jawab interaktif.' }
@@ -837,10 +843,7 @@ const DEFAULT_EVENTS = [
       textColor: '#0B1F3A',
       offsetY: 0
     },
-    attendees: [
-      { id: 'att-6', name: 'Rina Marlina, S.Pd.', school: 'TKIT Qurrata Ayun', region: 'Kab. Lampung Selatan', role: 'Guru', phone: '085377006606', email: 'rina.marlina@example.com', timestamp: '2026-11-10 19:45', verified: true },
-      { id: 'att-7', name: 'Budi Santoso, S.E.', school: 'SDIT Al-Furqon', region: 'Kab. Lampung Tengah', role: 'Komite / Orang Tua', phone: '081373007707', email: 'budi.santoso@example.com', timestamp: '2026-11-10 20:05', verified: true }
-    ]
+    attendees: []
   },
   {
     id: 'evt-jsit-004',
@@ -886,10 +889,30 @@ const DEFAULT_EVENTS = [
   }
 ];
 
+    let db = null;
+    let auth = null;
+    let isFirebaseReady = false;
     let events = [];
+    let attendeesMap = {};
+    let attendeeUnsubs = {};
     let settings = { ...DEFAULT_SETTINGS };
     let tempCustomTemplateImg = '';
     let tempEventFlyerImg = '';
+
+    function isFirebaseConfigured() {
+      const cfg = window.FIREBASE_CONFIG;
+      return cfg && cfg.apiKey && !cfg.apiKey.includes('GANTI_DENGAN') && cfg.projectId && !cfg.projectId.includes('GANTI_DENGAN');
+    }
+
+    function ensureFirestoreSafeDataUrl(canvas, initialQuality = 0.85, maxChars = 420000) {
+      let q = initialQuality;
+      let dataUrl = canvas.toDataURL('image/jpeg', q);
+      while (dataUrl.length > maxChars && q > 0.35) {
+        q -= 0.1;
+        dataUrl = canvas.toDataURL('image/jpeg', q);
+      }
+      return dataUrl;
+    }
 
     function parseEndTimeFromText(timeStr) {
       if (!timeStr) return '23:59';
@@ -918,78 +941,220 @@ const DEFAULT_EVENTS = [
       return new Date() >= getCertificateReleaseDate(ev);
     }
 
+    function normalizeEventItem(item) {
+      const c = item.certificate || {};
+      if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
+      if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
+      if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
+      item.certificate = c;
+      if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
+      if (!Array.isArray(item.materials)) item.materials = [];
+      if (!Array.isArray(item.recordings)) item.recordings = [];
+      if (!Array.isArray(item.speakers)) item.speakers = [];
+      if (attendeesMap[item.id]) {
+        item.attendees = attendeesMap[item.id];
+      } else if (!Array.isArray(item.attendees)) {
+        item.attendees = [];
+      }
+      return item;
+    }
+
     function bootAdmin() {
-      const s = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY);
-      if (s) {
-        try {
-          const parsed = JSON.parse(s);
-          if (parsed.signerName === 'Dr. H. Ahmad Fauzi, M.Pd.') parsed.signerName = DEFAULT_SETTINGS.signerName;
-          if (parsed.signerTitle === 'Ketua JSIT Wilayah Lampung') parsed.signerTitle = DEFAULT_SETTINGS.signerTitle;
-          settings = { ...DEFAULT_SETTINGS, ...parsed };
-          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-        } catch (e) {}
-      }
-
-      const ev = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
-      if (ev) {
-        try {
-          events = JSON.parse(ev).map(item => {
-            const c = item.certificate || {};
-            if (c.signerName === 'Dr. H. Ahmad Fauzi, M.Pd.') c.signerName = DEFAULT_SETTINGS.signerName;
-            if (c.signerTitle === 'Ketua JSIT Wilayah Lampung') c.signerTitle = DEFAULT_SETTINGS.signerTitle;
-            if (!c.releaseMode) c.releaseMode = c.enabled === false ? 'disabled' : 'after_end';
-            if (!c.customEndDate) c.customEndDate = item.dateEnd || item.dateStart;
-            if (!c.customEndTime) c.customEndTime = item.timeEnd || parseEndTimeFromText(item.time);
-            item.certificate = c;
-            if (typeof item.flyerImg === 'undefined') item.flyerImg = '';
-            return item;
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-        } catch (e) {
-          events = [...DEFAULT_EVENTS];
-        }
-      } else {
-        events = [...DEFAULT_EVENTS];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-      }
-
-      document.getElementById('cfg-pass').value = settings.adminPass;
-      document.getElementById('cfg-signer').value = settings.signerName;
-      document.getElementById('cfg-title').value = settings.signerTitle;
-      document.getElementById('cfg-webhook').value = settings.webhookUrl || '';
       document.getElementById('quick-att-region').innerHTML = LAMPUNG_REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
 
+      if (window.firebase && isFirebaseConfigured()) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(window.FIREBASE_CONFIG);
+          }
+          db = firebase.firestore();
+          auth = firebase.auth();
+          isFirebaseReady = true;
+
+          const badge = document.getElementById('login-firebase-badge');
+          badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          badge.textContent = `Firebase Terhubung (${window.FIREBASE_CONFIG.projectId})`;
+
+          auth.onAuthStateChanged((user) => {
+            if (user && !user.isAnonymous) {
+              document.getElementById('sidebar-cloud-text').textContent = `Cloud: ${user.email}`;
+              enterWorkspace();
+            } else {
+              document.getElementById('admin-app').classList.add('hidden');
+              document.getElementById('login-screen').classList.remove('hidden');
+            }
+          });
+          if (window.lucide) lucide.createIcons();
+          return;
+        } catch (err) {
+          console.error('Firebase init error:', err);
+        }
+      }
+
+      // Fallback Mode Lokal jika firebase-config.js belum diisi
+      const badge = document.getElementById('login-firebase-badge');
+      badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200';
+      badge.textContent = 'Mode Lokal (Isi firebase-config.js untuk Cloud)';
+      document.getElementById('login-email-group').classList.add('hidden');
+      document.getElementById('admin-password-input').value = 'jsitlampung2026';
+      document.getElementById('login-hint-text').innerHTML = 'Mode Lokal aktif. Sandi default: <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold">jsitlampung2026</code>';
+      document.getElementById('sidebar-cloud-text').textContent = 'Mode Lokal (Belum Cloud)';
+
+      loadLocalFallbackAdmin();
       if (sessionStorage.getItem('jsit_lpg_admin_logged') === 'true') {
         enterWorkspace();
       }
       if (window.lucide) lucide.createIcons();
     }
 
-    function handleAdminLogin(e) {
+    function loadLocalFallbackAdmin() {
+      const s = localStorage.getItem(SETTINGS_KEY);
+      if (s) {
+        try { settings = { ...DEFAULT_SETTINGS, ...JSON.parse(s) }; } catch (e) {}
+      }
+      const ev = localStorage.getItem(STORAGE_KEY);
+      if (ev) {
+        try { events = JSON.parse(ev).map(normalizeEventItem); } catch (e) { events = DEFAULT_EVENTS.map(normalizeEventItem); }
+      } else {
+        events = DEFAULT_EVENTS.map(normalizeEventItem);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      }
+      applySettingsToInputs();
+    }
+
+    function applySettingsToInputs() {
+      document.getElementById('cfg-signer').value = settings.signerName || DEFAULT_SETTINGS.signerName;
+      document.getElementById('cfg-title').value = settings.signerTitle || DEFAULT_SETTINGS.signerTitle;
+      document.getElementById('cfg-webhook').value = settings.webhookUrl || '';
+    }
+
+    async function handleAdminLogin(e) {
       e.preventDefault();
+      const errBox = document.getElementById('login-error-msg');
+      errBox.classList.add('hidden');
+
+      if (isFirebaseReady && auth) {
+        const email = document.getElementById('admin-email-input').value.trim();
+        const pass = document.getElementById('admin-password-input').value;
+        if (!email) {
+          errBox.textContent = 'Silakan masukkan Email Admin Firebase Anda.';
+          errBox.classList.remove('hidden');
+          return;
+        }
+        const btn = document.getElementById('btn-login-submit');
+        btn.disabled = true;
+        btn.textContent = 'Memverifikasi akun Firebase...';
+        try {
+          await auth.signInWithEmailAndPassword(email, pass);
+        } catch (err) {
+          errBox.textContent = 'Login gagal: Email atau Kata Sandi salah, atau akun belum dibuat di Firebase Authentication.';
+          errBox.classList.remove('hidden');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Masuk ke Ruang Kerja Admin &rarr;';
+        }
+        return;
+      }
+
       const val = document.getElementById('admin-password-input').value;
       if (val === settings.adminPass) {
         sessionStorage.setItem('jsit_lpg_admin_logged', 'true');
         enterWorkspace();
       } else {
-        alert('Kata sandi salah! Sandi default: jsitlampung2026');
+        errBox.textContent = 'Kata sandi salah! Sandi default mode lokal: jsitlampung2026';
+        errBox.classList.remove('hidden');
       }
     }
 
-    function logoutAdmin() {
+    async function logoutAdmin() {
+      if (isFirebaseReady && auth) {
+        await auth.signOut();
+      }
       sessionStorage.removeItem('jsit_lpg_admin_logged');
       location.reload();
+    }
+
+    function attachAdminAttendeeListener(eventId) {
+      if (!db || attendeeUnsubs[eventId]) return;
+      attendeeUnsubs[eventId] = db.collection('events').doc(eventId).collection('attendees')
+        .onSnapshot((snap) => {
+          const list = [];
+          snap.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+          list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          attendeesMap[eventId] = list;
+          const ev = events.find(item => item.id === eventId);
+          if (ev) ev.attendees = list;
+          syncAllAdminUI();
+        });
     }
 
     function enterWorkspace() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-app').classList.remove('hidden');
-      syncAllAdminUI();
+
+      if (isFirebaseReady && db) {
+        db.collection('settings').doc('global').onSnapshot((doc) => {
+          if (doc.exists) {
+            settings = { ...DEFAULT_SETTINGS, ...doc.data() };
+            applySettingsToInputs();
+          }
+        });
+
+        db.collection('events').onSnapshot((snapshot) => {
+          const fresh = [];
+          const activeIds = new Set();
+          snapshot.forEach((doc) => {
+            activeIds.add(doc.id);
+            const item = normalizeEventItem({ id: doc.id, ...doc.data() });
+            fresh.push(item);
+            attachAdminAttendeeListener(doc.id);
+          });
+
+          Object.keys(attendeeUnsubs).forEach((oldId) => {
+            if (!activeIds.has(oldId)) {
+              attendeeUnsubs[oldId]();
+              delete attendeeUnsubs[oldId];
+              delete attendeesMap[oldId];
+            }
+          });
+
+          fresh.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
+          events = fresh;
+          document.getElementById('btn-seed-cloud').classList.toggle('hidden', events.length > 0);
+          syncAllAdminUI();
+        });
+      } else {
+        syncAllAdminUI();
+      }
     }
 
-    function saveEvents() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-      syncAllAdminUI();
+    async function persistSingleEventToCloud(evObj) {
+      const cleanPayload = { ...evObj, updatedAt: new Date().toISOString() };
+      delete cleanPayload.attendees; // Disimpan di subkoleksi terpisah agar aman & skalabel
+
+      if (isFirebaseReady && db) {
+        await db.collection('events').doc(evObj.id).set(cleanPayload, { merge: true });
+      } else {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        syncAllAdminUI();
+      }
+    }
+
+    async function seedDefaultEventsToCloud() {
+      if (!confirm('Muat 4 kegiatan contoh JSIT Lampung ke database Firebase?')) return;
+      for (const item of DEFAULT_EVENTS) {
+        const clone = JSON.parse(JSON.stringify(item));
+        if (!isFirebaseReady) {
+          events.push(clone);
+        } else {
+          await persistSingleEventToCloud(clone);
+        }
+      }
+      if (!isFirebaseReady) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        syncAllAdminUI();
+      }
+      toast('4 Kegiatan contoh berhasil dimuat!');
     }
 
     function syncAllAdminUI() {
@@ -1059,7 +1224,7 @@ const DEFAULT_EVENTS = [
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="bg-white p-10 rounded-2xl border border-blue-100 text-center text-sm text-slate-500">Belum ada kegiatan yang sesuai filter. Klik <strong>+ Tambah Kegiatan Baru</strong> untuk membuat kegiatan.</div>`;
+        container.innerHTML = `<div class="bg-white p-10 rounded-2xl border border-blue-100 text-center text-sm text-slate-500">Belum ada kegiatan yang tersedia. Klik <strong>+ Tambah Kegiatan Baru</strong> atau <strong>+ Muat 4 Kegiatan Contoh</strong> untuk memulai.</div>`;
         return;
       }
 
@@ -1155,7 +1320,7 @@ const DEFAULT_EVENTS = [
       reader.onload = function(evt) {
         const img = new Image();
         img.onload = function() {
-          const maxWidth = 960;
+          const maxWidth = 900;
           let targetW = img.width;
           let targetH = img.height;
           if (targetW > maxWidth) {
@@ -1170,10 +1335,10 @@ const DEFAULT_EVENTS = [
           ctx.fillRect(0, 0, targetW, targetH);
           ctx.drawImage(img, 0, 0, targetW, targetH);
 
-          tempEventFlyerImg = canvas.toDataURL('image/jpeg', 0.85);
+          tempEventFlyerImg = ensureFirestoreSafeDataUrl(canvas, 0.82, 360000);
           document.getElementById('form-ev-flyer-url').value = '';
           updateModalFlyerPreviewUI();
-          toast('Flyer berhasil dimuat! Klik Simpan Kegiatan untuk menerapkan.');
+          toast('Flyer berhasil dimuat & dioptimasi untuk Firebase! Klik Simpan Kegiatan.');
         };
         img.src = evt.target.result;
       };
@@ -1254,7 +1419,7 @@ const DEFAULT_EVENTS = [
       document.getElementById('event-modal').classList.add('hidden');
     }
 
-    function submitEventForm(e) {
+    async function submitEventForm(e) {
       e.preventDefault();
       const id = document.getElementById('form-ev-id').value;
       const dateStart = document.getElementById('form-ev-start').value;
@@ -1283,67 +1448,79 @@ const DEFAULT_EVENTS = [
         description: document.getElementById('form-ev-desc').value.trim()
       };
 
-      if (id) {
-        const idx = events.findIndex(item => item.id === id);
-        if (idx !== -1) {
-          const existingCert = events[idx].certificate || {};
-          events[idx] = {
-            ...events[idx],
+      try {
+        if (id) {
+          const idx = events.findIndex(item => item.id === id);
+          if (idx !== -1) {
+            const existingCert = events[idx].certificate || {};
+            events[idx] = {
+              ...events[idx],
+              ...data,
+              certificate: {
+                ...existingCert,
+                customEndDate: dateEnd,
+                customEndTime: timeEnd
+              }
+            };
+            await persistSingleEventToCloud(events[idx]);
+          }
+          toast('Kegiatan & Flyer berhasil disimpan ke Firebase!');
+        } else {
+          const newEv = {
+            id: 'evt-' + Date.now(),
             ...data,
+            materials: [],
+            recordings: [],
             certificate: {
-              ...existingCert,
+              enabled: true,
+              releaseMode: 'after_end',
               customEndDate: dateEnd,
-              customEndTime: timeEnd
-            }
+              customEndTime: timeEnd,
+              jp: '8 JP',
+              prefix: `SERT-${data.category.toUpperCase().slice(0,6)}/JSIT-LPG/2026`,
+              roleLabel: 'Peserta',
+              signerName: settings.signerName,
+              signerTitle: settings.signerTitle,
+              themeColor: '#1E3A8A',
+              customTemplateImg: '',
+              hideDefaultChrome: true,
+              textColor: '#0B1F3A',
+              offsetY: 0
+            },
+            attendees: []
           };
+          if (!isFirebaseReady) events.unshift(newEv);
+          await persistSingleEventToCloud(newEv);
+          toast('Kegiatan baru berhasil ditambahkan ke Firebase!');
         }
-        toast('Kegiatan & Flyer berhasil diperbarui!');
-      } else {
-        events.unshift({
-          id: 'evt-' + Date.now(),
-          ...data,
-          materials: [],
-          recordings: [],
-          certificate: {
-            enabled: true,
-            releaseMode: 'after_end',
-            customEndDate: dateEnd,
-            customEndTime: timeEnd,
-            jp: '8 JP',
-            prefix: `SERT-${data.category.toUpperCase().slice(0,6)}/JSIT-LPG/2026`,
-            roleLabel: 'Peserta',
-            signerName: settings.signerName,
-            signerTitle: settings.signerTitle,
-            themeColor: '#1E3A8A',
-            customTemplateImg: '',
-            hideDefaultChrome: true,
-            textColor: '#0B1F3A',
-            offsetY: 0
-          },
-          attendees: []
-        });
-        toast('Kegiatan baru berhasil ditambahkan!');
+        closeEventModal();
+      } catch (err) {
+        console.error(err);
+        alert('Gagal menyimpan kegiatan ke Firebase: ' + err.message);
       }
-      closeEventModal();
-      saveEvents();
     }
 
-    function duplicateEventItem(id) {
+    async function duplicateEventItem(id) {
       const src = events.find(e => e.id === id);
       if (!src) return;
       const copy = JSON.parse(JSON.stringify(src));
       copy.id = 'evt-' + Date.now();
       copy.title = src.title + ' (Salinan)';
       copy.attendees = [];
-      events.unshift(copy);
-      saveEvents();
+      if (!isFirebaseReady) events.unshift(copy);
+      await persistSingleEventToCloud(copy);
       toast('Kegiatan berhasil diduplikat!');
     }
 
-    function deleteEventItem(id) {
-      if (!confirm('Hapus kegiatan ini?')) return;
-      events = events.filter(e => e.id !== id);
-      saveEvents();
+    async function deleteEventItem(id) {
+      if (!confirm('Hapus kegiatan ini dari database?')) return;
+      if (isFirebaseReady && db) {
+        await db.collection('events').doc(id).delete();
+      } else {
+        events = events.filter(e => e.id !== id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        syncAllAdminUI();
+      }
       toast('Kegiatan dihapus.');
     }
 
@@ -1428,10 +1605,10 @@ const DEFAULT_EVENTS = [
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          tempCustomTemplateImg = canvas.toDataURL('image/jpeg', 0.88);
+          tempCustomTemplateImg = ensureFirestoreSafeDataUrl(canvas, 0.85, 480000);
           updateTemplateControlsVisibility();
           updateCertPreviewLive();
-          toast('Template A4 Landscape berhasil dimuat! Klik Simpan Pengaturan untuk menerapkan.');
+          toast('Template A4 Landscape berhasil dimuat & dioptimasi! Klik Simpan Pengaturan.');
         };
         img.src = evt.target.result;
       };
@@ -1536,7 +1713,7 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    function saveCertificateStudio(e) {
+    async function saveCertificateStudio(e) {
       e.preventDefault();
       const evId = document.getElementById('cert-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
@@ -1564,8 +1741,9 @@ const DEFAULT_EVENTS = [
         textColor: document.getElementById('studio-text-color').value || '#0B1F3A',
         offsetY: parseInt(document.getElementById('studio-offset-y').value || '0', 10)
       };
-      saveEvents();
-      toast('Pengaturan & Template E-Sertifikat A4 Landscape berhasil disimpan!');
+
+      await persistSingleEventToCloud(events[idx]);
+      toast('Pengaturan & Template E-Sertifikat A4 Landscape tersimpan di Firebase!');
     }
 
     // PANEL 3: DAFTAR HADIR
@@ -1592,16 +1770,16 @@ const DEFAULT_EVENTS = [
       `).join('') : `<tr><td colspan="8" class="p-8 text-center text-slate-400">Belum ada peserta hadir pada kegiatan ini.</td></tr>`;
     }
 
-    function handleAddManualAttendee(e) {
+    async function handleAddManualAttendee(e) {
       e.preventDefault();
       const evId = document.getElementById('att-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
 
       const now = new Date();
-      if (!events[idx].attendees) events[idx].attendees = [];
-      events[idx].attendees.unshift({
-        id: 'att-' + Date.now(),
+      const attId = 'att-' + Date.now();
+      const newAtt = {
+        id: attId,
         name: document.getElementById('quick-att-name').value.trim(),
         school: document.getElementById('quick-att-school').value.trim(),
         region: document.getElementById('quick-att-region').value,
@@ -1609,21 +1787,37 @@ const DEFAULT_EVENTS = [
         phone: document.getElementById('quick-att-phone').value.trim(),
         email: '',
         timestamp: now.toISOString().slice(0,10) + ' ' + now.toTimeString().slice(0,5),
+        createdAt: Date.now(),
         verified: true
-      });
+      };
+
+      if (isFirebaseReady && db) {
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).set(newAtt);
+      } else {
+        if (!events[idx].attendees) events[idx].attendees = [];
+        events[idx].attendees.unshift(newAtt);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        syncAllAdminUI();
+      }
+
       document.getElementById('quick-att-name').value = '';
       document.getElementById('quick-att-school').value = '';
       document.getElementById('quick-att-phone').value = '';
-      saveEvents();
       toast('Peserta ditambahkan ke Daftar Hadir!');
     }
 
-    function deleteAttendeeItem(attId) {
+    async function deleteAttendeeItem(attId) {
       const evId = document.getElementById('att-event-selector').value;
-      const idx = events.findIndex(e => e.id === evId);
-      if (idx === -1) return;
-      events[idx].attendees = events[idx].attendees.filter(a => a.id !== attId);
-      saveEvents();
+      if (isFirebaseReady && db) {
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).delete();
+      } else {
+        const idx = events.findIndex(e => e.id === evId);
+        if (idx !== -1) {
+          events[idx].attendees = events[idx].attendees.filter(a => a.id !== attId);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+          syncAllAdminUI();
+        }
+      }
       toast('Data peserta dihapus.');
     }
 
@@ -1683,7 +1877,7 @@ const DEFAULT_EVENTS = [
       `).join('') : '<p class="text-xs text-slate-400 text-center py-4">Belum ada rekaman.</p>';
     }
 
-    function handleAddMaterial(e) {
+    async function handleAddMaterial(e) {
       e.preventDefault();
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
@@ -1699,20 +1893,20 @@ const DEFAULT_EVENTS = [
       document.getElementById('res-mat-title').value = '';
       document.getElementById('res-mat-url').value = '';
       document.getElementById('res-mat-desc').value = '';
-      saveEvents();
+      await persistSingleEventToCloud(events[idx]);
       toast('Materi berhasil ditambahkan!');
     }
 
-    function deleteMaterialItem(matId) {
+    async function deleteMaterialItem(matId) {
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
       events[idx].materials = events[idx].materials.filter(m => m.id !== matId);
-      saveEvents();
+      await persistSingleEventToCloud(events[idx]);
       toast('Materi dihapus.');
     }
 
-    function handleAddRecording(e) {
+    async function handleAddRecording(e) {
       e.preventDefault();
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
@@ -1728,67 +1922,82 @@ const DEFAULT_EVENTS = [
       document.getElementById('res-rec-title').value = '';
       document.getElementById('res-rec-url').value = '';
       document.getElementById('res-rec-notes').value = '';
-      saveEvents();
+      await persistSingleEventToCloud(events[idx]);
       toast('Rekaman berhasil ditambahkan!');
     }
 
-    function deleteRecordingItem(recId) {
+    async function deleteRecordingItem(recId) {
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
       events[idx].recordings = events[idx].recordings.filter(r => r.id !== recId);
-      saveEvents();
+      await persistSingleEventToCloud(events[idx]);
       toast('Rekaman dihapus.');
     }
 
-    // PANEL 5 & 6: GITHUB & SETTINGS
+    // PANEL 5 & 6: BACKUP & SETTINGS
     function downloadGitHubJSON() {
       const blob = new Blob([JSON.stringify(events, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'data-kegiatan.json';
+      a.download = 'backup-data-kegiatan-jsit.json';
       a.click();
       URL.revokeObjectURL(url);
-      toast('File data-kegiatan.json siap diunggah ke GitHub!');
+      toast('File backup JSON berhasil diunduh!');
     }
 
     function uploadGitHubJSON(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (ev) => {
+      reader.onload = async (ev) => {
         try {
           const parsed = JSON.parse(ev.target.result);
           if (Array.isArray(parsed)) {
-            events = parsed;
-            saveEvents();
-            toast('Database JSON berhasil dipulihkan!');
+            for (const item of parsed) {
+              const norm = normalizeEventItem(item);
+              const atts = norm.attendees || [];
+              await persistSingleEventToCloud(norm);
+              if (isFirebaseReady && db && atts.length > 0) {
+                for (const att of atts) {
+                  const aid = att.id || ('att-' + Date.now() + Math.random().toString(36).slice(2,5));
+                  await db.collection('events').doc(norm.id).collection('attendees').doc(aid).set({ ...att, id: aid }, { merge: true });
+                }
+              }
+            }
+            if (!isFirebaseReady) {
+              events = parsed.map(normalizeEventItem);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+              syncAllAdminUI();
+            }
+            toast('Database JSON berhasil diimpor ke Firebase!');
           } else {
             alert('Format JSON tidak valid.');
           }
         } catch (err) {
-          alert('File JSON rusak.');
+          alert('File JSON rusak atau gagal diimpor: ' + err.message);
         }
       };
       reader.readAsText(file);
     }
 
-    function resetDefaultData() {
-      if (!confirm('Reset seluruh data ke contoh awal?')) return;
-      events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
-      saveEvents();
-      toast('Data direset ke contoh awal.');
-    }
-
-    function saveSystemSettings(e) {
+    async function saveSystemSettings(e) {
       e.preventDefault();
-      settings.adminPass = document.getElementById('cfg-pass').value.trim() || 'jsitlampung2026';
       settings.signerName = document.getElementById('cfg-signer').value.trim();
       settings.signerTitle = document.getElementById('cfg-title').value.trim();
       settings.webhookUrl = document.getElementById('cfg-webhook').value.trim();
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      toast('Pengaturan sistem berhasil disimpan!');
+
+      if (isFirebaseReady && db) {
+        await db.collection('settings').doc('global').set({
+          signerName: settings.signerName,
+          signerTitle: settings.signerTitle,
+          webhookUrl: settings.webhookUrl
+        }, { merge: true });
+      } else {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      }
+      toast('Pengaturan sistem berhasil disimpan ke Firebase!');
     }
 
     function toast(msg) {

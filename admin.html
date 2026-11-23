@@ -451,7 +451,7 @@
             </button>
           </form>
 
-          <!-- Live A4 Landscape Preview -->
+          <!-- Live A4 Landscape Preview (1000x707 Virtual Stage 100% Identik dengan index.html) -->
           <div class="lg:col-span-7 space-y-3 lg:sticky lg:top-6">
             <div class="flex flex-wrap items-center justify-between gap-2 bg-white p-3 rounded-xl border border-blue-100">
               <div class="flex items-center gap-2">
@@ -465,42 +465,54 @@
               </button>
             </div>
 
-            <div id="studio-preview-box" class="bg-white border-8 border-double border-blue-900 rounded-2xl p-5 sm:p-6 shadow-lg text-center aspect-[297/210] flex flex-col justify-between relative overflow-hidden bg-cover bg-center">
-              <div id="studio-preview-inner-frame" class="border border-amber-400/80 p-4 sm:p-5 rounded-xl flex-1 flex flex-col justify-between relative z-10">
-                <div id="studio-default-header">
-                  <span class="inline-block px-3 py-0.5 rounded-full bg-blue-900 text-amber-300 text-[10px] font-bold uppercase tracking-widest">Jaringan Sekolah Islam Terpadu Indonesia</span>
-                  <h4 class="font-display font-extrabold text-sm sm:text-base text-navy-900 mt-1">WILAYAH PROVINSI LAMPUNG</h4>
+            <div id="studio-preview-wrapper" class="w-full aspect-[297/210] relative overflow-hidden rounded-2xl shadow-lg bg-white border border-slate-200">
+              <div id="studio-preview-box" style="width: 1000px; height: 707px; transform-origin: top left;" class="bg-white relative overflow-hidden select-none">
+                <img id="studio-bg-img" src="" alt="" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none z-0" />
+                <div id="studio-outer-border" class="absolute inset-0 pointer-events-none z-[1] border-[10px] border-double border-blue-900"></div>
+                <div id="studio-preview-inner-frame" class="absolute inset-[20px] pointer-events-none z-[1] border-2 border-amber-500/75"></div>
+
+                <div id="studio-default-header" class="absolute top-[42px] left-[60px] right-[60px] text-center z-10 space-y-1">
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold uppercase tracking-widest">
+                    Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
+                  </div>
+                  <h4 class="font-display font-extrabold text-[20px] text-navy-900 tracking-wide">WILAYAH PROVINSI LAMPUNG</h4>
                 </div>
-                <div id="studio-dynamic-block" class="flex-1 flex flex-col justify-around transition-transform">
-                  <div>
-                    <h2 id="prev-cert-heading" class="hidden font-display font-extrabold text-2xl sm:text-3xl text-blue-800 tracking-wider">SERTIFIKAT</h2>
-                    <p class="text-xs font-bold text-slate-600" id="prev-cert-num">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
+
+                <div id="studio-dynamic-block" style="top: 158px; left: 75px; right: 75px;" class="absolute text-center z-10">
+                  <h2 id="prev-cert-heading" class="hidden font-display font-extrabold text-[38px] text-blue-900 tracking-wider uppercase leading-none mb-1.5">SERTIFIKAT</h2>
+                  <p class="text-[14px] font-bold text-slate-600 tracking-wide mb-4" id="prev-cert-num">Nomor: 001/SERT-JSIT-LPG/XI/2026</p>
+
+                  <p class="text-[13px] text-slate-500 font-medium mb-1" id="prev-label-given">Diberikan dengan hormat kepada:</p>
+                  <div class="mb-1.5">
+                    <p class="inline-block font-display font-extrabold text-[28px] text-navy-900 border-b-2 border-amber-500 pb-1 px-4 leading-tight" id="prev-cert-owner">Contoh Nama Peserta, S.Pd., M.Pd.</p>
                   </div>
-                  <div>
-                    <p class="text-[11px] text-slate-500" id="prev-label-given">Diberikan dengan hormat kepada:</p>
-                    <p class="font-display font-extrabold text-lg sm:text-xl text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4" id="prev-cert-owner">Contoh Nama Peserta, S.Pd., M.Pd.</p>
-                    <p class="text-[11px] font-semibold text-blue-700 mt-0.5" id="prev-cert-school">SDIT Permata Bunda — Kota Bandar Lampung</p>
-                  </div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed max-w-lg mx-auto" id="prev-cert-body">
-                    Atas partisipasi aktif sebagai <strong id="prev-cert-role">Peserta</strong> dalam kegiatan <strong id="prev-cert-cat">Bimtek</strong>:<br/>
-                    <strong class="text-navy-900" id="prev-cert-event">"Judul Kegiatan"</strong><br/>
-                    dengan bobot pelatihan setara <strong class="text-blue-800" id="prev-cert-jp">16 JP</strong>.
+                  <p class="text-[14.5px] font-bold text-blue-800 mb-4" id="prev-cert-school">SDIT Permata Bunda — Kota Bandar Lampung</p>
+
+                  <p class="text-[13.5px] text-slate-700 leading-[1.55] max-w-[790px] mx-auto" id="prev-cert-body">
+                    Atas partisipasi aktifnya sebagai <strong id="prev-cert-role">Peserta</strong> dalam kegiatan <strong id="prev-cert-cat">Bimtek</strong>:<br/>
+                    <strong class="font-display font-extrabold text-[15.5px] block my-1" id="prev-cert-event">"Judul Kegiatan"</strong>
+                    yang diselenggarakan oleh <span id="prev-body-org-sub">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span> pada tanggal <strong id="prev-cert-date-range">28 – 29 Nov 2026</strong> dengan bobot pelatihan setara <strong id="prev-cert-jp">16 JP</strong>.
                   </p>
                 </div>
-                <div class="grid grid-cols-2 items-end pt-1 relative z-20">
-                  <div id="studio-qr-block" title="Klik & geser untuk menyesuaikan letak QR Code & Teks Scan Verifikasi" class="draggable-cert-el flex items-center gap-2 text-left pl-2 origin-bottom-left rounded-lg ring-1 ring-dashed ring-blue-400/70 hover:ring-2 hover:ring-blue-600 p-1">
-                    <img id="studio-qr-img" src="" alt="QR Verifikasi" class="w-12 h-12 rounded border border-slate-200 bg-white p-0.5 pointer-events-none" />
-                    <div id="studio-qr-text-box" class="text-[9px] leading-tight text-slate-500 bg-white/85 px-1.5 py-1 rounded pointer-events-none">
-                      <strong class="text-navy-900 block">Scan Verifikasi</strong>
-                      <span id="prev-qr-org-sub">JSIT Wilayah Lampung - Tim Diklat Wilayah</span>
-                    </div>
+
+                <div id="studio-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" title="Klik & geser untuk menyesuaikan letak QR Code & Teks Scan Verifikasi" class="draggable-cert-el absolute z-20 flex items-center gap-3 rounded-xl ring-1 ring-dashed ring-blue-400/70 hover:ring-2 hover:ring-blue-600 p-1">
+                  <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-2xs shrink-0 pointer-events-none">
+                    <img id="studio-qr-img" src="" alt="QR Verifikasi" class="w-[78px] h-[78px]" />
                   </div>
-                  <div id="studio-signer-block" title="Klik & geser untuk menyesuaikan letak Tanda Tangan" class="draggable-cert-el text-center pr-2 origin-bottom rounded-lg ring-1 ring-dashed ring-amber-500/80 hover:ring-2 hover:ring-amber-600 p-1">
-                    <p class="text-[9px] text-slate-500 pointer-events-none" id="prev-cert-issued">Bandar Lampung, 29 Nov 2026</p>
-                    <p class="text-[10px] text-slate-600 font-semibold pointer-events-none" id="prev-cert-title">Ketua JSIT Indonesia Wilayah Lampung</p>
-                    <div class="my-1 px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[9px] italic text-blue-800 inline-block pointer-events-none">TTD Elektronik Terverifikasi</div>
-                    <p class="text-xs font-extrabold text-navy-900 underline pointer-events-none" id="prev-cert-signer">Muslimin, M.Pd.I.,Gr.</p>
+                  <div id="studio-qr-text-box" class="text-[10.5px] leading-tight text-slate-600 bg-white/85 px-2.5 py-1.5 rounded-lg pointer-events-none">
+                    <strong class="text-navy-900 block">Scan Barcode Verifikasi</strong>
+                    <span id="prev-qr-org-sub">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span><br/>
+                    <span id="prev-cert-code" class="font-mono text-blue-700 font-bold">JSIT-001-001</span>
                   </div>
+                </div>
+
+                <div id="studio-signer-block" style="right: 65px; bottom: 52px; width: 320px; transform-origin: bottom center;" title="Klik & geser untuk menyesuaikan letak Tanda Tangan" class="draggable-cert-el absolute z-20 text-center space-y-0.5 rounded-xl ring-1 ring-dashed ring-amber-500/80 hover:ring-2 hover:ring-amber-600 p-1">
+                  <p class="text-[11.5px] text-slate-600 pointer-events-none" id="prev-cert-issued">Bandar Lampung, 29 Nov 2026</p>
+                  <p class="text-[12.5px] text-slate-800 font-semibold pointer-events-none" id="prev-cert-title">Ketua JSIT Indonesia Wilayah Lampung</p>
+                  <div class="py-1 pointer-events-none">
+                    <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[10px] italic text-blue-800 font-semibold">Ditandatangani secara elektronik</span>
+                  </div>
+                  <p class="font-display font-extrabold text-[14px] text-navy-900 underline pointer-events-none" id="prev-cert-signer">Muslimin, M.Pd.I.,Gr.</p>
                 </div>
               </div>
             </div>
@@ -1164,7 +1176,7 @@ service cloud.firestore {
           <div class="flex items-center justify-between gap-2">
             <div>
               <span class="font-bold text-xs uppercase tracking-wider text-indigo-950 block">Upload Flyer Kegiatan (Poster Resmi)</span>
-              <span class="text-[11px] text-slate-600">Flyer akan tampil rapi di dalam kolom <strong>Narasumber & Fasilitator</strong> pada halaman portal peserta.</span>
+              <span class="text-[11px] text-slate-600">Flyer akan tampil rapi di kartu kegiatan beranda &amp; di dalam kolom <strong>Narasumber &amp; Fasilitator</strong> pada portal peserta.</span>
             </div>
             <span id="modal-flyer-status-pill" class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[10px] font-bold shrink-0">Belum Ada</span>
           </div>
@@ -1747,7 +1759,22 @@ const DEFAULT_EVENTS = [
       }
     }
 
+    function scaleStudioPreviewStage() {
+      const wrapper = document.getElementById('studio-preview-wrapper');
+      const stage = document.getElementById('studio-preview-box');
+      if (!wrapper || !stage) return;
+      const w = wrapper.clientWidth || 600;
+      const scale = w / 1000;
+      stage.style.transform = `scale(${scale.toFixed(5)})`;
+    }
+
     function setupPreviewDraggableElements() {
+      const wrapper = document.getElementById('studio-preview-wrapper');
+      if (wrapper && window.ResizeObserver && !wrapper.dataset.obsReady) {
+        wrapper.dataset.obsReady = '1';
+        new ResizeObserver(() => scaleStudioPreviewStage()).observe(wrapper);
+      }
+
       const pairs = [
         { elId: 'studio-qr-block', xInputId: 'studio-qr-x', yInputId: 'studio-qr-y' },
         { elId: 'studio-signer-block', xInputId: 'studio-signer-x', yInputId: 'studio-signer-y' }
@@ -1777,8 +1804,8 @@ const DEFAULT_EVENTS = [
 
         el.addEventListener('pointermove', (e) => {
           if (!dragging) return;
-          const previewBox = document.getElementById('studio-preview-box');
-          const boxW = (previewBox && previewBox.clientWidth) ? previewBox.clientWidth : 600;
+          const previewWrap = document.getElementById('studio-preview-wrapper');
+          const boxW = (previewWrap && previewWrap.clientWidth) ? previewWrap.clientWidth : 600;
           const scaleFactor = 1000 / boxW;
 
           const dxUnits = Math.round((e.clientX - startClientX) * scaleFactor);
@@ -1806,10 +1833,7 @@ const DEFAULT_EVENTS = [
       });
 
       window.addEventListener('resize', () => {
-        const certPanel = document.getElementById('panel-sertifikat');
-        if (certPanel && !certPanel.classList.contains('hidden')) {
-          updateCertPreviewLive();
-        }
+        scaleStudioPreviewStage();
       });
     }
 
@@ -1981,6 +2005,8 @@ const DEFAULT_EVENTS = [
       document.getElementById('cfg-webhook').value = settings.webhookUrl || '';
       const qrOrgEl = document.getElementById('prev-qr-org-sub');
       if (qrOrgEl) qrOrgEl.textContent = settings.orgSub || DEFAULT_SETTINGS.orgSub;
+      const bodyOrgEl = document.getElementById('prev-body-org-sub');
+      if (bodyOrgEl) bodyOrgEl.textContent = settings.orgSub || DEFAULT_SETTINGS.orgSub;
     }
 
     async function handleAdminLogin(e) {
@@ -2237,6 +2263,9 @@ const DEFAULT_EVENTS = [
       const activePanel = document.getElementById(`panel-${tabName}`);
       if (activePanel) activePanel.classList.remove('hidden');
       syncAllAdminUI();
+      if (tabName === 'sertifikat') {
+        setTimeout(() => scaleStudioPreviewStage(), 20);
+      }
     }
 
     function jumpToEventSubFeature(tabName, eventId) {
@@ -2659,7 +2688,7 @@ const DEFAULT_EVENTS = [
       toast('Kegiatan dihapus.');
     }
 
-    // PANEL 2: STUDIO SERTIFIKAT & UPLOAD TEMPLATE A4 LANDSCAPE
+    // PANEL 2: STUDIO SERTIFIKAT & UPLOAD TEMPLATE A4 LANDSCAPE (100% IDENTIK DENGAN INDEX.HTML)
     function loadCertificateStudio() {
       const evId = document.getElementById('cert-event-selector').value;
       const ev = events.find(e => e.id === evId);
@@ -2830,7 +2859,8 @@ const DEFAULT_EVENTS = [
       const title = document.getElementById('studio-cert-title').value || settings.signerTitle;
       const color = document.getElementById('studio-cert-color').value || '#1E3A8A';
 
-      const previewBox = document.getElementById('studio-preview-box');
+      const bgImg = document.getElementById('studio-bg-img');
+      const outerBorder = document.getElementById('studio-outer-border');
       const innerFrame = document.getElementById('studio-preview-inner-frame');
       const defaultHeader = document.getElementById('studio-default-header');
       const dynamicBlock = document.getElementById('studio-dynamic-block');
@@ -2854,28 +2884,30 @@ const DEFAULT_EVENTS = [
       document.getElementById('badge-signer-pos').textContent = `X:${signerX}, Y:${signerY}`;
       document.getElementById('badge-signer-scale').textContent = `${signerScale}%`;
 
-      const boxW = (previewBox && previewBox.clientWidth) ? previewBox.clientWidth : 600;
-      const unitPx = boxW / 1000;
-
       if (tempCustomTemplateImg) {
-        previewBox.style.backgroundImage = `url('${tempCustomTemplateImg}')`;
+        bgImg.src = tempCustomTemplateImg;
+        bgImg.classList.remove('hidden');
         if (hideChrome) {
-          previewBox.style.borderWidth = '0px';
-          innerFrame.classList.remove('border', 'border-amber-400/80');
-          defaultHeader.classList.add('invisible');
+          outerBorder.classList.add('hidden');
+          innerFrame.classList.add('hidden');
+          defaultHeader.classList.add('hidden');
+          dynamicBlock.style.top = '165px';
         } else {
-          previewBox.style.borderWidth = '8px';
-          previewBox.style.borderColor = color;
-          innerFrame.classList.add('border', 'border-amber-400/80');
-          defaultHeader.classList.remove('invisible');
+          outerBorder.classList.remove('hidden');
+          outerBorder.style.borderColor = color;
+          innerFrame.classList.remove('hidden');
+          defaultHeader.classList.remove('hidden');
+          dynamicBlock.style.top = '158px';
         }
-        dynamicBlock.style.transform = `translateY(${Math.round(offsetY * (boxW / 835))}px)`;
+        dynamicBlock.style.transform = `translateY(${offsetY}px)`;
       } else {
-        previewBox.style.backgroundImage = 'none';
-        previewBox.style.borderWidth = '8px';
-        previewBox.style.borderColor = color;
-        innerFrame.classList.add('border', 'border-amber-400/80');
-        defaultHeader.classList.remove('invisible');
+        bgImg.src = '';
+        bgImg.classList.add('hidden');
+        outerBorder.classList.remove('hidden');
+        outerBorder.style.borderColor = color;
+        innerFrame.classList.remove('hidden');
+        defaultHeader.classList.remove('hidden');
+        dynamicBlock.style.top = '158px';
         dynamicBlock.style.transform = 'translateY(0px)';
       }
 
@@ -2888,18 +2920,18 @@ const DEFAULT_EVENTS = [
       const qrBlock = document.getElementById('studio-qr-block');
       const qrTextBox = document.getElementById('studio-qr-text-box');
       if (qrBlock) {
-        qrBlock.style.transform = `translate(${(qrX * unitPx).toFixed(1)}px, ${(qrY * unitPx).toFixed(1)}px) scale(${(qrScale / 100).toFixed(2)})`;
+        qrBlock.style.transform = `translate(${qrX}px, ${qrY}px) scale(${(qrScale / 100).toFixed(2)})`;
       }
       if (qrTextBox) {
         qrTextBox.className = showScanBg
-          ? 'text-[9px] leading-tight text-slate-600 bg-white/85 px-1.5 py-1 rounded pointer-events-none'
-          : 'text-[9px] leading-tight text-slate-700 px-1.5 py-1 rounded pointer-events-none';
+          ? 'text-[10.5px] leading-tight text-slate-600 bg-white/85 px-2.5 py-1.5 rounded-lg pointer-events-none'
+          : 'text-[10.5px] leading-tight text-slate-700 px-2.5 py-1.5 rounded-lg pointer-events-none';
       }
 
       const signerBlock = document.getElementById('studio-signer-block');
       const issuedEl = document.getElementById('prev-cert-issued');
       if (signerBlock) {
-        signerBlock.style.transform = `translate(${(signerX * unitPx).toFixed(1)}px, ${(signerY * unitPx).toFixed(1)}px) scale(${(signerScale / 100).toFixed(2)})`;
+        signerBlock.style.transform = `translate(${signerX}px, ${signerY}px) scale(${(signerScale / 100).toFixed(2)})`;
       }
       if (issuedEl) {
         issuedEl.classList.toggle('hidden', !showIssuedDate);
@@ -2912,7 +2944,8 @@ const DEFAULT_EVENTS = [
       let sampleSeq = '001';
       let sampleName = 'Contoh Nama Peserta, S.Pd., M.Pd.';
       let sampleSchool = 'SDIT Permata Bunda — Kota Bandar Lampung';
-      let sampleVerifyUrl = `${getPortalIndexBaseUrl()}#verifikasi?cert=${encodeURIComponent('JSIT-' + String(ev.id || '001').slice(-3).toUpperCase() + '-001')}`;
+      let sampleVerCode = 'JSIT-' + String(ev.id || '001').slice(-3).toUpperCase() + '-001';
+      let sampleVerifyUrl = `${getPortalIndexBaseUrl()}#verifikasi?cert=${encodeURIComponent(sampleVerCode)}`;
 
       if (sampleIdx !== -1) {
         const sampleAtt = attList[sampleIdx];
@@ -2920,15 +2953,19 @@ const DEFAULT_EVENTS = [
         sampleSeq = meta.seqNum;
         sampleName = sampleAtt.name;
         sampleSchool = `${sampleAtt.school || '-'} — ${sampleAtt.region || 'Lampung'}`;
+        sampleVerCode = meta.verCode;
         sampleVerifyUrl = meta.verificationUrl;
       }
 
       const activeTxtCol = tempCustomTemplateImg ? textColor : '#0B1F3A';
       document.getElementById('prev-cert-num').style.color = tempCustomTemplateImg ? textColor : '#475569';
+      document.getElementById('prev-label-given').style.color = tempCustomTemplateImg ? textColor : '#64748B';
       document.getElementById('prev-cert-owner').style.color = activeTxtCol;
-      document.getElementById('prev-cert-body').style.color = tempCustomTemplateImg ? textColor : '#475569';
-      document.getElementById('prev-cert-title').style.color = activeTxtCol;
+      document.getElementById('prev-cert-school').style.color = tempCustomTemplateImg ? textColor : '#1E40AF';
+      document.getElementById('prev-cert-body').style.color = tempCustomTemplateImg ? textColor : '#334155';
+      document.getElementById('prev-cert-title').style.color = tempCustomTemplateImg ? textColor : '#1E293B';
       document.getElementById('prev-cert-signer').style.color = activeTxtCol;
+      if (issuedEl) issuedEl.style.color = tempCustomTemplateImg ? textColor : '#475569';
 
       document.getElementById('prev-cert-num').textContent = `Nomor: ${sampleSeq}/${prefix}`;
       document.getElementById('prev-cert-owner').textContent = sampleName;
@@ -2936,12 +2973,21 @@ const DEFAULT_EVENTS = [
       document.getElementById('prev-cert-role').textContent = role;
       document.getElementById('prev-cert-cat').textContent = ev.category;
       document.getElementById('prev-cert-event').textContent = `"${ev.title}"`;
+      document.getElementById('prev-cert-date-range').textContent = formatDateIndoAdmin(ev.dateStart, ev.dateEnd);
       document.getElementById('prev-cert-jp').textContent = jp;
       document.getElementById('prev-cert-signer').textContent = signer;
       document.getElementById('prev-cert-title').textContent = title;
+      const codeEl = document.getElementById('prev-cert-code');
+      if (codeEl) codeEl.textContent = sampleVerCode;
+      const bodyOrgEl = document.getElementById('prev-body-org-sub');
+      if (bodyOrgEl) bodyOrgEl.textContent = settings.orgSub || DEFAULT_SETTINGS.orgSub;
+      const qrOrgEl = document.getElementById('prev-qr-org-sub');
+      if (qrOrgEl) qrOrgEl.textContent = settings.orgSub || DEFAULT_SETTINGS.orgSub;
+
+      scaleStudioPreviewStage();
 
       if (window.QRCode) {
-        QRCode.toDataURL(sampleVerifyUrl, { width: 180, margin: 1 }, (err, url) => {
+        QRCode.toDataURL(sampleVerifyUrl, { width: 220, margin: 1 }, (err, url) => {
           if (!err && url) {
             document.getElementById('studio-qr-img').src = url;
             latestSampleQrDataUrl = url;
@@ -2960,8 +3006,8 @@ const DEFAULT_EVENTS = [
       const ctx = canvas.getContext('2d');
       const W = canvas.width;
       const H = canvas.height;
+      const S = W / 1000;
 
-      const prefix = document.getElementById('studio-cert-prefix').value || 'SERT/JSIT-LPG/2026';
       const jp = document.getElementById('studio-cert-jp').value || '8 JP';
       const roleLabel = document.getElementById('studio-cert-role').value || 'Peserta';
       const signerName = document.getElementById('studio-cert-signer').value || settings.signerName;
@@ -2986,106 +3032,115 @@ const DEFAULT_EVENTS = [
       const certNumText = document.getElementById('prev-cert-num').textContent.replace('Nomor: ', '');
       const dateRange = formatDateIndoAdmin(ev.dateStart, ev.dateEnd);
       const issuedDate = formatDateIndoAdmin(ev.dateEnd || ev.dateStart, '');
-      const verCode = `JSIT-${String(ev.id || '001').slice(-3).toUpperCase()}-001`;
+      const verCode = document.getElementById('prev-cert-code')?.textContent || `JSIT-${String(ev.id || '001').slice(-3).toUpperCase()}-001`;
 
       function drawBody() {
         const txtCol = tempCustomTemplateImg ? textColor : '#0B1F3A';
         const subTxtCol = tempCustomTemplateImg ? txtCol : '#334155';
-        const yShift = tempCustomTemplateImg ? Math.round(offsetY * (W / 835)) : 0;
 
         if (!tempCustomTemplateImg || !hideDefaultChrome) {
           ctx.strokeStyle = themeColor;
-          ctx.lineWidth = 18;
-          ctx.strokeRect(36, 36, W - 72, H - 72);
+          ctx.lineWidth = Math.round(10 * S);
+          ctx.strokeRect(5 * S, 5 * S, W - 10 * S, H - 10 * S);
           ctx.strokeStyle = '#D97706';
-          ctx.lineWidth = 4;
-          ctx.strokeRect(64, 64, W - 128, H - 128);
+          ctx.lineWidth = Math.round(2 * S);
+          ctx.strokeRect(20 * S, 20 * S, W - 40 * S, H - 40 * S);
 
           ctx.textAlign = 'center';
           ctx.fillStyle = themeColor;
-          ctx.font = 'bold 26px sans-serif';
-          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 138);
+          ctx.font = `bold ${Math.round(13 * S)}px sans-serif`;
+          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 62 * S);
           ctx.fillStyle = '#0F172A';
-          ctx.font = 'bold 34px sans-serif';
-          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 182);
+          ctx.font = `bold ${Math.round(20 * S)}px sans-serif`;
+          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 92 * S);
         }
 
+        const baseTop = (!tempCustomTemplateImg || !hideDefaultChrome) ? 158 : 165;
+        let yCursor = (baseTop + (tempCustomTemplateImg ? offsetY : 0)) * S;
+
         ctx.textAlign = 'center';
-        let numY = 295 + yShift;
         if (showCertHeading) {
           ctx.fillStyle = themeColor;
-          ctx.font = 'bold 74px sans-serif';
-          ctx.fillText('SERTIFIKAT', W / 2, 285 + yShift);
-          numY = 335 + yShift;
+          ctx.font = `bold ${Math.round(38 * S)}px sans-serif`;
+          ctx.fillText('SERTIFIKAT', W / 2, yCursor + 34 * S);
+          yCursor += 48 * S;
         }
 
         ctx.fillStyle = tempCustomTemplateImg ? txtCol : '#475569';
-        ctx.font = 'bold 28px sans-serif';
-        ctx.fillText(`Nomor: ${certNumText}`, W / 2, numY);
+        ctx.font = `bold ${Math.round(14 * S)}px sans-serif`;
+        ctx.fillText(`Nomor: ${certNumText}`, W / 2, yCursor + 14 * S);
+        yCursor += 38 * S;
 
         ctx.fillStyle = tempCustomTemplateImg ? txtCol : '#64748B';
-        ctx.font = '26px sans-serif';
-        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 425 + yShift);
+        ctx.font = `500 ${Math.round(13 * S)}px sans-serif`;
+        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, yCursor + 13 * S);
+        yCursor += 26 * S;
 
         ctx.fillStyle = txtCol;
-        ctx.font = 'bold 54px sans-serif';
-        ctx.fillText(ownerName, W / 2, 498 + yShift);
+        ctx.font = `bold ${Math.round(28 * S)}px sans-serif`;
+        ctx.fillText(ownerName, W / 2, yCursor + 28 * S);
         const nameW = ctx.measureText(ownerName).width;
         ctx.strokeStyle = '#D97706';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = Math.round(2.5 * S);
         ctx.beginPath();
-        ctx.moveTo((W - nameW) / 2, 514 + yShift);
-        ctx.lineTo((W + nameW) / 2, 514 + yShift);
+        ctx.moveTo((W - nameW) / 2 - 12 * S, yCursor + 36 * S);
+        ctx.lineTo((W + nameW) / 2 + 12 * S, yCursor + 36 * S);
         ctx.stroke();
+        yCursor += 50 * S;
 
-        ctx.fillStyle = tempCustomTemplateImg ? txtCol : '#1D4ED8';
-        ctx.font = 'bold 28px sans-serif';
-        ctx.fillText(schoolText, W / 2, 560 + yShift);
+        ctx.fillStyle = tempCustomTemplateImg ? txtCol : '#1E40AF';
+        ctx.font = `bold ${Math.round(14.5 * S)}px sans-serif`;
+        ctx.fillText(schoolText, W / 2, yCursor + 14 * S);
+        yCursor += 34 * S;
 
         ctx.fillStyle = subTxtCol;
-        ctx.font = '25px sans-serif';
-        ctx.fillText(`Atas partisipasi aktif sebagai ${roleLabel} dalam kegiatan ${ev.category}:`, W / 2, 636 + yShift);
+        ctx.font = `${Math.round(13.5 * S)}px sans-serif`;
+        ctx.fillText(`Atas partisipasi aktifnya sebagai ${roleLabel} dalam kegiatan ${ev.category}:`, W / 2, yCursor + 14 * S);
+        yCursor += 24 * S;
 
         ctx.fillStyle = txtCol;
-        ctx.font = 'bold 31px sans-serif';
-        const titleLines = wrapCanvasText(ctx, `"${ev.title}"`, W - 300);
+        ctx.font = `bold ${Math.round(15.5 * S)}px sans-serif`;
+        const titleLines = wrapCanvasText(ctx, `"${ev.title}"`, 790 * S);
         titleLines.forEach((line, i) => {
-          ctx.fillText(line, W / 2, 686 + yShift + i * 40);
+          ctx.fillText(line, W / 2, yCursor + 16 * S + i * 22 * S);
+        });
+        yCursor += titleLines.length * 22 * S + 22 * S;
+
+        ctx.fillStyle = subTxtCol;
+        ctx.font = `${Math.round(13.5 * S)}px sans-serif`;
+        const footerDescLines = wrapCanvasText(ctx, `yang diselenggarakan oleh ${orgSubText} pada tanggal ${dateRange} dengan bobot pelatihan setara ${jp}.`, 790 * S);
+        footerDescLines.forEach((line, i) => {
+          ctx.fillText(line, W / 2, yCursor + i * 21 * S);
         });
 
-        const afterTitleY = 686 + yShift + titleLines.length * 40 + 16;
-        ctx.fillStyle = subTxtCol;
-        ctx.font = '24px sans-serif';
-        ctx.fillText(`Diselenggarakan oleh ${orgSubText} pada ${dateRange} (${jp})`, W / 2, afterTitleY);
-
         const qrScaleRatio = qrScale / 100;
-        const qrBottomY = 1105 + Math.round(qrOffsetY * (W / 1000));
-        const qrBaseX = 135 + Math.round(qrOffsetX * (W / 1000));
-        const qrSize = Math.round(165 * qrScaleRatio);
-        const qrPad = Math.round(10 * qrScaleRatio);
+        const qrBottomY = (707 - 52 + qrOffsetY) * S;
+        const qrBaseX = (65 + qrOffsetX) * S;
+        const qrSize = Math.round(78 * S * qrScaleRatio);
+        const qrPad = Math.round(6 * S * qrScaleRatio);
         const qrBaseY = qrBottomY - qrSize;
 
         const finishExport = () => {
           const sScaleRatio = signerScale / 100;
-          const signerX = (W - 380) + Math.round(signerOffsetX * (W / 1000));
-          const signerBottomY = 1095 + Math.round(signerOffsetY * (W / 1000));
-          const signerTopY = signerBottomY - Math.round(145 * sScaleRatio);
+          const signerCenterX = (1000 - 65 - 160 + signerOffsetX) * S;
+          const signerBottomY = (707 - 52 + signerOffsetY) * S;
+          const signerTopY = signerBottomY - Math.round(92 * S * sScaleRatio);
 
           ctx.textAlign = 'center';
           if (showIssuedDate) {
             ctx.fillStyle = tempCustomTemplateImg ? txtCol : '#475569';
-            ctx.font = `${Math.round(21 * sScaleRatio)}px sans-serif`;
-            ctx.fillText(`Bandar Lampung, ${issuedDate}`, signerX, signerTopY);
+            ctx.font = `${Math.round(11.5 * S * sScaleRatio)}px sans-serif`;
+            ctx.fillText(`Bandar Lampung, ${issuedDate}`, signerCenterX, signerTopY);
           }
           ctx.fillStyle = txtCol;
-          ctx.font = `bold ${Math.round(23 * sScaleRatio)}px sans-serif`;
-          ctx.fillText(signerTitle, signerX, signerTopY + Math.round(35 * sScaleRatio));
+          ctx.font = `600 ${Math.round(12.5 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText(signerTitle, signerCenterX, signerTopY + Math.round(20 * S * sScaleRatio));
           ctx.fillStyle = '#1E40AF';
-          ctx.font = `italic ${Math.round(18 * sScaleRatio)}px sans-serif`;
-          ctx.fillText('[Ditandatangani secara elektronik]', signerX, signerTopY + Math.round(80 * sScaleRatio));
+          ctx.font = `italic ${Math.round(10 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText('Ditandatangani secara elektronik', signerCenterX, signerTopY + Math.round(46 * S * sScaleRatio));
           ctx.fillStyle = txtCol;
-          ctx.font = `bold ${Math.round(26 * sScaleRatio)}px sans-serif`;
-          ctx.fillText(signerName, signerX, signerTopY + Math.round(132 * sScaleRatio));
+          ctx.font = `bold ${Math.round(14 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText(signerName, signerCenterX, signerTopY + Math.round(78 * S * sScaleRatio));
 
           const link = document.createElement('a');
           link.download = `Pratinjau-Sertifikat-A4-${ev.id}.png`;
@@ -3104,22 +3159,21 @@ const DEFAULT_EVENTS = [
             ctx.strokeRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
             ctx.drawImage(qrImg, qrBaseX, qrBaseY, qrSize, qrSize);
 
-            const textStartX = qrBaseX + qrSize + Math.round(24 * qrScaleRatio);
+            const textStartX = qrBaseX + qrSize + Math.round(14 * S * qrScaleRatio);
             if (showScanBg) {
               ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-              ctx.fillRect(textStartX - 10, qrBaseY + Math.round(8 * qrScaleRatio), Math.round(455 * qrScaleRatio), Math.round(136 * qrScaleRatio));
+              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(4 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(68 * S * qrScaleRatio));
             }
             ctx.textAlign = 'left';
             ctx.fillStyle = '#0B1F3A';
-            ctx.font = `bold ${Math.round(21 * qrScaleRatio)}px sans-serif`;
-            ctx.fillText('Scan Barcode Verifikasi Keaslian', textStartX, qrBaseY + Math.round(38 * qrScaleRatio));
+            ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px sans-serif`;
+            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(20 * S * qrScaleRatio));
             ctx.fillStyle = '#475569';
-            ctx.font = `${Math.round(18 * qrScaleRatio)}px sans-serif`;
-            ctx.fillText(settings.orgName || 'JSIT Wilayah Lampung', textStartX, qrBaseY + Math.round(70 * qrScaleRatio));
-            ctx.fillText(orgSubText, textStartX, qrBaseY + Math.round(98 * qrScaleRatio));
+            ctx.font = `${Math.round(10 * S * qrScaleRatio)}px sans-serif`;
+            ctx.fillText(orgSubText, textStartX, qrBaseY + Math.round(38 * S * qrScaleRatio));
             ctx.fillStyle = '#1D4ED8';
-            ctx.font = `bold ${Math.round(18 * qrScaleRatio)}px monospace`;
-            ctx.fillText(`Kode: ${verCode}`, textStartX, qrBaseY + Math.round(128 * qrScaleRatio));
+            ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px monospace`;
+            ctx.fillText(verCode, textStartX, qrBaseY + Math.round(56 * S * qrScaleRatio));
             finishExport();
           };
           qrImg.src = latestSampleQrDataUrl;
@@ -3629,70 +3683,17 @@ const DEFAULT_EVENTS = [
               <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${meta.relInfo.badgeClass}">${escapeHtml(meta.relInfo.label)}</span>
             </td>
             <td class="p-3.5 text-right">
-              <div class="inline-flex items-center gap-2 justify-end">
-                <a href="${escapeHtml(meta.verificationUrl)}" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Cek &nearr;</a>
-                ${meta.waUrl ? `<a href="${escapeHtml(meta.waUrl)}" target="_blank" rel="noopener" class="text-emerald-600 hover:underline font-bold">WA</a>` : ''}
-                ${canManageAtt ? `<button type="button" onclick="openEditAttendeeModal('${safeAttId}')" class="text-amber-700 hover:underline font-bold">Edit</button>` : ''}
-                ${canManageAtt ? `<button type="button" onclick="deleteAttendeeItem('${safeAttId}')" class="text-rose-600 hover:underline font-bold">Hapus</button>` : ''}
+              <div class="inline-flex items-center gap-1.5 justify-end">
+                <a href="${escapeHtml(meta.verificationUrl)}" target="_blank" rel="noopener" title="Buka Informasi E-Sertifikat" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-[11px] font-bold transition">
+                  Sertifikat &nearr;
+                </a>
+                ${canManageAtt ? `<button type="button" onclick="openEditAttendeeModal('${safeAttId}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-900 text-[11px] font-bold transition">Edit</button>` : ''}
+                ${canManageAtt ? `<button type="button" onclick="deleteAttendeeItem('${safeAttId}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold transition">Hapus</button>` : ''}
               </div>
             </td>
           </tr>
         `;
-      }).join('') : `<tr><td colspan="9" class="p-8 text-center text-slate-400">Belum ada peserta hadir pada kegiatan ini.</td></tr>`;
-    }
-
-    function openEditAttendeeModal(attId) {
-      if (!hasPermission('manage_attendees')) return;
-      const evId = document.getElementById('att-event-selector').value;
-      const ev = events.find(e => e.id === evId);
-      if (!ev) return;
-      const att = (ev.attendees || []).find(a => a.id === attId);
-      if (!att) return;
-
-      document.getElementById('edit-att-id').value = att.id;
-      document.getElementById('edit-att-name').value = att.name || '';
-      document.getElementById('edit-att-school').value = att.school || '';
-      if (LAMPUNG_REGIONS.includes(att.region)) {
-        document.getElementById('edit-att-region').value = att.region;
-      }
-      document.getElementById('edit-att-role').value = att.role || 'Peserta';
-      document.getElementById('edit-att-phone').value = att.phone || '';
-      document.getElementById('edit-attendee-modal').classList.remove('hidden');
-    }
-
-    function closeEditAttendeeModal() {
-      document.getElementById('edit-attendee-modal').classList.add('hidden');
-    }
-
-    async function submitEditAttendeeForm(e) {
-      e.preventDefault();
-      if (!hasPermission('manage_attendees')) return;
-      const evId = document.getElementById('att-event-selector').value;
-      const attId = document.getElementById('edit-att-id').value;
-      const updatedFields = {
-        name: document.getElementById('edit-att-name').value.trim(),
-        school: document.getElementById('edit-att-school').value.trim(),
-        region: document.getElementById('edit-att-region').value,
-        role: document.getElementById('edit-att-role').value,
-        phone: document.getElementById('edit-att-phone').value.trim(),
-        updatedBy: currentUserProfile ? currentUserProfile.email : 'admin'
-      };
-
-      if (isFirebaseReady && db) {
-        await db.collection('events').doc(evId).collection('attendees').doc(attId).set(updatedFields, { merge: true });
-      } else {
-        const evIdx = events.findIndex(e => e.id === evId);
-        if (evIdx !== -1) {
-          const attIdx = (events[evIdx].attendees || []).findIndex(a => a.id === attId);
-          if (attIdx !== -1) {
-            events[evIdx].attendees[attIdx] = { ...events[evIdx].attendees[attIdx], ...updatedFields };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-            syncAllAdminUI();
-          }
-        }
-      }
-      closeEditAttendeeModal();
-      toast('Data peserta berhasil diperbarui!');
+      }).join('') : `<tr><td colspan="9" class="p-8 text-center text-slate-400">Belum ada data peserta hadir untuk kegiatan ini.</td></tr>`;
     }
 
     async function handleAddManualAttendee(e) {
@@ -3708,7 +3709,7 @@ const DEFAULT_EVENTS = [
         id: attId,
         name: document.getElementById('quick-att-name').value.trim(),
         school: document.getElementById('quick-att-school').value.trim(),
-        region: document.getElementById('quick-att-region').value,
+        region: document.getElementById('quick-att-region').value || 'Kota Bandar Lampung',
         role: 'Peserta',
         phone: document.getElementById('quick-att-phone').value.trim(),
         email: '',
@@ -3726,26 +3727,92 @@ const DEFAULT_EVENTS = [
         localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
         syncAllAdminUI();
       }
+      e.target.reset();
+      toast('Peserta berhasil ditambahkan!');
+    }
 
-      document.getElementById('quick-att-name').value = '';
-      document.getElementById('quick-att-school').value = '';
-      document.getElementById('quick-att-phone').value = '';
-      toast('Peserta ditambahkan ke Daftar Hadir!');
+    function openEditAttendeeModal(attId) {
+      if (!hasPermission('manage_attendees')) return;
+      const evId = document.getElementById('att-event-selector').value;
+      const ev = events.find(e => e.id === evId);
+      if (!ev) return;
+      const att = (ev.attendees || []).find(a => a.id === attId);
+      if (!att) return;
+
+      document.getElementById('edit-att-id').value = att.id;
+      document.getElementById('edit-att-name').value = att.name || '';
+      document.getElementById('edit-att-school').value = att.school || '';
+      const regSelect = document.getElementById('edit-att-region');
+      if (att.region && !Array.from(regSelect.options).some(o => o.value === att.region)) {
+        const opt = document.createElement('option');
+        opt.value = att.region;
+        opt.textContent = att.region;
+        regSelect.appendChild(opt);
+      }
+      regSelect.value = att.region || 'Kota Bandar Lampung';
+
+      const roleSelect = document.getElementById('edit-att-role');
+      if (att.role && !Array.from(roleSelect.options).some(o => o.value === att.role)) {
+        const opt = document.createElement('option');
+        opt.value = att.role;
+        opt.textContent = att.role;
+        roleSelect.appendChild(opt);
+      }
+      roleSelect.value = att.role || 'Peserta';
+      document.getElementById('edit-att-phone').value = att.phone || '';
+      document.getElementById('edit-attendee-modal').classList.remove('hidden');
+    }
+
+    function closeEditAttendeeModal() {
+      document.getElementById('edit-attendee-modal').classList.add('hidden');
+    }
+
+    async function submitEditAttendeeForm(e) {
+      e.preventDefault();
+      if (!hasPermission('manage_attendees')) return;
+      const evId = document.getElementById('att-event-selector').value;
+      const attId = document.getElementById('edit-att-id').value;
+      const evIdx = events.findIndex(item => item.id === evId);
+      if (evIdx === -1 || !attId) return;
+
+      const updatedFields = {
+        name: document.getElementById('edit-att-name').value.trim(),
+        school: document.getElementById('edit-att-school').value.trim(),
+        region: document.getElementById('edit-att-region').value,
+        role: document.getElementById('edit-att-role').value,
+        phone: document.getElementById('edit-att-phone').value.trim(),
+        updatedAt: new Date().toISOString(),
+        updatedBy: currentUserProfile ? currentUserProfile.email : 'admin'
+      };
+
+      if (isFirebaseReady && db) {
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).update(updatedFields);
+      } else {
+        const attList = events[evIdx].attendees || [];
+        const attIdx = attList.findIndex(a => a.id === attId);
+        if (attIdx !== -1) {
+          attList[attIdx] = { ...attList[attIdx], ...updatedFields };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+          syncAllAdminUI();
+        }
+      }
+      closeEditAttendeeModal();
+      toast('Data peserta diperbarui & otomatis tersinkron ke E-Sertifikat!');
     }
 
     async function deleteAttendeeItem(attId) {
       if (!hasPermission('manage_attendees')) return;
-      if (!confirm('Hapus data peserta ini dari daftar hadir?')) return;
+      if (!confirm('Hapus peserta ini dari daftar hadir?')) return;
       const evId = document.getElementById('att-event-selector').value;
+      const idx = events.findIndex(e => e.id === evId);
+      if (idx === -1) return;
+
       if (isFirebaseReady && db) {
         await db.collection('events').doc(evId).collection('attendees').doc(attId).delete();
       } else {
-        const idx = events.findIndex(e => e.id === evId);
-        if (idx !== -1) {
-          events[idx].attendees = events[idx].attendees.filter(a => a.id !== attId);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-          syncAllAdminUI();
-        }
+        events[idx].attendees = (events[idx].attendees || []).filter(a => a.id !== attId);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        syncAllAdminUI();
       }
       toast('Data peserta dihapus.');
     }
@@ -3757,12 +3824,12 @@ const DEFAULT_EVENTS = [
       }
       const evId = document.getElementById('att-event-selector').value;
       const ev = events.find(e => e.id === evId);
-      if (!ev || !ev.attendees || ev.attendees.length === 0) {
-        alert('Belum ada data kehadiran untuk diexport.');
+      if (!ev || !(ev.attendees || []).length) {
+        alert('Belum ada data peserta untuk diekspor.');
         return;
       }
       const list = ev.attendees || [];
-      const headers = ['No', 'Nomor Sertifikat', 'Kode Validasi', 'Status Sertifikat', 'Nama Lengkap', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran', 'Bobot JP', 'WhatsApp', 'Waktu Hadir', 'Tautan Verifikasi Sertifikat'];
+      const headers = ['No', 'Nomor Sertifikat', 'Kode Validasi', 'Status Sertifikat', 'Nama Lengkap & Gelar', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran', 'WhatsApp', 'Waktu Hadir'];
       const rows = list.map((a, idx) => {
         const meta = buildAttendeeCertMeta(ev, a, idx, list.length);
         return [
@@ -3774,10 +3841,8 @@ const DEFAULT_EVENTS = [
           a.school,
           a.region,
           meta.attendanceRole,
-          meta.jp,
           a.phone,
-          a.timestamp || '-',
-          meta.verificationUrl
+          a.timestamp || '-'
         ];
       });
       const csvContent = '\uFEFF' + [headers, ...rows]
@@ -3787,59 +3852,59 @@ const DEFAULT_EVENTS = [
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Daftar_Hadir_dan_Sertifikat_${(ev.title || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+      link.download = `Daftar_Hadir_${(ev.title || 'Kegiatan').replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
       link.click();
       URL.revokeObjectURL(url);
-      toast('CSV Daftar Hadir & Sertifikat diunduh!');
+      toast('CSV Daftar Hadir & Nomor Sertifikat diunduh!');
     }
 
-    // PANEL 4: MATERI & REKAMAN (LENGKAP DENGAN EDIT & HAPUS)
+    // PANEL 4: MATERI & REKAMAN
     function renderResourcesPanel() {
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
       if (!ev) return;
       const canRes = hasPermission('manage_resources');
 
-      const matList = document.getElementById('res-mat-list');
-      matList.innerHTML = (ev.materials || []).length ? ev.materials.map(m => `
-        <div class="p-3 rounded-xl border border-blue-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+      const matEl = document.getElementById('res-mat-list');
+      matEl.innerHTML = (ev.materials || []).length ? ev.materials.map(m => `
+        <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
             <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-[10px]">${escapeHtml(m.type)}</span>
-            <strong class="text-navy-900 ml-1">${escapeHtml(m.title)}</strong>
-            <a href="${escapeHtml(sanitizeUrl(m.url))}" target="_blank" rel="noopener" class="block text-blue-600 truncate hover:underline mt-0.5">${escapeHtml(m.url)}</a>
+            <strong class="block text-navy-900 mt-0.5 truncate">${escapeHtml(m.title)}</strong>
+            <span class="text-[11px] text-slate-400 truncate block">${escapeHtml(m.url)}</span>
           </div>
           ${canRes ? `
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="startEditMaterial('${escapeHtml(m.id)}')" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold">Edit</button>
-              <button onclick="deleteMaterial('${escapeHtml(m.id)}')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 font-bold">Hapus</button>
+              <button type="button" onclick="editMaterialItem('${escapeHtml(m.id)}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 font-bold">Edit</button>
+              <button type="button" onclick="deleteMaterialItem('${escapeHtml(m.id)}')" class="px-2.5 py-1 rounded bg-rose-50 text-rose-600 font-bold">Hapus</button>
             </div>
           ` : ''}
         </div>
-      `).join('') : `<p class="text-xs text-slate-400">Belum ada materi untuk kegiatan ini.</p>`;
+      `).join('') : '<p class="text-xs text-slate-400">Belum ada materi.</p>';
 
-      const recList = document.getElementById('res-rec-list');
-      recList.innerHTML = (ev.recordings || []).length ? ev.recordings.map(r => `
-        <div class="p-3 rounded-xl border border-sky-100 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+      const recEl = document.getElementById('res-rec-list');
+      recEl.innerHTML = (ev.recordings || []).length ? ev.recordings.map(r => `
+        <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
             <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-bold text-[10px]">${escapeHtml(r.platform)}</span>
-            <strong class="text-navy-900 ml-1">${escapeHtml(r.title)}</strong>
-            <a href="${escapeHtml(sanitizeUrl(r.url))}" target="_blank" rel="noopener" class="block text-sky-600 truncate hover:underline mt-0.5">${escapeHtml(r.url)}</a>
+            <strong class="block text-navy-900 mt-0.5 truncate">${escapeHtml(r.title)}</strong>
+            <span class="text-[11px] text-slate-400 truncate block">${escapeHtml(r.url)}</span>
           </div>
           ${canRes ? `
             <div class="flex items-center gap-1.5 shrink-0">
-              <button onclick="startEditRecording('${escapeHtml(r.id)}')" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold">Edit</button>
-              <button onclick="deleteRecording('${escapeHtml(r.id)}')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 font-bold">Hapus</button>
+              <button type="button" onclick="editRecordingItem('${escapeHtml(r.id)}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-800 font-bold">Edit</button>
+              <button type="button" onclick="deleteRecordingItem('${escapeHtml(r.id)}')" class="px-2.5 py-1 rounded bg-rose-50 text-rose-600 font-bold">Hapus</button>
             </div>
           ` : ''}
         </div>
-      `).join('') : `<p class="text-xs text-slate-400">Belum ada video rekaman untuk kegiatan ini.</p>`;
+      `).join('') : '<p class="text-xs text-slate-400">Belum ada rekaman.</p>';
     }
 
-    function startEditMaterial(matId) {
+    function editMaterialItem(matId) {
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
-      if (!ev) return;
-      const mat = (ev.materials || []).find(m => m.id === matId);
+      const mat = (ev?.materials || []).find(m => m.id === matId);
       if (!mat) return;
       document.getElementById('res-mat-edit-id').value = mat.id;
       document.getElementById('res-mat-title').value = mat.title || '';
@@ -3852,9 +3917,7 @@ const DEFAULT_EVENTS = [
 
     function cancelEditMaterial() {
       document.getElementById('res-mat-edit-id').value = '';
-      document.getElementById('res-mat-title').value = '';
-      document.getElementById('res-mat-url').value = '';
-      document.getElementById('res-mat-desc').value = '';
+      document.getElementById('form-add-material').reset();
       document.getElementById('btn-submit-mat').textContent = '+ Tambah';
       document.getElementById('btn-cancel-mat-edit').classList.add('hidden');
     }
@@ -3865,45 +3928,44 @@ const DEFAULT_EVENTS = [
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
-      if (!events[idx].materials) events[idx].materials = [];
 
       const editId = document.getElementById('res-mat-edit-id').value;
       const payload = {
-        id: editId || ('m-' + Date.now()),
         title: document.getElementById('res-mat-title').value.trim(),
         type: document.getElementById('res-mat-type').value,
         url: document.getElementById('res-mat-url').value.trim(),
         desc: document.getElementById('res-mat-desc').value.trim()
       };
 
+      if (!events[idx].materials) events[idx].materials = [];
       if (editId) {
         const mIdx = events[idx].materials.findIndex(m => m.id === editId);
-        if (mIdx !== -1) events[idx].materials[mIdx] = payload;
-        toast('Materi diperbarui!');
+        if (mIdx !== -1) events[idx].materials[mIdx] = { ...events[idx].materials[mIdx], ...payload };
+        cancelEditMaterial();
+        toast('Materi berhasil diperbarui!');
       } else {
-        events[idx].materials.push(payload);
-        toast('Materi ditambahkan!');
+        events[idx].materials.push({ id: 'm-' + Date.now(), ...payload });
+        e.target.reset();
+        toast('Materi berhasil ditambahkan!');
       }
-
-      cancelEditMaterial();
       await persistSingleEventToCloud(events[idx]);
     }
 
-    async function deleteMaterial(matId) {
+    async function deleteMaterialItem(matId) {
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
-      events[idx].materials = events[idx].materials.filter(m => m.id !== matId);
+      events[idx].materials = (events[idx].materials || []).filter(m => m.id !== matId);
       await persistSingleEventToCloud(events[idx]);
       toast('Materi dihapus.');
     }
 
-    function startEditRecording(recId) {
+    function editRecordingItem(recId) {
+      if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const ev = events.find(e => e.id === evId);
-      if (!ev) return;
-      const rec = (ev.recordings || []).find(r => r.id === recId);
+      const rec = (ev?.recordings || []).find(r => r.id === recId);
       if (!rec) return;
       document.getElementById('res-rec-edit-id').value = rec.id;
       document.getElementById('res-rec-title').value = rec.title || '';
@@ -3916,9 +3978,7 @@ const DEFAULT_EVENTS = [
 
     function cancelEditRecording() {
       document.getElementById('res-rec-edit-id').value = '';
-      document.getElementById('res-rec-title').value = '';
-      document.getElementById('res-rec-url').value = '';
-      document.getElementById('res-rec-notes').value = '';
+      document.getElementById('form-add-recording').reset();
       document.getElementById('btn-submit-rec').textContent = '+ Tambah';
       document.getElementById('btn-cancel-rec-edit').classList.add('hidden');
     }
@@ -3929,68 +3989,60 @@ const DEFAULT_EVENTS = [
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
-      if (!events[idx].recordings) events[idx].recordings = [];
 
       const editId = document.getElementById('res-rec-edit-id').value;
       const payload = {
-        id: editId || ('r-' + Date.now()),
         title: document.getElementById('res-rec-title').value.trim(),
         platform: document.getElementById('res-rec-platform').value,
         url: document.getElementById('res-rec-url').value.trim(),
         notes: document.getElementById('res-rec-notes').value.trim()
       };
 
+      if (!events[idx].recordings) events[idx].recordings = [];
       if (editId) {
         const rIdx = events[idx].recordings.findIndex(r => r.id === editId);
-        if (rIdx !== -1) events[idx].recordings[rIdx] = payload;
-        toast('Rekaman diperbarui!');
+        if (rIdx !== -1) events[idx].recordings[rIdx] = { ...events[idx].recordings[rIdx], ...payload };
+        cancelEditRecording();
+        toast('Rekaman berhasil diperbarui!');
       } else {
-        events[idx].recordings.push(payload);
-        toast('Rekaman ditambahkan!');
+        events[idx].recordings.push({ id: 'r-' + Date.now(), ...payload });
+        e.target.reset();
+        toast('Rekaman berhasil ditambahkan!');
       }
-
-      cancelEditRecording();
       await persistSingleEventToCloud(events[idx]);
     }
 
-    async function deleteRecording(recId) {
+    async function deleteRecordingItem(recId) {
       if (!hasPermission('manage_resources')) return;
       const evId = document.getElementById('res-event-selector').value;
       const idx = events.findIndex(e => e.id === evId);
       if (idx === -1) return;
-      events[idx].recordings = events[idx].recordings.filter(r => r.id !== recId);
+      events[idx].recordings = (events[idx].recordings || []).filter(r => r.id !== recId);
       await persistSingleEventToCloud(events[idx]);
       toast('Rekaman dihapus.');
     }
 
-    // PANEL 5 & 6: BACKUP & SETTINGS
+    // PANEL 5: CLOUD SYNC & BACKUP JSON
     function downloadGitHubJSON() {
-      if (!hasPermission('manage_settings')) return;
       const payload = {
         updatedAt: new Date().toISOString(),
-        organization: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
+        organization: settings.orgSub,
+        settings: {
+          orgName: settings.orgName,
+          orgSub: settings.orgSub,
+          signerName: settings.signerName,
+          signerTitle: settings.signerTitle
+        },
         events
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'events-data.json';
+      a.download = `jsit-lampung-backup-${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      toast('Backup events-data.json diunduh!');
-    }
-
-    function downloadFirebaseConfigTemplate() {
-      const content = `// Konfigurasi Firebase JSIT Wilayah Lampung\nwindow.FIREBASE_CONFIG = {\n  apiKey: "GANTI_DENGAN_API_KEY_ANDA",\n  authDomain: "proyek-anda.firebaseapp.com",\n  projectId: "proyek-anda",\n  storageBucket: "proyek-anda.appspot.com",\n  messagingSenderId: "1234567890",\n  appId: "1:1234567890:web:abcdef123456"\n};\n`;
-      const blob = new Blob([content], { type: 'application/javascript' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'firebase-config.js';
-      a.click();
-      URL.revokeObjectURL(url);
-      toast('Template firebase-config.js diunduh!');
+      toast('Backup JSON berhasil diunduh!');
     }
 
     function uploadGitHubJSON(e) {
@@ -3998,20 +4050,21 @@ const DEFAULT_EVENTS = [
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async function(evt) {
+      reader.onload = async (evt) => {
         try {
           const parsed = JSON.parse(evt.target.result);
-          const list = Array.isArray(parsed) ? parsed : (parsed.events || []);
-          if (!list.length) throw new Error('File tidak berisi daftar kegiatan.');
-          for (const item of list) {
-            const norm = normalizeEventItem(item);
+          const list = Array.isArray(parsed) ? parsed : parsed.events;
+          if (!Array.isArray(list)) {
+            alert('Format JSON tidak valid.');
+            return;
+          }
+          for (const rawEv of list) {
+            const ev = normalizeEventItem(rawEv);
+            const atts = ev.attendees || [];
+            await persistSingleEventToCloud(ev);
             if (isFirebaseReady && db) {
-              await persistSingleEventToCloud(norm);
-              if (Array.isArray(norm.attendees)) {
-                for (const att of norm.attendees) {
-                  const attId = att.id || ('att-' + Date.now() + '-' + Math.random().toString(36).slice(2,6));
-                  await db.collection('events').doc(norm.id).collection('attendees').doc(attId).set({ ...att, id: attId });
-                }
+              for (const att of atts) {
+                await db.collection('events').doc(ev.id).collection('attendees').doc(att.id || ('att-' + Date.now())).set(att);
               }
             }
           }
@@ -4028,11 +4081,23 @@ const DEFAULT_EVENTS = [
       reader.readAsText(file);
     }
 
+    function downloadFirebaseConfigTemplate() {
+      const tpl = `// Konfigurasi Firebase JSIT Wilayah Lampung\nwindow.FIREBASE_CONFIG = {\n  apiKey: "GANTI_DENGAN_API_KEY_FIREBASE_ANDA",\n  authDomain: "proyek-anda.firebaseapp.com",\n  projectId: "proyek-anda",\n  storageBucket: "proyek-anda.firebasestorage.app",\n  messagingSenderId: "123456789012",\n  appId: "1:123456789012:web:abcdef123456"\n};\n`;
+      const blob = new Blob([tpl], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'firebase-config.js';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // PANEL 6: PENGATURAN
     async function saveSystemSettings(e) {
       e.preventDefault();
       if (!hasPermission('manage_settings')) return;
-      settings.orgName = document.getElementById('cfg-org-name').value.trim() || DEFAULT_SETTINGS.orgName;
-      settings.orgSub = document.getElementById('cfg-org-sub').value.trim() || DEFAULT_SETTINGS.orgSub;
+      settings.orgName = document.getElementById('cfg-org-name').value.trim();
+      settings.orgSub = document.getElementById('cfg-org-sub').value.trim();
       settings.signerName = document.getElementById('cfg-signer').value.trim();
       settings.signerTitle = document.getElementById('cfg-title').value.trim();
       settings.webhookUrl = document.getElementById('cfg-webhook').value.trim();
@@ -4047,12 +4112,14 @@ const DEFAULT_EVENTS = [
       toast('Pengaturan sistem berhasil disimpan!');
     }
 
-    // PANEL 7: MULTIUSER & HAK AKSES
+    // PANEL 7: MANAJEMEN MULTIUSER & HAK AKSES
     function renderUsersPanel() {
+      if (!hasPermission('manage_users')) return;
       const tbody = document.getElementById('admin-users-tbody');
+      const countLabel = document.getElementById('users-count-label');
       if (!tbody) return;
-      const q = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
 
+      const q = (document.getElementById('user-search-input')?.value || '').trim().toLowerCase();
       const filtered = adminUsers.filter(u => {
         if (!q) return true;
         return (
@@ -4063,52 +4130,57 @@ const DEFAULT_EVENTS = [
         );
       });
 
-      const countLbl = document.getElementById('users-count-label');
-      if (countLbl) countLbl.textContent = `Daftar Akun Terdaftar (${filtered.length} dari ${adminUsers.length} Pengguna)`;
+      if (countLabel) {
+        countLabel.textContent = `Daftar Akun Terdaftar (${filtered.length} dari ${adminUsers.length} Pengguna)`;
+      }
 
       tbody.innerHTML = filtered.length ? filtered.map((u, idx) => {
+        const isSelf = currentUserProfile && u.email === currentUserProfile.email;
         const activePerms = PERMISSION_KEYS.filter(k => u.permissions && u.permissions[k]);
-        const permBadges = u.role === 'super_admin'
-          ? `<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-bold">Semua Akses Sistem (Full)</span>`
-          : (activePerms.length
-              ? activePerms.map(k => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${escapeHtml(PERMISSION_SHORT_LABELS[k])}</span>`).join(' ')
-              : `<span class="text-[10px] text-slate-400 italic">Hanya Lihat</span>`);
-
-        const isSelf = currentUserProfile && currentUserProfile.email === u.email;
-        const safeEmail = escapeHtml(u.email);
+        const permChips = activePerms.slice(0, 4).map(k =>
+          `<span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-100 text-[10px] font-semibold mr-1 mb-1">${escapeHtml(PERMISSION_SHORT_LABELS[k])}</span>`
+        ).join('') + (activePerms.length > 4 ? `<span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold">+${activePerms.length - 4} izin lainnya</span>` : '');
 
         return `
           <tr class="hover:bg-blue-50/40">
             <td class="p-3.5 font-bold text-slate-500">${idx + 1}</td>
             <td class="p-3.5">
-              <div class="font-bold text-navy-900">${escapeHtml(u.name)} ${isSelf ? '<span class="text-[10px] text-blue-600">(Anda)</span>' : ''}</div>
+              <div class="font-bold text-navy-900 flex items-center gap-1.5">
+                <span>${escapeHtml(u.name)}</span>
+                ${isSelf ? '<span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[9px] font-extrabold">Anda</span>' : ''}
+              </div>
               <div class="text-[11px] text-slate-500">${escapeHtml(u.division || '-')}</div>
             </td>
-            <td class="p-3.5 font-mono text-slate-700">${safeEmail}</td>
+            <td class="p-3.5 font-mono text-slate-700">${escapeHtml(u.email)}</td>
             <td class="p-3.5">
-              <span class="px-2.5 py-1 rounded-md text-[11px] font-extrabold ${ROLE_BADGE_CLASSES[u.role] || 'bg-slate-600 text-white'}">
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold ${ROLE_BADGE_CLASSES[u.role] || 'bg-slate-600 text-white'}">
                 ${escapeHtml(ROLE_LABELS[u.role] || u.role)}
               </span>
             </td>
-            <td class="p-3.5 max-w-xs">
-              <div class="flex flex-wrap gap-1">${permBadges}</div>
-            </td>
+            <td class="p-3.5 max-w-xs">${permChips || '<span class="text-slate-400">Hanya Lihat</span>'}</td>
             <td class="p-3.5">
-              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${u.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${u.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
                 ${u.active ? 'Aktif' : 'Nonaktif'}
               </span>
             </td>
             <td class="p-3.5 text-right">
-              <div class="inline-flex items-center gap-2 justify-end">
-                <button type="button" onclick="openUserModal('${safeEmail}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-[11px] font-bold transition">
-                  Atur Akses
+              <div class="inline-flex items-center gap-1.5 justify-end">
+                <button type="button" onclick="openUserModal('${escapeHtml(u.email)}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-800 hover:text-white text-[11px] font-bold transition">
+                  Atur Hak Akses
                 </button>
-                ${!isSelf ? `<button type="button" onclick="deleteUserAccount('${safeEmail}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[11px] font-bold transition">Hapus</button>` : ''}
+                ${!isSelf ? `
+                  <button type="button" onclick="toggleUserActiveStatus('${escapeHtml(u.email)}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 text-[11px] font-bold transition">
+                    ${u.active ? 'Nonaktifkan' : 'Aktifkan'}
+                  </button>
+                  <button type="button" onclick="deleteAdminUser('${escapeHtml(u.email)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold transition">
+                    Hapus
+                  </button>
+                ` : ''}
               </div>
             </td>
           </tr>
         `;
-      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Tidak ada akun pengguna yang sesuai pencarian.</td></tr>`;
+      }).join('') : `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada akun pengguna yang sesuai pencarian.</td></tr>`;
     }
 
     function applyRolePresetToCheckboxes() {
@@ -4121,10 +4193,7 @@ const DEFAULT_EVENTS = [
     }
 
     function openUserModal(editEmail = null) {
-      if (!hasPermission('manage_users')) {
-        alert('Hanya Super Admin atau pengguna dengan izin Kelola Multiuser yang dapat mengatur akun.');
-        return;
-      }
+      if (!hasPermission('manage_users')) return;
       const emailInput = document.getElementById('form-user-email');
       const pwdInput = document.getElementById('form-user-password');
       const pwdStar = document.getElementById('pwd-req-star');
@@ -4133,46 +4202,45 @@ const DEFAULT_EVENTS = [
       if (editEmail) {
         const u = adminUsers.find(item => item.email === editEmail);
         if (!u) return;
-        document.getElementById('modal-user-heading').textContent = 'Edit Pengguna & Kustomisasi Hak Akses';
+        document.getElementById('modal-user-heading').textContent = 'Edit Pengguna & Pengaturan Hak Akses';
         document.getElementById('form-user-edit-email').value = u.email;
         document.getElementById('form-user-name').value = u.name;
         document.getElementById('form-user-division').value = u.division || '';
         emailInput.value = u.email;
         emailInput.readOnly = true;
-        emailInput.classList.add('bg-slate-100');
-
-        pwdInput.value = '';
-        pwdInput.required = false;
-        pwdStar.classList.add('hidden');
-        pwdHint.textContent = isFirebaseReady
-          ? 'Kata sandi Firebase dikelola via Firebase Console / Reset Password.'
-          : 'Kosongkan jika tidak ingin mengubah kata sandi akun lokal ini.';
-
+        emailInput.classList.add('bg-slate-100', 'text-slate-500');
         document.getElementById('form-user-role').value = u.role;
-        document.getElementById('form-user-active').value = u.active ? 'true' : 'false';
+        document.getElementById('form-user-active').value = String(u.active);
 
         PERMISSION_KEYS.forEach(k => {
           const cb = document.getElementById(`perm-${k}`);
           if (cb) cb.checked = Boolean(u.permissions && u.permissions[k]);
         });
+
+        pwdInput.value = '';
+        pwdInput.required = false;
+        pwdStar.classList.add('hidden');
+        pwdHint.textContent = isFirebaseReady
+          ? 'Reset kata sandi akun Firebase dikelola melalui Firebase Console.'
+          : 'Kosongkan jika tidak ingin mengubah kata sandi akun ini.';
       } else {
-        document.getElementById('modal-user-heading').textContent = 'Tambah Pengguna & Atur Hak Akses';
+        document.getElementById('modal-user-heading').textContent = 'Tambah Pengguna & Atur Hak Akses Baru';
         document.getElementById('form-user-edit-email').value = '';
         document.getElementById('form-user-name').value = '';
         document.getElementById('form-user-division').value = '';
         emailInput.value = '';
         emailInput.readOnly = false;
-        emailInput.classList.remove('bg-slate-100');
+        emailInput.classList.remove('bg-slate-100', 'text-slate-500');
+        document.getElementById('form-user-role').value = 'admin_kegiatan';
+        document.getElementById('form-user-active').value = 'true';
+        applyRolePresetToCheckboxes();
 
         pwdInput.value = '';
         pwdInput.required = true;
         pwdStar.classList.remove('hidden');
         pwdHint.textContent = 'Wajib diisi saat membuat akun baru (minimal 6 karakter).';
-
-        document.getElementById('form-user-role').value = 'admin_kegiatan';
-        document.getElementById('form-user-active').value = 'true';
-        applyRolePresetToCheckboxes();
       }
+
       document.getElementById('user-modal').classList.remove('hidden');
     }
 
@@ -4180,16 +4248,16 @@ const DEFAULT_EVENTS = [
       document.getElementById('user-modal').classList.add('hidden');
     }
 
-    async function createFirebaseUserWithoutLoggingOutAdmin(email, password) {
-      const secondaryAppName = 'SecondaryAdminCreateApp';
-      let secApp = firebase.apps.find(a => a.name === secondaryAppName);
-      if (!secApp) {
-        secApp = firebase.initializeApp(window.FIREBASE_CONFIG, secondaryAppName);
+    async function createFirebaseAuthAccountSecondary(email, password) {
+      const appName = 'SecondaryUserCreator_' + Date.now();
+      const secondaryApp = firebase.initializeApp(window.FIREBASE_CONFIG, appName);
+      try {
+        const secondaryAuth = secondaryApp.auth();
+        await secondaryAuth.createUserWithEmailAndPassword(email, password);
+        await secondaryAuth.signOut();
+      } finally {
+        await secondaryApp.delete();
       }
-      const secAuth = secApp.auth();
-      const cred = await secAuth.createUserWithEmailAndPassword(email, password);
-      await secAuth.signOut();
-      return cred.user;
     }
 
     async function submitUserForm(e) {
@@ -4198,102 +4266,117 @@ const DEFAULT_EVENTS = [
 
       const editEmail = document.getElementById('form-user-edit-email').value.trim().toLowerCase();
       const email = document.getElementById('form-user-email').value.trim().toLowerCase();
-      const password = document.getElementById('form-user-password').value;
       const name = document.getElementById('form-user-name').value.trim();
       const division = document.getElementById('form-user-division').value.trim() || 'Tim Diklat JSIT Lampung';
       const role = document.getElementById('form-user-role').value;
       const active = document.getElementById('form-user-active').value === 'true';
+      const password = document.getElementById('form-user-password').value;
 
-      const permissions = {};
+      const customPerms = {};
       PERMISSION_KEYS.forEach(k => {
-        const cb = document.getElementById(`perm-${k}`);
-        permissions[k] = role === 'super_admin' ? true : Boolean(cb && cb.checked);
+        customPerms[k] = Boolean(document.getElementById(`perm-${k}`)?.checked);
       });
 
       const btn = document.getElementById('btn-submit-user');
       btn.disabled = true;
-      btn.textContent = 'Menyimpan akun & hak akses...';
+      btn.textContent = 'Menyimpan akun...';
 
       try {
-        if (isFirebaseReady && db) {
-          if (!editEmail) {
-            if (!password || password.length < 6) {
-              alert('Kata sandi awal minimal 6 karakter.');
-              return;
-            }
-            try {
-              await createFirebaseUserWithoutLoggingOutAdmin(email, password);
-            } catch (authErr) {
-              if (authErr.code === 'auth/email-already-in-use') {
-                // Email sudah ada di Firebase Auth, lanjut simpan hak akses Firestore
-              } else {
-                throw authErr;
-              }
-            }
-          }
-
-          const userDocPayload = {
-            email,
+        if (editEmail) {
+          const existing = adminUsers.find(u => u.email === editEmail);
+          const updatedRecord = normalizeUserRecord({
+            ...(existing || {}),
+            email: editEmail,
             name,
             division,
             role,
             active,
-            permissions,
+            permissions: customPerms,
+            password: (!isFirebaseReady && password) ? password : (existing ? existing.password : ''),
             updatedAt: new Date().toISOString(),
             updatedBy: currentUserProfile ? currentUserProfile.email : 'super_admin'
-          };
-          await db.collection('admin_users').doc(email).set(userDocPayload, { merge: true });
-          toast(`Hak akses pengguna ${name} tersimpan di Cloud!`);
-        } else {
-          if (editEmail) {
-            const idx = adminUsers.findIndex(u => u.email === editEmail);
-            if (idx !== -1) {
-              adminUsers[idx] = normalizeUserRecord({
-                ...adminUsers[idx],
-                name,
-                division,
-                role,
-                active,
-                permissions,
-                password: password ? password : adminUsers[idx].password
-              });
-            }
+          });
+
+          if (isFirebaseReady && db) {
+            const firestoreData = { ...updatedRecord };
+            delete firestoreData.password;
+            await db.collection('admin_users').doc(editEmail).set(firestoreData, { merge: true });
           } else {
-            if (adminUsers.some(u => u.email === email)) {
-              alert('Email tersebut sudah terdaftar.');
-              return;
-            }
-            adminUsers.push(normalizeUserRecord({
+            const idx = adminUsers.findIndex(u => u.email === editEmail);
+            if (idx !== -1) adminUsers[idx] = updatedRecord;
+            localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+            renderUsersPanel();
+          }
+          toast('Hak akses & profil pengguna berhasil diperbarui!');
+        } else {
+          if (adminUsers.some(u => u.email === email)) {
+            alert('Email tersebut sudah terdaftar dalam sistem.');
+            return;
+          }
+          if (!password || password.length < 6) {
+            alert('Kata sandi minimal 6 karakter.');
+            return;
+          }
+
+          if (isFirebaseReady && auth && db) {
+            await createFirebaseAuthAccountSecondary(email, password);
+            const newProfile = normalizeUserRecord({
+              email,
+              name,
+              division,
+              role,
+              active,
+              permissions: customPerms,
+              createdAt: new Date().toISOString(),
+              createdBy: currentUserProfile ? currentUserProfile.email : 'super_admin'
+            });
+            delete newProfile.password;
+            await db.collection('admin_users').doc(email).set(newProfile);
+          } else {
+            const newLocalUser = normalizeUserRecord({
               email,
               password,
               name,
               division,
               role,
               active,
-              permissions
-            }));
+              permissions: customPerms
+            });
+            adminUsers.push(newLocalUser);
+            localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+            renderUsersPanel();
           }
-          localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
-          renderUsersPanel();
-          toast(`Akun & hak akses ${name} berhasil disimpan!`);
+          toast('Akun pengguna baru berhasil dibuat & aktif!');
         }
         closeUserModal();
       } catch (err) {
         console.error(err);
-        alert('Gagal menyimpan akun pengguna: ' + err.message);
+        alert('Gagal menyimpan pengguna: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Simpan Pengguna & Hak Akses';
       }
     }
 
-    async function deleteUserAccount(email) {
+    async function toggleUserActiveStatus(email) {
       if (!hasPermission('manage_users')) return;
-      if (currentUserProfile && currentUserProfile.email === email) {
-        alert('Anda tidak dapat menghapus akun Anda sendiri.');
-        return;
+      const target = adminUsers.find(u => u.email === email);
+      if (!target) return;
+      const nextState = !target.active;
+
+      if (isFirebaseReady && db) {
+        await db.collection('admin_users').doc(email).set({ active: nextState }, { merge: true });
+      } else {
+        target.active = nextState;
+        localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
+        renderUsersPanel();
       }
-      if (!confirm(`Hapus hak akses akun ${email} dari portal admin?`)) return;
+      toast(nextState ? 'Akun pengguna diaktifkan.' : 'Akun pengguna dinonaktifkan.');
+    }
+
+    async function deleteAdminUser(email) {
+      if (!hasPermission('manage_users')) return;
+      if (!confirm(`Hapus hak akses pengguna "${email}" dari daftar pengelola?`)) return;
 
       if (isFirebaseReady && db) {
         await db.collection('admin_users').doc(email).delete();
@@ -4302,7 +4385,7 @@ const DEFAULT_EVENTS = [
         localStorage.setItem(USERS_KEY, JSON.stringify(adminUsers));
         renderUsersPanel();
       }
-      toast('Akun pengguna berhasil dihapus.');
+      toast('Pengguna dihapus dari daftar hak akses.');
     }
 
     function toast(msg) {

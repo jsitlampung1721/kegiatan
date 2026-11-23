@@ -78,18 +78,40 @@
         radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.09), transparent 42%),
         #FFFFFF;
     }
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
     @media print {
-      body * { visibility: hidden; }
-      #cert-printable-area, #cert-printable-area * { visibility: visible; }
-      #cert-printable-area {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 297mm;
-        height: 210mm;
-        margin: 0;
-        padding: 10mm;
-        box-shadow: none !important;
+      html, body {
+        width: 297mm !important;
+        height: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #FFFFFF !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body > *:not(#cert-print-host) {
+        display: none !important;
+      }
+      #cert-print-host {
+        display: block !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 297mm !important;
+        height: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #FFFFFF !important;
+        z-index: 99999 !important;
+      }
+      #cert-print-host * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
@@ -99,19 +121,20 @@
   <!-- TOP NAVIGATION BAR -->
   <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-blue-800/60 text-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-      <a href="#" onclick="showCatalogHome(event)" class="flex items-center gap-3 group min-w-0">
-        <div class="w-10 h-10 rounded-xl bg-white border border-blue-300/40 p-1 flex items-center justify-center shadow-md shrink-0 overflow-hidden">
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Logo Web sebagai Tombol Login Admin -->
+        <a href="admin.html" title="Login Admin / Pengelola" aria-label="Login Admin" class="w-10 h-10 rounded-xl bg-white border border-blue-300/40 p-1 flex items-center justify-center shadow-md shrink-0 overflow-hidden hover:ring-2 hover:ring-sky-400 transition">
           <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
-        </div>
-        <div class="leading-tight min-w-0">
+        </a>
+        <a href="#" onclick="showCatalogHome(event)" class="leading-tight min-w-0 group">
           <div class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-sky-300 transition truncate" id="nav-org-name">
             JSIT Wilayah Lampung
           </div>
           <div class="text-[11px] font-medium text-sky-200/90 truncate" id="nav-org-sub">
             JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
 
       <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
         <span id="cloud-sync-pill" title="Status Sinkronisasi Database" class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold text-sky-200">
@@ -122,10 +145,6 @@
           <i data-lucide="award" class="w-4 h-4 text-amber-300"></i>
           <span>Cek E-Sertifikat</span>
         </button>
-        <a href="admin.html" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition">
-          <i data-lucide="shield-check" class="w-4 h-4"></i>
-          <span>Admin</span>
-        </a>
       </div>
     </div>
   </header>
@@ -135,31 +154,77 @@
     <section class="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-blue-800 text-white">
       <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#60A5FA 1px, transparent 1px); background-size: 24px 24px;"></div>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-10">
-        <div class="max-w-3xl space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-400/15 border border-sky-300/30 text-sky-200 text-xs font-semibold">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
-            <span>Sistem Terpadu Manajemen Diklat &amp; Event JSIT Lampung</span>
-          </div>
-          <h1 class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight leading-tight">
-            Portal Kegiatan, Presensi, Materi, Rekaman &amp; E-Sertifikat
-          </h1>
-          <p class="text-blue-100/90 text-sm sm:text-base leading-relaxed">
-            Pilih kartu kegiatan di bawah ini untuk membuka ruang kegiatan lengkap yang memuat informasi acara, flyer resmi, pengisian daftar hadir, unduhan materi, video rekaman, serta E-Sertifikat digital.
-          </p>
-        </div>
+        <div class="grid lg:grid-cols-12 gap-8 items-center">
+          <!-- Kolom Kiri: Judul & Pencarian -->
+          <div class="lg:col-span-8 space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-400/15 border border-sky-300/30 text-sky-200 text-xs font-semibold">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+              <span>Sistem Terpadu Manajemen Diklat &amp; Event JSIT Lampung</span>
+            </div>
+            <h1 class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight leading-tight">
+              Portal Kegiatan, Presensi, Materi, Rekaman &amp; E-Sertifikat
+            </h1>
+            <p class="text-blue-100/90 text-sm sm:text-base leading-relaxed">
+              Pilih kartu kegiatan di bawah ini untuk membuka ruang kegiatan lengkap yang memuat informasi acara, flyer resmi, pengisian daftar hadir, unduhan materi, video rekaman, serta E-Sertifikat digital.
+            </p>
 
-        <!-- Search & Filter Bar -->
-        <div class="mt-7 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/15 flex flex-col sm:flex-row gap-2 max-w-4xl">
-          <div class="relative flex-1">
-            <i data-lucide="search" class="w-4 h-4 text-blue-200 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <input type="text" id="search-input" oninput="renderEvents()" placeholder="Cari judul seminar, webinar, pelatihan, atau narasumber..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-400" />
+            <!-- Search & Filter Bar -->
+            <div class="pt-4 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/15 flex flex-col sm:flex-row gap-2 max-w-4xl">
+              <div class="relative flex-1">
+                <i data-lucide="search" class="w-4 h-4 text-blue-200 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="search-input" oninput="renderEvents()" placeholder="Cari judul seminar, webinar, pelatihan, atau narasumber..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-400" />
+              </div>
+              <select id="status-filter" onchange="renderEvents()" class="px-3.5 py-2.5 rounded-xl bg-navy-950/80 text-white border border-blue-400/30 text-sm font-medium focus:outline-none">
+                <option value="ALL">Semua Status</option>
+                <option value="Buka Pendaftaran">Buka Pendaftaran</option>
+                <option value="Berlangsung">Berlangsung</option>
+                <option value="Selesai">Selesai</option>
+              </select>
+            </div>
           </div>
-          <select id="status-filter" onchange="renderEvents()" class="px-3.5 py-2.5 rounded-xl bg-navy-950/80 text-white border border-blue-400/30 text-sm font-medium focus:outline-none">
-            <option value="ALL">Semua Status</option>
-            <option value="Buka Pendaftaran">Buka Pendaftaran</option>
-            <option value="Berlangsung">Berlangsung</option>
-            <option value="Selesai">Selesai</option>
-          </select>
+
+          <!-- Kolom Kanan: Statistik Portal Diklat -->
+          <div class="lg:col-span-4">
+            <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-5 shadow-xl space-y-3.5">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-300"></i>
+                  <span class="font-display font-bold text-xs uppercase tracking-wider text-sky-200">Statistik Portal Diklat</span>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 text-[10px] font-bold">Real-Time</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-2xl bg-navy-950/50 border border-white/10">
+                  <div class="flex items-center gap-1.5 text-sky-300 text-[11px] font-semibold">
+                    <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                    <span>Total Kegiatan</span>
+                  </div>
+                  <div class="font-display font-extrabold text-2xl text-white mt-1" id="hero-stat-events">0</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-navy-950/50 border border-white/10">
+                  <div class="flex items-center gap-1.5 text-emerald-300 text-[11px] font-semibold">
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                    <span>Peserta Hadir</span>
+                  </div>
+                  <div class="font-display font-extrabold text-2xl text-white mt-1" id="hero-stat-attendees">0</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-navy-950/50 border border-white/10">
+                  <div class="flex items-center gap-1.5 text-blue-300 text-[11px] font-semibold">
+                    <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                    <span>Materi &amp; Rekaman</span>
+                  </div>
+                  <div class="font-display font-extrabold text-2xl text-white mt-1" id="hero-stat-resources">0</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-navy-950/50 border border-white/10">
+                  <div class="flex items-center gap-1.5 text-amber-300 text-[11px] font-semibold">
+                    <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                    <span>Sertifikat Rilis</span>
+                  </div>
+                  <div class="font-display font-extrabold text-2xl text-white mt-1" id="hero-stat-certs">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -510,7 +575,7 @@
             </div>
           </div>
 
-          <!-- GENERATED A4 LANDSCAPE CERTIFICATE PREVIEW -->
+          <!-- GENERATED A4 LANDSCAPE CERTIFICATE PREVIEW (100% PRESISI DENGAN STUDIO ADMIN) -->
           <div id="cert-result-wrapper" class="hidden space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-blue-100">
               <div class="flex items-center gap-2.5">
@@ -518,85 +583,79 @@
                 <span class="text-xs sm:text-sm font-bold text-navy-900">E-Sertifikat A4 Landscape Siap Diunduh</span>
               </div>
               <div class="flex flex-wrap gap-2">
-                <button onclick="downloadCertificatePNG()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+                <button type="button" onclick="downloadCertificatePNG()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
                   <i data-lucide="image" class="w-4 h-4"></i>
                   <span>Unduh Gambar (PNG A4)</span>
                 </button>
-                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+                <button type="button" onclick="printCertificateA4()" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
                   <i data-lucide="printer" class="w-4 h-4"></i>
                   <span>Cetak / Simpan PDF (A4)</span>
                 </button>
               </div>
             </div>
 
-            <!-- Printable A4 Landscape Certificate Sheet (297mm x 210mm Aspect Ratio) -->
-            <div class="overflow-x-auto pb-2">
-              <div id="cert-printable-area" class="cert-paper min-w-[780px] max-w-[1000px] mx-auto aspect-[297/210] border-[10px] border-double border-blue-900 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between bg-cover bg-center">
-                <div id="cert-view-inner-frame" class="border-2 border-amber-500/70 rounded-xl p-5 sm:p-6 flex-1 flex flex-col justify-between relative z-10">
-                  
-                  <!-- Header Kop JSIT (Dapat disembunyikan jika memakai full custom template) -->
-                  <div id="cert-view-default-header" class="text-center space-y-1">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900 text-amber-300 text-[10px] font-bold uppercase tracking-widest">
-                      Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
-                    </div>
-                    <h2 class="font-display font-extrabold text-lg sm:text-xl text-navy-900 tracking-wide">
-                      WILAYAH PROVINSI LAMPUNG
-                    </h2>
+            <!-- Responsive Scaled Virtual Stage (1000x707 = Rasio Presisi A4 Landscape 297x210) -->
+            <div id="cert-stage-wrapper" class="w-full max-w-[960px] mx-auto aspect-[297/210] relative overflow-hidden rounded-2xl shadow-xl bg-white border border-slate-200">
+              <div id="cert-printable-area" style="width: 1000px; height: 707px; transform-origin: top left;" class="cert-paper relative overflow-hidden select-none">
+                <!-- Background Template Image (Tag <img> asli agar 100% muncul saat Cetak / PDF) -->
+                <img id="cert-view-bg-img" src="" alt="" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none z-0" />
+
+                <!-- Bingkai Default (Disembunyikan jika menggunakan full template custom) -->
+                <div id="cert-view-outer-border" class="absolute inset-0 pointer-events-none z-[1] border-[10px] border-double border-blue-900"></div>
+                <div id="cert-view-inner-frame" class="absolute inset-[20px] pointer-events-none z-[1] border-2 border-amber-500/75"></div>
+
+                <!-- Header Kop JSIT -->
+                <div id="cert-view-default-header" class="absolute top-[42px] left-[60px] right-[60px] text-center z-10 space-y-1">
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold uppercase tracking-widest">
+                    Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
                   </div>
+                  <h2 class="font-display font-extrabold text-[20px] text-navy-900 tracking-wide">
+                    WILAYAH PROVINSI LAMPUNG
+                  </h2>
+                </div>
 
-                  <!-- Center Recipient & Event Details -->
-                  <div id="cert-view-dynamic-block" class="text-center flex-1 flex flex-col justify-around my-1">
-                    <div>
-                      <h1 id="cert-view-heading" class="hidden font-display font-extrabold text-2xl sm:text-4xl text-blue-900 tracking-wider uppercase">SERTIFIKAT</h1>
-                      <p id="cert-view-number" class="text-xs font-bold text-slate-600 mt-0.5 tracking-wide">Nomor: 001/SERT-JSIT-LPG/2026</p>
-                    </div>
+                <!-- Center Recipient & Event Details -->
+                <div id="cert-view-dynamic-block" style="top: 158px; left: 75px; right: 75px;" class="absolute text-center z-10">
+                  <h1 id="cert-view-heading" class="hidden font-display font-extrabold text-[38px] text-blue-900 tracking-wider uppercase leading-none mb-1.5">SERTIFIKAT</h1>
+                  <p id="cert-view-number" class="text-[14px] font-bold text-slate-600 tracking-wide mb-4">Nomor: 001/SERT-JSIT-LPG/2026</p>
 
-                    <div class="space-y-1">
-                      <p id="cert-view-given-label" class="text-xs text-slate-500 font-medium">Diberikan dengan hormat kepada:</p>
-                      <div id="cert-view-name" class="font-display font-extrabold text-xl sm:text-3xl text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4 px-4">
-                        Nama Peserta
-                      </div>
-                      <p id="cert-view-school" class="text-xs sm:text-sm font-semibold text-blue-800 pt-0.5">Asal Sekolah — Kabupaten/Kota</p>
-                    </div>
-
-                    <p id="cert-view-description" class="text-xs sm:text-sm text-slate-700 max-w-2xl mx-auto leading-relaxed">
-                      Atas partisipasi aktifnya sebagai <strong>Peserta</strong> dalam kegiatan ...
-                    </p>
+                  <p id="cert-view-given-label" class="text-[13px] text-slate-500 font-medium mb-1">Diberikan dengan hormat kepada:</p>
+                  <div class="mb-1.5">
+                    <span id="cert-view-name" class="inline-block font-display font-extrabold text-[28px] text-navy-900 border-b-2 border-amber-500 pb-1 px-4 leading-tight">
+                      Nama Peserta
+                    </span>
                   </div>
+                  <p id="cert-view-school" class="text-[14.5px] font-bold text-blue-800 mb-4">Asal Sekolah — Kabupaten/Kota</p>
 
-                  <!-- Footer QR & Signature (Posisi Dapat Diatur dari Studio Admin) -->
-                  <div class="grid grid-cols-3 items-end pt-1 gap-4 relative z-20">
-                    <div id="cert-view-qr-block" class="flex items-center gap-2.5 origin-bottom-left">
-                      <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-2xs shrink-0">
-                        <img id="cert-qr-img" src="" alt="QR Verifikasi" class="w-16 h-16" />
-                      </div>
-                      <div id="cert-view-qr-text" class="text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1.5 rounded-lg">
-                        <span class="font-bold text-navy-900 block">Scan Barcode Verifikasi</span>
-                        <span id="cert-view-qr-org">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span><br/>
-                        <span id="cert-view-code" class="font-mono text-blue-700 font-bold">JSIT-001</span>
-                      </div>
-                    </div>
+                  <p id="cert-view-description" class="text-[13.5px] text-slate-700 max-w-[790px] mx-auto leading-[1.55]">
+                    Atas partisipasi aktifnya sebagai <strong>Peserta</strong> dalam kegiatan ...
+                  </p>
+                </div>
 
-                    <div class="text-center hidden sm:block">
-                      <span id="cert-view-jp-badge" class="inline-block px-3 py-1 rounded-full bg-blue-50/90 border border-blue-200 text-blue-900 font-extrabold text-xs">
-                        Bobot: 16 JP
-                      </span>
-                    </div>
-
-                    <div id="cert-view-signer-block" class="text-center space-y-0.5 origin-bottom">
-                      <p id="cert-view-issued" class="text-[11px] text-slate-600">Bandar Lampung, 2026</p>
-                      <p id="cert-view-signer-title" class="text-xs font-semibold text-slate-800">Ketua JSIT Indonesia Wilayah Lampung</p>
-                      <div class="py-1">
-                        <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[9px] font-semibold text-blue-800 italic">
-                          Ditandatangani secara elektronik
-                        </span>
-                      </div>
-                      <p id="cert-view-signer-name" class="font-display font-extrabold text-xs sm:text-sm text-navy-900 underline">
-                        Muslimin, M.Pd.I.,Gr.
-                      </p>
-                    </div>
+                <!-- Footer QR (Posisi Presisi Sinkron dengan Studio Admin) -->
+                <div id="cert-view-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" class="absolute z-20 flex items-center gap-3">
+                  <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-2xs shrink-0">
+                    <img id="cert-qr-img" src="" alt="QR Verifikasi" class="w-[78px] h-[78px]" />
                   </div>
+                  <div id="cert-view-qr-text" class="text-[10.5px] text-slate-600 leading-tight bg-white/85 px-2.5 py-1.5 rounded-lg">
+                    <span class="font-bold text-navy-900 block">Scan Barcode Verifikasi</span>
+                    <span id="cert-view-qr-org">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span><br/>
+                    <span id="cert-view-code" class="font-mono text-blue-700 font-bold">JSIT-001</span>
+                  </div>
+                </div>
 
+                <!-- Footer Signature (Posisi Presisi Sinkron dengan Studio Admin) -->
+                <div id="cert-view-signer-block" style="right: 65px; bottom: 52px; width: 320px; transform-origin: bottom center;" class="absolute z-20 text-center space-y-0.5">
+                  <p id="cert-view-issued" class="text-[11.5px] text-slate-600">Bandar Lampung, 2026</p>
+                  <p id="cert-view-signer-title" class="text-[12.5px] font-semibold text-slate-800">Ketua JSIT Indonesia Wilayah Lampung</p>
+                  <div class="py-1">
+                    <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[10px] font-semibold text-blue-800 italic">
+                      Ditandatangani secara elektronik
+                    </span>
+                  </div>
+                  <p id="cert-view-signer-name" class="font-display font-extrabold text-[14px] text-navy-900 underline">
+                    Muslimin, M.Pd.I.,Gr.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1020,8 +1079,20 @@ const DEFAULT_EVENTS = [
       return item;
     }
 
+    function updateHeroPortalStats() {
+      const evCountEl = document.getElementById('hero-stat-events');
+      const attCountEl = document.getElementById('hero-stat-attendees');
+      const resCountEl = document.getElementById('hero-stat-resources');
+      const certCountEl = document.getElementById('hero-stat-certs');
+      if (evCountEl) evCountEl.textContent = eventsData.length;
+      if (attCountEl) attCountEl.textContent = eventsData.reduce((s, e) => s + (e.attendees ? e.attendees.length : 0), 0);
+      if (resCountEl) resCountEl.textContent = eventsData.reduce((s, e) => s + (e.materials ? e.materials.length : 0) + (e.recordings ? e.recordings.length : 0), 0);
+      if (certCountEl) certCountEl.textContent = eventsData.filter(e => isCertificateReleased(e)).length;
+    }
+
     function refreshAllVisibleViews() {
       applyHeaderSettings();
+      updateHeroPortalStats();
       renderEvents();
       if (currentRoomEventId) {
         const activeEv = eventsData.find(e => e.id === currentRoomEventId);
@@ -1078,6 +1149,11 @@ const DEFAULT_EVENTS = [
 
     async function initPortalData() {
       document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      const certWrapper = document.getElementById('cert-stage-wrapper');
+      if (certWrapper && window.ResizeObserver) {
+        new ResizeObserver(() => scalePortalCertStage()).observe(certWrapper);
+      }
 
       window.addEventListener('storage', (e) => {
         if (!isFirebaseReady && (e.key === STORAGE_KEY || e.key === SETTINGS_KEY)) {
@@ -1210,6 +1286,7 @@ const DEFAULT_EVENTS = [
     }
 
     function renderEvents() {
+      updateHeroPortalStats();
       const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
       const statusFilter = document.getElementById('status-filter').value;
       const grid = document.getElementById('events-grid');
@@ -1248,6 +1325,7 @@ const DEFAULT_EVENTS = [
         const relDateObj = getCertificateReleaseDate(ev);
         const relTimeStr = relDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + relDateObj.toTimeString().slice(0,5) + ' WIB';
         const safeId = escapeHtml(ev.id);
+        const hasFlyer = Boolean(ev.flyerImg && ev.flyerImg.trim() !== '');
 
         return `
           <article class="bg-white rounded-3xl border border-blue-100/90 shadow-xs hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden">
@@ -1266,26 +1344,35 @@ const DEFAULT_EVENTS = [
             </div>
 
             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-              <div class="space-y-2.5 text-xs text-slate-600">
-                <div class="flex items-start gap-2.5">
-                  <i data-lucide="calendar" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
-                  <div>
-                    <span class="font-semibold text-slate-900 block">${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</span>
-                    <span class="text-slate-500">${escapeHtml(ev.time)}</span>
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0 space-y-2.5 text-xs text-slate-600">
+                  <div class="flex items-start gap-2.5">
+                    <i data-lucide="calendar" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
+                    <div>
+                      <span class="font-semibold text-slate-900 block">${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</span>
+                      <span class="text-slate-500">${escapeHtml(ev.time)}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2.5">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-sky-600 shrink-0 mt-0.5"></i>
+                    <span class="line-clamp-2 font-medium text-slate-700">${escapeHtml(ev.location)}</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <i data-lucide="users" class="w-4 h-4 text-blue-600 shrink-0"></i>
+                    <span><strong>${attendeeCount}</strong> / ${escapeHtml(ev.quota)} Peserta Hadir</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <i data-lucide="award" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                    <span>E-Sertifikat: <strong>${certReleased ? 'Sudah Rilis (' + escapeHtml((ev.certificate && ev.certificate.jp) || '8 JP') + ')' : 'Rilis ' + escapeHtml(relTimeStr)}</strong></span>
                   </div>
                 </div>
-                <div class="flex items-start gap-2.5">
-                  <i data-lucide="map-pin" class="w-4 h-4 text-sky-600 shrink-0 mt-0.5"></i>
-                  <span class="line-clamp-2 font-medium text-slate-700">${escapeHtml(ev.location)}</span>
-                </div>
-                <div class="flex items-center gap-2.5">
-                  <i data-lucide="users" class="w-4 h-4 text-blue-600 shrink-0"></i>
-                  <span><strong>${attendeeCount}</strong> / ${escapeHtml(ev.quota)} Peserta Hadir</span>
-                </div>
-                <div class="flex items-center gap-2.5">
-                  <i data-lucide="award" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                  <span>E-Sertifikat: <strong>${certReleased ? 'Sudah Rilis (' + escapeHtml((ev.certificate && ev.certificate.jp) || '8 JP') + ')' : 'Rilis ' + escapeHtml(relTimeStr)}</strong></span>
-                </div>
+
+                ${hasFlyer ? `
+                  <div onclick="openCardFlyerLightbox('${safeId}')" title="Klik untuk memperbesar flyer kegiatan" class="w-24 sm:w-[104px] aspect-[3/4] rounded-xl overflow-hidden border border-blue-200 bg-slate-50 shadow-xs shrink-0 cursor-zoom-in group relative">
+                    <img src="${escapeHtml(sanitizeUrl(ev.flyerImg))}" alt="Flyer ${escapeHtml(ev.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                    <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-navy-950/75 text-white text-[9px] font-bold">Flyer</span>
+                  </div>
+                ` : ''}
               </div>
 
               <div class="pt-3 border-t border-slate-100 space-y-2">
@@ -1317,6 +1404,15 @@ const DEFAULT_EVENTS = [
         `;
       }).join('');
 
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openCardFlyerLightbox(eventId) {
+      const ev = eventsData.find(item => item.id === eventId);
+      if (!ev || !ev.flyerImg) return;
+      document.getElementById('flyer-lightbox-title').textContent = `Flyer: ${ev.title}`;
+      document.getElementById('flyer-lightbox-img').src = sanitizeUrl(ev.flyerImg);
+      document.getElementById('flyer-lightbox-modal').classList.remove('hidden');
       if (window.lucide) lucide.createIcons();
     }
 
@@ -1538,6 +1634,10 @@ const DEFAULT_EVENTS = [
       const activePanel = document.getElementById(`room-panel-${tabName}`);
       if (activePanel) activePanel.classList.remove('hidden');
 
+      if (tabName === 'sertifikat') {
+        scalePortalCertStage();
+      }
+
       if (currentRoomEventId) {
         const targetHash = tabName && tabName !== 'info'
           ? `#kegiatan/${encodeURIComponent(currentRoomEventId)}/${encodeURIComponent(tabName)}`
@@ -1752,8 +1852,19 @@ const DEFAULT_EVENTS = [
       };
     }
 
+    function scalePortalCertStage() {
+      const wrapper = document.getElementById('cert-stage-wrapper');
+      const stage = document.getElementById('cert-printable-area');
+      if (!wrapper || !stage) return;
+      const w = wrapper.clientWidth || 835;
+      const scale = w / 1000;
+      stage.style.transform = `scale(${scale.toFixed(5)})`;
+    }
+
     function applyCertificateLayoutStyles(payload) {
       const area = document.getElementById('cert-printable-area');
+      const bgImg = document.getElementById('cert-view-bg-img');
+      const outerBorder = document.getElementById('cert-view-outer-border');
       const innerFrame = document.getElementById('cert-view-inner-frame');
       const defaultHeader = document.getElementById('cert-view-default-header');
       const dynamicBlock = document.getElementById('cert-view-dynamic-block');
@@ -1771,23 +1882,24 @@ const DEFAULT_EVENTS = [
       const qrOrg = document.getElementById('cert-view-qr-org');
       const signerBlock = document.getElementById('cert-view-signer-block');
 
-      const areaW = (area && area.clientWidth) ? area.clientWidth : 835;
-      const unitPx = areaW / 1000;
-
       if (qrOrg) qrOrg.textContent = payload.orgSubText || DEFAULT_SETTINGS.orgSub;
 
       if (payload.customTemplateImg) {
-        area.style.backgroundImage = `url('${payload.customTemplateImg}')`;
+        bgImg.src = payload.customTemplateImg;
+        bgImg.classList.remove('hidden');
         area.classList.remove('cert-paper');
+        area.style.backgroundColor = '#FFFFFF';
         if (payload.hideDefaultChrome) {
-          area.style.borderWidth = '0px';
-          innerFrame.classList.remove('border-2', 'border-amber-500/70');
-          defaultHeader.classList.add('invisible');
+          outerBorder.classList.add('hidden');
+          innerFrame.classList.add('hidden');
+          defaultHeader.classList.add('hidden');
+          dynamicBlock.style.top = '165px';
         } else {
-          area.style.borderWidth = '10px';
-          area.style.borderColor = payload.themeColor;
-          innerFrame.classList.add('border-2', 'border-amber-500/70');
-          defaultHeader.classList.remove('invisible');
+          outerBorder.classList.remove('hidden');
+          outerBorder.style.borderColor = payload.themeColor;
+          innerFrame.classList.remove('hidden');
+          defaultHeader.classList.remove('hidden');
+          dynamicBlock.style.top = '158px';
         }
         const txtColor = payload.textColor || '#0B1F3A';
         certNum.style.color = txtColor;
@@ -1798,14 +1910,16 @@ const DEFAULT_EVENTS = [
         signerTitleEl.style.color = txtColor;
         signerNameEl.style.color = txtColor;
         issuedEl.style.color = txtColor;
-        dynamicBlock.style.transform = `translateY(${Math.round(payload.offsetY * (areaW / 835))}px)`;
+        dynamicBlock.style.transform = `translateY(${payload.offsetY || 0}px)`;
       } else {
-        area.style.backgroundImage = '';
+        bgImg.src = '';
+        bgImg.classList.add('hidden');
         area.classList.add('cert-paper');
-        area.style.borderWidth = '10px';
-        area.style.borderColor = payload.themeColor;
-        innerFrame.classList.add('border-2', 'border-amber-500/70');
-        defaultHeader.classList.remove('invisible');
+        outerBorder.classList.remove('hidden');
+        outerBorder.style.borderColor = payload.themeColor;
+        innerFrame.classList.remove('hidden');
+        defaultHeader.classList.remove('hidden');
+        dynamicBlock.style.top = '158px';
         certNum.style.color = '#475569';
         givenLabel.style.color = '#64748B';
         ownerNameEl.style.color = '#0B1F3A';
@@ -1823,26 +1937,72 @@ const DEFAULT_EVENTS = [
       }
 
       if (qrBlock) {
-        const qX = (payload.qrOffsetX || 0) * unitPx;
-        const qY = (payload.qrOffsetY || 0) * unitPx;
+        const qX = payload.qrOffsetX || 0;
+        const qY = payload.qrOffsetY || 0;
         const qS = (payload.qrScale || 100) / 100;
-        qrBlock.style.transform = `translate(${qX.toFixed(1)}px, ${qY.toFixed(1)}px) scale(${qS.toFixed(2)})`;
+        qrBlock.style.transform = `translate(${qX}px, ${qY}px) scale(${qS.toFixed(2)})`;
       }
       if (qrText) {
         qrText.className = payload.showScanBg !== false
-          ? 'text-[10px] text-slate-600 leading-tight bg-white/85 px-2 py-1.5 rounded-lg'
-          : 'text-[10px] text-slate-700 leading-tight px-2 py-1.5 rounded-lg';
+          ? 'text-[10.5px] text-slate-600 leading-tight bg-white/85 px-2.5 py-1.5 rounded-lg'
+          : 'text-[10.5px] text-slate-700 leading-tight px-2.5 py-1.5 rounded-lg';
       }
 
       if (signerBlock) {
-        const sX = (payload.signerOffsetX || 0) * unitPx;
-        const sY = (payload.signerOffsetY || 0) * unitPx;
+        const sX = payload.signerOffsetX || 0;
+        const sY = payload.signerOffsetY || 0;
         const sS = (payload.signerScale || 100) / 100;
-        signerBlock.style.transform = `translate(${sX.toFixed(1)}px, ${sY.toFixed(1)}px) scale(${sS.toFixed(2)})`;
+        signerBlock.style.transform = `translate(${sX}px, ${sY}px) scale(${sS.toFixed(2)})`;
       }
       if (issuedEl) {
         issuedEl.classList.toggle('hidden', payload.showIssuedDate === false);
       }
+
+      scalePortalCertStage();
+    }
+
+    async function printCertificateA4() {
+      const sourceStage = document.getElementById('cert-printable-area');
+      if (!sourceStage) return;
+
+      const oldHost = document.getElementById('cert-print-host');
+      if (oldHost) oldHost.remove();
+
+      const printHost = document.createElement('div');
+      printHost.id = 'cert-print-host';
+      printHost.style.cssText = 'display:none; width:297mm; height:210mm; margin:0; padding:0; overflow:hidden; background:#FFFFFF;';
+
+      const clonedStage = sourceStage.cloneNode(true);
+      clonedStage.removeAttribute('id');
+      // 297mm = 1122.52px pada 96dpi -> scale(1.12252) mengisi tepat 297mm x 210mm penuh!
+      clonedStage.style.width = '1000px';
+      clonedStage.style.height = '707px';
+      clonedStage.style.transformOrigin = 'top left';
+      clonedStage.style.transform = 'scale(1.12252)';
+      clonedStage.style.position = 'relative';
+
+      printHost.appendChild(clonedStage);
+      document.body.appendChild(printHost);
+
+      const imgs = Array.from(printHost.querySelectorAll('img')).filter(img => !img.classList.contains('hidden') && img.src);
+      await Promise.all(imgs.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }));
+
+      const cleanupPrint = () => {
+        const h = document.getElementById('cert-print-host');
+        if (h) h.remove();
+        window.removeEventListener('afterprint', cleanupPrint);
+      };
+      window.addEventListener('afterprint', cleanupPrint);
+
+      setTimeout(() => {
+        window.print();
+      }, 80);
     }
 
     function renderCertificateForAttendeeIndex(ev, foundIndex) {
@@ -1865,10 +2025,9 @@ const DEFAULT_EVENTS = [
       document.getElementById('cert-view-school').textContent = `${payload.school} — ${payload.region}`;
       document.getElementById('cert-view-description').innerHTML = `
         Atas partisipasi aktifnya sebagai <strong>${escapeHtml(payload.roleLabel)}</strong> dalam kegiatan <strong>${escapeHtml(payload.category)}</strong>:<br/>
-        <span class="font-display font-bold text-sm sm:text-base block my-1">"${escapeHtml(payload.eventTitle)}"</span>
+        <span class="font-display font-extrabold text-[15.5px] block my-1">"${escapeHtml(payload.eventTitle)}"</span>
         yang diselenggarakan oleh ${escapeHtml(payload.orgSubText)} pada tanggal <strong>${escapeHtml(payload.dateRange)}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(payload.jp)}</strong>.
       `;
-      document.getElementById('cert-view-jp-badge').textContent = `Bobot: ${payload.jp}`;
       document.getElementById('cert-view-code').textContent = payload.verCode;
       document.getElementById('cert-view-issued').textContent = `Bandar Lampung, ${payload.issuedDate}`;
       document.getElementById('cert-view-signer-title').textContent = payload.signerTitle;
@@ -1968,105 +2127,115 @@ const DEFAULT_EVENTS = [
       const ctx = canvas.getContext('2d');
       const W = canvas.width;
       const H = canvas.height;
+      const S = W / 1000;
 
       function drawTextAndQr() {
         const txtCol = p.customTemplateImg ? (p.textColor || '#0B1F3A') : '#0B1F3A';
         const subTxtCol = p.customTemplateImg ? txtCol : '#334155';
-        const yShift = p.customTemplateImg ? Math.round((p.offsetY || 0) * (W / 835)) : 0;
 
         if (!p.customTemplateImg || !p.hideDefaultChrome) {
           ctx.strokeStyle = p.themeColor;
-          ctx.lineWidth = 18;
-          ctx.strokeRect(36, 36, W - 72, H - 72);
+          ctx.lineWidth = Math.round(10 * S);
+          ctx.strokeRect(5 * S, 5 * S, W - 10 * S, H - 10 * S);
           ctx.strokeStyle = '#D97706';
-          ctx.lineWidth = 4;
-          ctx.strokeRect(64, 64, W - 128, H - 128);
+          ctx.lineWidth = Math.round(2 * S);
+          ctx.strokeRect(20 * S, 20 * S, W - 40 * S, H - 40 * S);
 
           ctx.textAlign = 'center';
           ctx.fillStyle = p.themeColor;
-          ctx.font = 'bold 26px sans-serif';
-          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 138);
+          ctx.font = `bold ${Math.round(13 * S)}px sans-serif`;
+          ctx.fillText('JARINGAN SEKOLAH ISLAM TERPADU (JSIT) INDONESIA', W / 2, 62 * S);
           ctx.fillStyle = '#0F172A';
-          ctx.font = 'bold 34px sans-serif';
-          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 182);
+          ctx.font = `bold ${Math.round(20 * S)}px sans-serif`;
+          ctx.fillText('WILAYAH PROVINSI LAMPUNG', W / 2, 92 * S);
         }
 
+        const baseTop = (!p.customTemplateImg || !p.hideDefaultChrome) ? 158 : 165;
+        let yCursor = (baseTop + (p.customTemplateImg ? (p.offsetY || 0) : 0)) * S;
+
         ctx.textAlign = 'center';
-        let numY = 295 + yShift;
         if (p.showCertHeading) {
           ctx.fillStyle = p.themeColor;
-          ctx.font = 'bold 74px sans-serif';
-          ctx.fillText('SERTIFIKAT', W / 2, 285 + yShift);
-          numY = 335 + yShift;
+          ctx.font = `bold ${Math.round(38 * S)}px sans-serif`;
+          ctx.fillText('SERTIFIKAT', W / 2, yCursor + 34 * S);
+          yCursor += 48 * S;
         }
 
         ctx.fillStyle = p.customTemplateImg ? txtCol : '#475569';
-        ctx.font = 'bold 28px sans-serif';
-        ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, numY);
+        ctx.font = `bold ${Math.round(14 * S)}px sans-serif`;
+        ctx.fillText(`Nomor: ${p.certNumber}`, W / 2, yCursor + 14 * S);
+        yCursor += 38 * S;
 
         ctx.fillStyle = p.customTemplateImg ? txtCol : '#64748B';
-        ctx.font = '26px sans-serif';
-        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, 425 + yShift);
+        ctx.font = `500 ${Math.round(13 * S)}px sans-serif`;
+        ctx.fillText('Diberikan dengan hormat kepada:', W / 2, yCursor + 13 * S);
+        yCursor += 26 * S;
 
         ctx.fillStyle = txtCol;
-        ctx.font = 'bold 54px sans-serif';
-        ctx.fillText(p.name, W / 2, 498 + yShift);
+        ctx.font = `bold ${Math.round(28 * S)}px sans-serif`;
+        ctx.fillText(p.name, W / 2, yCursor + 28 * S);
         const nameW = ctx.measureText(p.name).width;
         ctx.strokeStyle = '#D97706';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = Math.round(2.5 * S);
         ctx.beginPath();
-        ctx.moveTo((W - nameW) / 2, 514 + yShift);
-        ctx.lineTo((W + nameW) / 2, 514 + yShift);
+        ctx.moveTo((W - nameW) / 2 - 12 * S, yCursor + 36 * S);
+        ctx.lineTo((W + nameW) / 2 + 12 * S, yCursor + 36 * S);
         ctx.stroke();
+        yCursor += 50 * S;
 
-        ctx.fillStyle = p.customTemplateImg ? txtCol : '#1D4ED8';
-        ctx.font = 'bold 28px sans-serif';
-        ctx.fillText(`${p.school} — ${p.region}`, W / 2, 560 + yShift);
+        ctx.fillStyle = p.customTemplateImg ? txtCol : '#1E40AF';
+        ctx.font = `bold ${Math.round(14.5 * S)}px sans-serif`;
+        ctx.fillText(`${p.school} — ${p.region}`, W / 2, yCursor + 14 * S);
+        yCursor += 34 * S;
 
         ctx.fillStyle = subTxtCol;
-        ctx.font = '25px sans-serif';
-        ctx.fillText(`Atas partisipasi aktifnya sebagai ${p.roleLabel} dalam kegiatan ${p.category}:`, W / 2, 636 + yShift);
+        ctx.font = `${Math.round(13.5 * S)}px sans-serif`;
+        ctx.fillText(`Atas partisipasi aktifnya sebagai ${p.roleLabel} dalam kegiatan ${p.category}:`, W / 2, yCursor + 14 * S);
+        yCursor += 24 * S;
 
         ctx.fillStyle = txtCol;
-        ctx.font = 'bold 31px sans-serif';
-        const titleLines = wrapCanvasText(ctx, `"${p.eventTitle}"`, W - 300);
+        ctx.font = `bold ${Math.round(15.5 * S)}px sans-serif`;
+        const titleLines = wrapCanvasText(ctx, `"${p.eventTitle}"`, 790 * S);
         titleLines.forEach((line, i) => {
-          ctx.fillText(line, W / 2, 686 + yShift + i * 40);
+          ctx.fillText(line, W / 2, yCursor + 16 * S + i * 22 * S);
+        });
+        yCursor += titleLines.length * 22 * S + 22 * S;
+
+        ctx.fillStyle = subTxtCol;
+        ctx.font = `${Math.round(13.5 * S)}px sans-serif`;
+        const footerDescLines = wrapCanvasText(ctx, `yang diselenggarakan oleh ${p.orgSubText || DEFAULT_SETTINGS.orgSub} pada tanggal ${p.dateRange} dengan bobot pelatihan setara ${p.jp}.`, 790 * S);
+        footerDescLines.forEach((line, i) => {
+          ctx.fillText(line, W / 2, yCursor + i * 21 * S);
         });
 
-        const afterTitleY = 686 + yShift + titleLines.length * 40 + 16;
-        ctx.fillStyle = subTxtCol;
-        ctx.font = '24px sans-serif';
-        ctx.fillText(`Diselenggarakan oleh ${p.orgSubText || DEFAULT_SETTINGS.orgSub} pada ${p.dateRange} (${p.jp})`, W / 2, afterTitleY);
-
         const qrScaleRatio = (p.qrScale || 100) / 100;
-        const qrBottomY = 1105 + Math.round((p.qrOffsetY || 0) * (W / 1000));
-        const qrBaseX = 135 + Math.round((p.qrOffsetX || 0) * (W / 1000));
-        const qrSize = Math.round(165 * qrScaleRatio);
-        const qrPad = Math.round(10 * qrScaleRatio);
+        const qrBottomY = (707 - 52 + (p.qrOffsetY || 0)) * S;
+        const qrBaseX = (65 + (p.qrOffsetX || 0)) * S;
+        const qrSize = Math.round(78 * S * qrScaleRatio);
+        const qrPad = Math.round(6 * S * qrScaleRatio);
         const qrBaseY = qrBottomY - qrSize;
 
         const finishDownload = () => {
           const sScaleRatio = (p.signerScale || 100) / 100;
-          const signerX = (W - 380) + Math.round((p.signerOffsetX || 0) * (W / 1000));
-          const signerBottomY = 1095 + Math.round((p.signerOffsetY || 0) * (W / 1000));
-          const signerTopY = signerBottomY - Math.round(145 * sScaleRatio);
+          const signerCenterX = (1000 - 65 - 160 + (p.signerOffsetX || 0)) * S;
+          const signerBottomY = (707 - 52 + (p.signerOffsetY || 0)) * S;
+          const signerTopY = signerBottomY - Math.round(92 * S * sScaleRatio);
 
           ctx.textAlign = 'center';
           if (p.showIssuedDate !== false) {
             ctx.fillStyle = p.customTemplateImg ? txtCol : '#475569';
-            ctx.font = `${Math.round(21 * sScaleRatio)}px sans-serif`;
-            ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, signerX, signerTopY);
+            ctx.font = `${Math.round(11.5 * S * sScaleRatio)}px sans-serif`;
+            ctx.fillText(`Bandar Lampung, ${p.issuedDate}`, signerCenterX, signerTopY);
           }
           ctx.fillStyle = txtCol;
-          ctx.font = `bold ${Math.round(23 * sScaleRatio)}px sans-serif`;
-          ctx.fillText(p.signerTitle, signerX, signerTopY + Math.round(35 * sScaleRatio));
+          ctx.font = `600 ${Math.round(12.5 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText(p.signerTitle, signerCenterX, signerTopY + Math.round(20 * S * sScaleRatio));
           ctx.fillStyle = '#1E40AF';
-          ctx.font = `italic ${Math.round(18 * sScaleRatio)}px sans-serif`;
-          ctx.fillText('[Ditandatangani secara elektronik]', signerX, signerTopY + Math.round(80 * sScaleRatio));
+          ctx.font = `italic ${Math.round(10 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText('Ditandatangani secara elektronik', signerCenterX, signerTopY + Math.round(46 * S * sScaleRatio));
           ctx.fillStyle = txtCol;
-          ctx.font = `bold ${Math.round(26 * sScaleRatio)}px sans-serif`;
-          ctx.fillText(p.signerName, signerX, signerTopY + Math.round(132 * sScaleRatio));
+          ctx.font = `bold ${Math.round(14 * S * sScaleRatio)}px sans-serif`;
+          ctx.fillText(p.signerName, signerCenterX, signerTopY + Math.round(78 * S * sScaleRatio));
 
           const link = document.createElement('a');
           link.download = `E-Sertifikat-A4-JSIT-Lampung-${p.name.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
@@ -2084,22 +2253,21 @@ const DEFAULT_EVENTS = [
             ctx.strokeRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
             ctx.drawImage(qrImg, qrBaseX, qrBaseY, qrSize, qrSize);
 
-            const textStartX = qrBaseX + qrSize + Math.round(24 * qrScaleRatio);
+            const textStartX = qrBaseX + qrSize + Math.round(14 * S * qrScaleRatio);
             if (p.showScanBg !== false) {
               ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-              ctx.fillRect(textStartX - 10, qrBaseY + Math.round(8 * qrScaleRatio), Math.round(455 * qrScaleRatio), Math.round(136 * qrScaleRatio));
+              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(4 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(68 * S * qrScaleRatio));
             }
             ctx.textAlign = 'left';
             ctx.fillStyle = '#0B1F3A';
-            ctx.font = `bold ${Math.round(21 * qrScaleRatio)}px sans-serif`;
-            ctx.fillText('Scan Barcode Verifikasi Keaslian', textStartX, qrBaseY + Math.round(38 * qrScaleRatio));
+            ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px sans-serif`;
+            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(20 * S * qrScaleRatio));
             ctx.fillStyle = '#475569';
-            ctx.font = `${Math.round(18 * qrScaleRatio)}px sans-serif`;
-            ctx.fillText(settingsData.orgName || 'JSIT Wilayah Lampung', textStartX, qrBaseY + Math.round(70 * qrScaleRatio));
-            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(98 * qrScaleRatio));
+            ctx.font = `${Math.round(10 * S * qrScaleRatio)}px sans-serif`;
+            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(38 * S * qrScaleRatio));
             ctx.fillStyle = '#1D4ED8';
-            ctx.font = `bold ${Math.round(18 * qrScaleRatio)}px monospace`;
-            ctx.fillText(`Kode: ${p.verCode}`, textStartX, qrBaseY + Math.round(128 * qrScaleRatio));
+            ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px monospace`;
+            ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(56 * S * qrScaleRatio));
             finishDownload();
           };
           qrImg.src = p.qrDataUrl;
@@ -2303,9 +2471,7 @@ const DEFAULT_EVENTS = [
 
     window.addEventListener('hashchange', handleRoutingFromHash);
     window.addEventListener('resize', () => {
-      if (activeCertPayload && !document.getElementById('cert-result-wrapper').classList.contains('hidden')) {
-        applyCertificateLayoutStyles(activeCertPayload);
-      }
+      scalePortalCertStage();
     });
     window.addEventListener('DOMContentLoaded', initPortalData);
   </script>

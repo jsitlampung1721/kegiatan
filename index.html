@@ -83,11 +83,6 @@
         radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.09), transparent 42%),
         #FFFFFF;
     }
-    .qr-crisp {
-      image-rendering: -moz-crisp-edges;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-    }
     @page {
       size: A4 landscape;
       margin: 0;
@@ -642,10 +637,10 @@
                   </p>
                 </div>
 
-                <!-- Footer QR (Posisi Presisi Sinkron dengan Studio Admin) -->
+                <!-- Footer QR (Ukuran Diperbesar 96x96 & Kontras Tinggi agar Mudah Di-scan) -->
                 <div id="cert-view-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" class="absolute z-20 flex items-center gap-3">
-                  <div class="p-1.5 bg-white border border-slate-300 rounded-xl shadow-2xs shrink-0">
-                    <img id="cert-qr-img" src="" alt="QR Verifikasi Peserta" class="w-[82px] h-[82px] block qr-crisp" />
+                  <div class="p-2 bg-white border border-slate-300 rounded-xl shadow-2xs shrink-0">
+                    <img id="cert-qr-img" src="" alt="QR Verifikasi Peserta" class="w-[96px] h-[96px] block" />
                   </div>
                   <div id="cert-view-qr-text" class="text-[10.5px] text-slate-600 leading-tight bg-white/85 px-2.5 py-1.5 rounded-lg">
                     <span class="font-bold text-navy-900 block">Scan Barcode Verifikasi</span>
@@ -756,8 +751,7 @@
       </div>
     </div>
   </footer>
-
-  <!-- APPLICATION SCRIPT -->
+<!-- APPLICATION SCRIPT -->
   <script>
 window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {};
 const STORAGE_KEY = 'jsit_lampung_events_v3';
@@ -1779,10 +1773,6 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    function encodeCertPayloadBase64(obj) {
-      return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
-    }
-
     function decodeCertPayloadBase64(str) {
       try {
         return JSON.parse(decodeURIComponent(escape(atob(str))));
@@ -1791,7 +1781,8 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    function generateQrDataUrl(text, size = 320) {
+    // QR Code beresolusi tinggi dengan quiet-zone (margin 4) & modul besar agar mudah di-scan kamera HP
+    function generateQrDataUrl(text, size = 400) {
       try {
         if (typeof window.qrcode === 'function') {
           const qr = window.qrcode(0, 'M');
@@ -1800,7 +1791,7 @@ const DEFAULT_EVENTS = [
           const count = qr.getModuleCount();
           const margin = 4;
           const totalModules = count + margin * 2;
-          const cellSize = Math.max(4, Math.floor(size / totalModules));
+          const cellSize = Math.max(8, Math.floor(size / totalModules));
           const canvasSize = totalModules * cellSize;
 
           const canvas = document.createElement('canvas');
@@ -1811,7 +1802,7 @@ const DEFAULT_EVENTS = [
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-          ctx.fillStyle = '#0F172A';
+          ctx.fillStyle = '#000000';
           for (let row = 0; row < count; row++) {
             for (let col = 0; col < count; col++) {
               if (qr.isDark(row, col)) {
@@ -1824,12 +1815,14 @@ const DEFAULT_EVENTS = [
       } catch (err) {
         console.error('QR generation error:', err);
       }
-      return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=10&data=${encodeURIComponent(text)}`;
+      return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=M&margin=12&color=000000&bgcolor=FFFFFF&data=${encodeURIComponent(text)}`;
     }
 
-    function buildCertificatePayloadForAttendee(ev, attendee, foundIndex) {
+    function buildCertificatePayloadForAttendee(ev, attendee, foundIndex, fallbackSeqStr = '') {
       const attendees = ev.attendees || [];
-      const seqNum = String(attendees.length - foundIndex).padStart(3, '0');
+      const seqNum = foundIndex >= 0 && attendees.length > foundIndex
+        ? String(attendees.length - foundIndex).padStart(3, '0')
+        : (fallbackSeqStr || '001');
       const certCfg = ev.certificate || {};
       const prefix = certCfg.prefix || 'SERT/JSIT-LPG/2026';
       const certNumber = `${seqNum}/${prefix}`;
@@ -1842,25 +1835,9 @@ const DEFAULT_EVENTS = [
       const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
       const orgSubText = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
 
-      // Payload ringkas agar QR Code tidak terlalu padat & mudah dipindai kamera HP
-      const compactPayload = {
-        no: certNumber,
-        kab: attendee.region || 'Provinsi Lampung',
-        tgl: dateRange,
-        ttd: `${signerName} - ${signerTitle}`,
-        hal: ev.title,
-        nama: attendee.name,
-        sek: attendee.school,
-        sts: roleLabel,
-        jp: jp,
-        evId: ev.id,
-        attId: attendee.id,
-        code: verCode
-      };
-
+      // URL Verifikasi super ringkas (±90 karakter) agar titik QR Code besar, renggang & cepat terbaca kamera HP
       const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const encoded = encodeCertPayloadBase64(compactPayload);
-      const verificationUrl = `${baseUrl}#verifikasi?ev=${encodeURIComponent(ev.id)}&at=${encodeURIComponent(attendee.id)}&c=${encodeURIComponent(verCode)}&v=${encodeURIComponent(encoded)}`;
+      const verificationUrl = `${baseUrl}#verifikasi?ev=${encodeURIComponent(ev.id)}&at=${encodeURIComponent(attendee.id)}&c=${encodeURIComponent(verCode)}`;
 
       return {
         certNumber,
@@ -2020,7 +1997,6 @@ const DEFAULT_EVENTS = [
 
       const clonedStage = sourceStage.cloneNode(true);
       clonedStage.removeAttribute('id');
-      // 297mm = 1122.52px pada 96dpi -> scale(1.12252) mengisi tepat 297mm x 210mm penuh!
       clonedStage.style.width = '1000px';
       clonedStage.style.height = '707px';
       clonedStage.style.transformOrigin = 'top left';
@@ -2064,7 +2040,7 @@ const DEFAULT_EVENTS = [
       multiBox.classList.add('hidden');
 
       const payload = buildCertificatePayloadForAttendee(ev, attendee, foundIndex);
-      const qrUrl = generateQrDataUrl(payload.verificationUrl, 320);
+      const qrUrl = generateQrDataUrl(payload.verificationUrl, 400);
       payload.qrDataUrl = qrUrl;
       activeCertPayload = payload;
 
@@ -2168,7 +2144,7 @@ const DEFAULT_EVENTS = [
       if (!activeCertPayload) return;
       const p = activeCertPayload;
       if (!p.qrDataUrl) {
-        p.qrDataUrl = generateQrDataUrl(p.verificationUrl, 320);
+        p.qrDataUrl = generateQrDataUrl(p.verificationUrl, 400);
       }
 
       const canvas = document.getElementById('hd-cert-canvas');
@@ -2259,8 +2235,8 @@ const DEFAULT_EVENTS = [
         const qrScaleRatio = (p.qrScale || 100) / 100;
         const qrBottomY = (707 - 52 + (p.qrOffsetY || 0)) * S;
         const qrBaseX = (65 + (p.qrOffsetX || 0)) * S;
-        const qrSize = Math.round(82 * S * qrScaleRatio);
-        const qrPad = Math.round(6 * S * qrScaleRatio);
+        const qrSize = Math.round(96 * S * qrScaleRatio);
+        const qrPad = Math.round(8 * S * qrScaleRatio);
         const qrBaseY = qrBottomY - qrSize;
 
         const finishDownload = () => {
@@ -2308,18 +2284,18 @@ const DEFAULT_EVENTS = [
             const textStartX = qrBaseX + qrSize + Math.round(14 * S * qrScaleRatio);
             if (p.showScanBg !== false) {
               ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(4 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(68 * S * qrScaleRatio));
+              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(10 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(68 * S * qrScaleRatio));
             }
             ctx.textAlign = 'left';
             ctx.fillStyle = '#0B1F3A';
             ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px sans-serif`;
-            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(20 * S * qrScaleRatio));
+            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(26 * S * qrScaleRatio));
             ctx.fillStyle = '#475569';
             ctx.font = `${Math.round(10 * S * qrScaleRatio)}px sans-serif`;
-            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(38 * S * qrScaleRatio));
+            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(44 * S * qrScaleRatio));
             ctx.fillStyle = '#1D4ED8';
             ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px monospace`;
-            ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(56 * S * qrScaleRatio));
+            ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(62 * S * qrScaleRatio));
             finishDownload();
           };
           qrImg.onerror = () => finishDownload();
@@ -2389,7 +2365,7 @@ const DEFAULT_EVENTS = [
       }
     }
 
-    function renderVerificationPage(hashStr) {
+    async function renderVerificationPage(hashStr) {
       document.getElementById('catalog-page').classList.add('hidden');
       document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('verification-page').classList.remove('hidden');
@@ -2397,15 +2373,15 @@ const DEFAULT_EVENTS = [
       const queryPart = hashStr.includes('?') ? hashStr.split('?')[1] : '';
       const params = new URLSearchParams(queryPart);
       const encodedData = params.get('v');
-      const certCodeParam = params.get('c') || params.get('cert');
-      const evIdParam = params.get('ev');
-      const attIdParam = params.get('at');
+      const certCodeParam = params.get('c') || params.get('cert') || '';
+      const evIdParam = params.get('ev') || '';
+      const attIdParam = params.get('at') || '';
       const bodyEl = document.getElementById('verification-result-body');
 
       let decoded = encodedData ? decodeCertPayloadBase64(encodedData) : null;
 
-      const targetEvId = (decoded && decoded.evId) || evIdParam || '';
-      const targetAttId = (decoded && decoded.attId) || attIdParam || '';
+      const targetEvId = (decoded && decoded.evId) || evIdParam;
+      const targetAttId = (decoded && decoded.attId) || attIdParam;
 
       let matchedEv = null;
       let matchedAtt = null;
@@ -2437,8 +2413,38 @@ const DEFAULT_EVENTS = [
         }
       }
 
+      // Jika tautan QR dibuka langsung dari kamera HP sebelum listener selesai memuat, tarik langsung dari Firestore
+      if (!matchedAtt && !decoded && isFirebaseReady && db && targetEvId && targetAttId) {
+        const statusHeading = document.getElementById('ver-status-heading');
+        if (statusHeading) statusHeading.textContent = 'Memverifikasi E-Sertifikat...';
+        bodyEl.innerHTML = `
+          <div class="p-6 text-center text-xs text-slate-500 space-y-2">
+            <div class="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p class="font-semibold text-navy-900">Menghubungkan ke database resmi JSIT Wilayah Lampung...</p>
+          </div>
+        `;
+        try {
+          const [evDoc, attDoc] = await Promise.all([
+            db.collection('events').doc(targetEvId).get(),
+            db.collection('events').doc(targetEvId).collection('attendees').doc(targetAttId).get()
+          ]);
+          if (evDoc.exists && attDoc.exists) {
+            matchedEv = normalizeEventItem({ id: evDoc.id, ...evDoc.data() });
+            matchedAtt = { id: attDoc.id, ...attDoc.data() };
+            if (!eventsData.some(e => e.id === matchedEv.id)) {
+              eventsData.push(matchedEv);
+            }
+          }
+        } catch (err) {
+          console.warn('Direct verification lookup warning:', err);
+        }
+      }
+
       if (matchedEv && matchedAtt) {
-        const livePayload = buildCertificatePayloadForAttendee(matchedEv, matchedAtt, matchedIdx);
+        const fallbackSeq = certCodeParam && certCodeParam.includes('-')
+          ? certCodeParam.split('-').pop()
+          : '001';
+        const livePayload = buildCertificatePayloadForAttendee(matchedEv, matchedAtt, matchedIdx, fallbackSeq);
         decoded = {
           no: livePayload.certNumber,
           kab: livePayload.region,

@@ -3922,18 +3922,50 @@ service cloud.firestore {
     // =========================================================================
     // BOOTSTRAP SAAT HALAMAN DIMUAT
     // =========================================================================
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
       initFirebaseIfConfigured();
       loadLocalData();
 
-      try {
-        const savedSession = sessionStorage.getItem(SESSION_KEY);
-        if (savedSession) {
-          state.currentUser = JSON.parse(savedSession);
-          await enterWorkspace();
+      if (state.firebaseReady && state.auth) {
+        let isInitialAuthCheck = true;
+        state.auth.onAuthStateChanged(async (firebaseUser) => {
+          if (!isInitialAuthCheck) return;
+          isInitialAuthCheck = false;
+
+          if (firebaseUser) {
+            try {
+              const savedSession = sessionStorage.getItem(SESSION_KEY);
+              if (savedSession) state.currentUser = JSON.parse(savedSession);
+            } catch (e) {}
+
+            if (!state.currentUser || state.currentUser.email !== firebaseUser.email) {
+              state.currentUser = {
+                email: firebaseUser.email,
+                name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+                division: 'Pengelola Wilayah',
+                role: 'super_admin',
+                active: true,
+                permissions: { ...ROLE_PRESETS.super_admin }
+              };
+              sessionStorage.setItem(SESSION_KEY, JSON.stringify(state.currentUser));
+            }
+            await enterWorkspace();
+          } else {
+            // Hapus sisa sesi lokal agar user login ulang menggunakan Firebase Auth
+            sessionStorage.removeItem(SESSION_KEY);
+            state.currentUser = null;
+          }
+        });
+      } else {
+        try {
+          const savedSession = sessionStorage.getItem(SESSION_KEY);
+          if (savedSession) {
+            state.currentUser = JSON.parse(savedSession);
+            enterWorkspace();
+          }
+        } catch (err) {
+          sessionStorage.removeItem(SESSION_KEY);
         }
-      } catch (err) {
-        sessionStorage.removeItem(SESSION_KEY);
       }
     });
   </script>

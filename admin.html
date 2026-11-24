@@ -1438,7 +1438,7 @@ service cloud.firestore {
       const badge = document.getElementById('login-firebase-badge');
       const localBox = document.getElementById('local-demo-accounts');
       try {
-        const cfg = window.JSIT_FIREBASE_CONFIG || window.firebaseConfig;
+        const cfg = window.FIREBASE_CONFIG || window.JSIT_FIREBASE_CONFIG || window.firebaseConfig;
         if (window.firebase && cfg && cfg.apiKey && !String(cfg.apiKey).includes('ISI_')) {
           if (!firebase.apps.length) {
             firebase.initializeApp(cfg);

@@ -568,3 +568,819 @@
       <button type="button" class="tab-btn" data-tab="materi">📚 Materi &amp; Rekaman</button>
       <button type="button" class="tab-btn" data-tab="verifikasi">🔍 Verifikasi QR / Nomor Sertifikat</button>
     </nav>
+    <!-- TAB 1: JADWAL & PRESENSI KEGIATAN -->
+    <section class="panel-section active" id="panel-kegiatan">
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔎</span>
+          <input type="text" id="searchEventInput" class="input-ctrl" placeholder="Cari judul kegiatan, narasumber, atau lokasi..." autocomplete="off" />
+        </div>
+        <select id="filterCategory" class="select-ctrl">
+          <option value="ALL">Semua Kategori</option>
+          <option value="Webinar">Webinar</option>
+          <option value="Workshop">Workshop</option>
+          <option value="Pelatihan">Pelatihan</option>
+          <option value="Seminar">Seminar</option>
+          <option value="Rapat / Forum">Rapat / Forum</option>
+        </select>
+        <select id="filterStatus" class="select-ctrl">
+          <option value="ALL">Semua Status</option>
+          <option value="open">Presensi Dibuka</option>
+          <option value="upcoming">Akan Datang</option>
+          <option value="closed">Selesai / Ditutup</option>
+        </select>
+      </div>
+
+      <div class="events-grid" id="eventsGrid">
+        <!-- Kartu kegiatan dirender instan via DocumentFragment -->
+      </div>
+    </section>
+
+    <!-- TAB 2: CEK & UNDUH E-SERTIFIKAT -->
+    <section class="panel-section" id="panel-sertifikat">
+      <div class="glass-card" style="margin-bottom:18px;">
+        <h3 style="font-size:16px; margin-bottom:6px;">🎓 Pencarian &amp; Unduh E-Sertifikat Mandiri</h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+          Masukkan <strong>Nama Lengkap</strong>, <strong>Email</strong>, atau <strong>NIP/NIK/ID Peserta</strong> yang Anda gunakan saat mengisi daftar hadir.
+        </p>
+        <form id="formSearchCert" style="display:flex; flex-wrap:wrap; gap:10px;">
+          <input type="text" id="certQueryInput" class="input-ctrl" style="flex:1 1 260px;" placeholder="Contoh: Budi Santoso atau budi@email.com..." required />
+          <select id="certEventFilter" class="select-ctrl" style="flex:0 1 240px;">
+            <option value="ALL">Semua Kegiatan</option>
+          </select>
+          <button type="submit" class="btn btn-primary">🔍 Cari Sertifikat Saya</button>
+        </form>
+      </div>
+
+      <div id="certResultsContainer" class="events-grid">
+        <div class="glass-card" style="grid-column:1/-1; text-align:center; color:var(--text-secondary); padding:32px;">
+          Silakan masukkan nama atau email Anda di atas untuk menampilkan daftar E-Sertifikat yang tersedia.
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MATERI & REKAMAN -->
+    <section class="panel-section" id="panel-materi">
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="search-icon">📚</span>
+          <input type="text" id="searchMaterialInput" class="input-ctrl" placeholder="Cari judul materi, modul PDF, slide, atau link rekaman..." autocomplete="off" />
+        </div>
+        <select id="filterMaterialEvent" class="select-ctrl">
+          <option value="ALL">Semua Kegiatan</option>
+        </select>
+      </div>
+
+      <div class="grid-2" id="materialsGrid">
+        <!-- Kartu materi dirender secara cepat -->
+      </div>
+    </section>
+
+    <!-- TAB 4: VERIFIKASI KEASLIAN SERTIFIKAT -->
+    <section class="panel-section" id="panel-verifikasi">
+      <div class="glass-card" style="max-width:680px; margin:0 auto;">
+        <h3 style="font-size:16px; margin-bottom:6px;">🔍 Verifikasi Keaslian E-Sertifikat</h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+          Masukkan <strong>Nomor Sertifikat</strong> atau <strong>Kode Verifikasi QR</strong> untuk memvalidasi keaslian dokumen yang diterbitkan oleh sistem.
+        </p>
+        <form id="formVerifyCert" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <input type="text" id="verifyCodeInput" class="input-ctrl" style="flex:1 1 260px;" placeholder="Contoh: CERT-2026-XXXX atau Nomor Surat..." required />
+          <button type="submit" class="btn btn-emerald">✔ Validasi Dokumen</button>
+        </form>
+        <div id="verifyResultBox"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL 1: FORM PRESENSI / DAFTAR HADIR PESERTA -->
+  <div class="modal-backdrop" id="modalAttendance" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 id="attModalTitle">Isi Daftar Hadir Peserta</h3>
+          <span id="attModalSubtitle" style="font-size:12px; color:var(--text-secondary);">Pastikan penulisan nama &amp; gelar sudah benar untuk E-Sertifikat.</span>
+        </div>
+        <button type="button" class="btn-close" data-close-modal="modalAttendance" aria-label="Tutup">✕</button>
+      </div>
+
+      <form id="formSubmitAttendance">
+        <input type="hidden" id="attEventId" />
+        <div class="form-group">
+          <label for="attFullName">Nama Lengkap &amp; Gelar (Untuk E-Sertifikat) *</label>
+          <input type="text" id="attFullName" class="input-ctrl" placeholder="Contoh: Dr. Ahmad Fauzi, M.Pd." required />
+        </div>
+        <div class="grid-2" style="gap:10px;">
+          <div class="form-group">
+            <label for="attIdNumber">NIP / NIK / NIM / ID Peserta</label>
+            <input type="text" id="attIdNumber" class="input-ctrl" placeholder="Opsional / Sesuai arahan panitia" />
+          </div>
+          <div class="form-group">
+            <label for="attPhone">No. WhatsApp / HP *</label>
+            <input type="tel" id="attPhone" class="input-ctrl" placeholder="08xxxxxxxxxx" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="attEmail">Alamat Email Aktif *</label>
+          <input type="email" id="attEmail" class="input-ctrl" placeholder="nama@email.com" required />
+        </div>
+        <div class="form-group">
+          <label for="attInstitution">Instansi / Unit Kerja / Asal Daerah *</label>
+          <input type="text" id="attInstitution" class="input-ctrl" placeholder="Contoh: Dinas Pendidikan / Universitas..." required />
+        </div>
+        <div class="form-group" id="attTokenGroup" style="display:none;">
+          <label for="attTokenInput">Kode Token Presensi Kegiatan *</label>
+          <input type="text" id="attTokenInput" class="input-ctrl" placeholder="Masukkan kode token dari panitia" />
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button type="button" class="btn btn-ghost" data-close-modal="modalAttendance">Batal</button>
+          <button type="submit" class="btn btn-emerald" id="btnSubmitAtt">✔ Kirim Daftar Hadir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: DETAIL KEGIATAN & FLYER LENGKAP -->
+  <div class="modal-backdrop" id="modalEventDetail" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width:620px;">
+      <div class="modal-header">
+        <h3 id="detailModalTitle">Detail Kegiatan</h3>
+        <button type="button" class="btn-close" data-close-modal="modalEventDetail" aria-label="Tutup">✕</button>
+      </div>
+      <div id="detailModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Wadah Toast & Render E-Sertifikat Offscreen (Resolusi Tinggi A4 Landscape) -->
+  <div class="toast-wrap" id="toastWrap"></div>
+  <div id="certRenderHost" aria-hidden="true"></div>
+  <script type="module">
+    // =========================================================================
+    // FAST-RESPONSE PORTAL PESERTA ENGINE (Sinkron dengan kegiatan admin_3.html)
+    // =========================================================================
+    const STORAGE_KEYS = {
+      EVENTS: 'pk_events_v3',
+      ATTENDEES: 'pk_attendees_v3',
+      MATERIALS: 'pk_materials_v3',
+      SETTINGS: 'pk_settings_v3'
+    };
+
+    const state = {
+      events: [],
+      attendees: [],
+      materials: [],
+      settings: {
+        orgName: 'PUSAT KEGIATAN',
+        orgSubtitle: 'Portal Informasi, Presensi & E-Sertifikat Peserta',
+        certPrefix: 'CERT',
+        signerName: 'Ketua Panitia Pelaksana',
+        signerTitle: 'Penanggung Jawab Kegiatan',
+        signatureDataUrl: ''
+      },
+      isCloud: false,
+      db: null,
+      fsOps: null
+    };
+
+    // Helper DOM & Escape Cepat
+    const $ = (sel) => document.querySelector(sel);
+    const esc = (str) => String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+    const debounce = (fn, delay = 140) => {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    };
+
+    function showToast(msg, type = 'info') {
+      const wrap = $('#toastWrap');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.2s';
+        setTimeout(() => el.remove(), 220);
+      }, 3000);
+    }
+
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.add('open');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('open');
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. INSTANT LOCAL CACHE LOAD (Render 0ms sebelum Cloud selesai)
+    // -------------------------------------------------------------------------
+    function loadFromLocalCache() {
+      try {
+        const ev = JSON.parse(localStorage.getItem(STORAGE_KEYS.EVENTS) || '[]');
+        const at = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDEES) || '[]');
+        const mt = JSON.parse(localStorage.getItem(STORAGE_KEYS.MATERIALS) || '[]');
+        const st = JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS) || 'null');
+
+        if (Array.isArray(ev)) state.events = ev;
+        if (Array.isArray(at)) state.attendees = at;
+        if (Array.isArray(mt)) state.materials = mt;
+        if (st && typeof st === 'object') Object.assign(state.settings, st);
+      } catch (e) {
+        console.warn('Cache lokal kosong/tidak valid:', e);
+      }
+      applySettingsToUI();
+      refreshAllViews();
+    }
+
+    function saveToLocalCache() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(state.events));
+        localStorage.setItem(STORAGE_KEYS.ATTENDEES, JSON.stringify(state.attendees));
+        localStorage.setItem(STORAGE_KEYS.MATERIALS, JSON.stringify(state.materials));
+      } catch (e) { /* Abaikan jika kuota penuh */ }
+    }
+
+    function applySettingsToUI() {
+      const org = state.settings.orgName || 'PUSAT KEGIATAN';
+      $('#orgTitle').textContent = org;
+      $('#orgSubtitle').textContent = state.settings.orgSubtitle || 'Portal Informasi, Presensi & E-Sertifikat Peserta';
+      const initials = org.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || '').join('') || 'PK';
+      $('#brandBadge').textContent = initials;
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. NON-BLOCKING CLOUD SYNC (Firebase Firestore jika tersedia)
+    // -------------------------------------------------------------------------
+    async function initCloudSync() {
+      const dot = $('#syncDot');
+      const txt = $('#syncText');
+      try {
+        const cfgMod = await import('./firebase-config.js');
+        const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+        const fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+
+        const firebaseConfig = cfgMod.firebaseConfig || cfgMod.default;
+        if (!firebaseConfig || !firebaseConfig.projectId) throw new Error('Konfigurasi Firebase belum diisi');
+
+        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        const db = fs.getFirestore(app);
+        state.db = db;
+        state.fsOps = fs;
+        state.isCloud = true;
+
+        dot.classList.add('online');
+        txt.textContent = 'Cloud Terhubung';
+
+        // Fetch paralel agar super cepat
+        const [evSnap, atSnap, mtSnap, stSnap] = await Promise.all([
+          fs.getDocs(fs.collection(db, 'events')),
+          fs.getDocs(fs.collection(db, 'attendees')),
+          fs.getDocs(fs.collection(db, 'materials')),
+          fs.getDoc(fs.doc(db, 'settings', 'general')).catch(() => null)
+        ]);
+
+        if (!evSnap.empty) state.events = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (!atSnap.empty) state.attendees = atSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (!mtSnap.empty) state.materials = mtSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (stSnap && stSnap.exists()) Object.assign(state.settings, stSnap.data());
+
+        saveToLocalCache();
+        applySettingsToUI();
+        refreshAllViews();
+      } catch (err) {
+        state.isCloud = false;
+        dot.classList.remove('online');
+        txt.textContent = 'Mode Lokal (Offline Ready)';
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. FAST DOM RENDERING (DocumentFragment + Event Delegation)
+    // -------------------------------------------------------------------------
+    function refreshAllViews() {
+      updateStats();
+      populateEventDropdowns();
+      renderEventsGrid();
+      renderMaterialsGrid();
+      handleDeepLinkParams();
+    }
+
+    function updateStats() {
+      $('#statTotalEvents').textContent = state.events.length;
+      const openCount = state.events.filter(e => (e.status || 'open') === 'open').length;
+      $('#statOpenEvents').textContent = openCount;
+      $('#statMaterials').textContent = state.materials.length;
+    }
+
+    function populateEventDropdowns() {
+      const optionsHtml = ['<option value="ALL">Semua Kegiatan</option>']
+        .concat(state.events.map(ev => `<option value="${esc(ev.id)}">${esc(ev.title || 'Kegiatan Tanpa Judul')}</option>`))
+        .join('');
+      $('#certEventFilter').innerHTML = optionsHtml;
+      $('#filterMaterialEvent').innerHTML = optionsHtml;
+    }
+
+    function renderEventsGrid() {
+      const grid = $('#eventsGrid');
+      const q = ($('#searchEventInput').value || '').trim().toLowerCase();
+      const cat = $('#filterCategory').value;
+      const st = $('#filterStatus').value;
+
+      const filtered = state.events.filter(ev => {
+        const status = ev.status || 'open';
+        if (cat !== 'ALL' && (ev.category || '') !== cat) return false;
+        if (st !== 'ALL' && status !== st) return false;
+        if (q) {
+          const hay = `${ev.title || ''} ${ev.speaker || ''} ${ev.location || ''} ${ev.description || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="glass-card" style="grid-column:1/-1; text-align:center; padding:34px; color:var(--text-secondary);">
+          Tidak ada kegiatan yang sesuai dengan filter pencarian saat ini.
+        </div>`;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const ev of filtered) {
+        const status = ev.status || 'open';
+        const badgeCls = status === 'open' ? 'badge-open' : status === 'upcoming' ? 'badge-upcoming' : 'badge-closed';
+        const badgeLbl = status === 'open' ? 'Presensi Dibuka' : status === 'upcoming' ? 'Akan Datang' : 'Selesai / Ditutup';
+
+        const card = document.createElement('article');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <div class="flyer-box">
+            ${ev.flyerUrl
+              ? `<img src="${esc(ev.flyerUrl)}" alt="${esc(ev.title)}" loading="lazy" decoding="async" />`
+              : `<div class="flyer-placeholder"><span style="font-size:26px;">📅</span><span>${esc(ev.category || 'Kegiatan Resmi')}</span></div>`}
+            <span class="badge-cat">${esc(ev.category || 'Umum')}</span>
+            <span class="badge-status ${badgeCls}">${badgeLbl}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${esc(ev.title || 'Kegiatan Tanpa Judul')}</h3>
+            <div class="card-meta">
+              <span>🗓️ ${esc(ev.date || 'Jadwal menyusul')} ${ev.time ? '• ' + esc(ev.time) : ''}</span>
+              <span>📍 ${esc(ev.location || 'Online / Zoom')}</span>
+              ${ev.speaker ? `<span>🎙️ ${esc(ev.speaker)}</span>` : ''}
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-ghost btn-sm" data-action="detail" data-id="${esc(ev.id)}">ℹ️ Detail &amp; Flyer</button>
+              ${status === 'open'
+                ? `<button type="button" class="btn btn-emerald btn-sm" data-action="attend" data-id="${esc(ev.id)}">✍️ Isi Presensi</button>`
+                : `<button type="button" class="btn btn-primary btn-sm" data-action="cert-tab" data-id="${esc(ev.id)}">🎓 E-Sertifikat</button>`}
+            </div>
+          </div>
+        `;
+        frag.appendChild(card);
+      }
+
+      grid.innerHTML = '';
+      grid.appendChild(frag);
+    }
+
+    function renderMaterialsGrid() {
+      const grid = $('#materialsGrid');
+      const q = ($('#searchMaterialInput').value || '').trim().toLowerCase();
+      const evFilter = $('#filterMaterialEvent').value;
+
+      const filtered = state.materials.filter(m => {
+        if (evFilter !== 'ALL' && m.eventId !== evFilter) return false;
+        if (q) {
+          const hay = `${m.title || ''} ${m.type || ''} ${m.description || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="glass-card" style="grid-column:1/-1; text-align:center; padding:32px; color:var(--text-secondary);">
+          Belum ada materi atau tautan rekaman yang dipublikasikan untuk filter ini.
+        </div>`;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const m of filtered) {
+        const ev = state.events.find(e => e.id === m.eventId);
+        const card = document.createElement('div');
+        card.className = 'glass-card';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '10px';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+            <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:6px; background:rgba(56,189,248,0.16); color:#38bdf8;">
+              ${esc(m.type || 'Materi / Modul')}
+            </span>
+            <span style="font-size:11px; color:var(--text-muted);">${esc(ev?.title || 'Umum')}</span>
+          </div>
+          <h4 style="font-size:15px; font-weight:700;">${esc(m.title || 'Dokumen Materi')}</h4>
+          ${m.description ? `<p style="font-size:13px; color:var(--text-secondary);">${esc(m.description)}</p>` : ''}
+          <div style="margin-top:auto; padding-top:8px;">
+            <a href="${esc(m.url || '#')}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">↗ Buka / Unduh Materi</a>
+          </div>
+        `;
+        frag.appendChild(card);
+      }
+
+      grid.innerHTML = '';
+      grid.appendChild(frag);
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. INTERAKSI PESERTA (Presensi, Detail, Pencarian Sertifikat, Verifikasi)
+    // -------------------------------------------------------------------------
+    function openAttendanceModal(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      if (!ev) return;
+      $('#attEventId').value = ev.id;
+      $('#attModalTitle').textContent = `Presensi: ${ev.title}`;
+      const tokenGroup = $('#attTokenGroup');
+      const tokenInput = $('#attTokenInput');
+      if (ev.token) {
+        tokenGroup.style.display = 'block';
+        tokenInput.required = true;
+      } else {
+        tokenGroup.style.display = 'none';
+        tokenInput.required = false;
+      }
+      openModal('modalAttendance');
+    }
+
+    function openDetailModal(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      if (!ev) return;
+      $('#detailModalTitle').textContent = ev.title || 'Detail Kegiatan';
+      $('#detailModalBody').innerHTML = `
+        ${ev.flyerUrl ? `<img src="${esc(ev.flyerUrl)}" alt="Flyer" style="width:100%; max-height:320px; object-fit:contain; background:#070b14; border-radius:12px; margin-bottom:14px;" />` : ''}
+        <div style="display:grid; gap:8px; font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+          <div><strong style="color:#fff;">Kategori:</strong> ${esc(ev.category || '-')}</div>
+          <div><strong style="color:#fff;">Tanggal &amp; Waktu:</strong> ${esc(ev.date || '-')} ${ev.time ? '(' + esc(ev.time) + ')' : ''}</div>
+          <div><strong style="color:#fff;">Lokasi / Media:</strong> ${esc(ev.location || '-')}</div>
+          <div><strong style="color:#fff;">Narasumber:</strong> ${esc(ev.speaker || '-')}</div>
+          ${ev.jp ? `<div><strong style="color:#fff;">Bobot Jam Pelajaran:</strong> ${esc(ev.jp)} JP</div>` : ''}
+        </div>
+        <p style="font-size:13px; line-height:1.6; color:#cbd5e1; white-space:pre-line; margin-bottom:16px;">${esc(ev.description || 'Tidak ada deskripsi tambahan.')}</p>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-ghost" data-close-modal="modalEventDetail">Tutup</button>
+          ${(ev.status || 'open') === 'open'
+            ? `<button type="button" class="btn btn-emerald" data-action="attend-from-detail" data-id="${esc(ev.id)}">✍️ Isi Daftar Hadir Sekarang</button>`
+            : ''}
+        </div>
+      `;
+      openModal('modalEventDetail');
+    }
+
+    async function handleAttendanceSubmit(e) {
+      e.preventDefault();
+      const eventId = $('#attEventId').value;
+      const ev = state.events.find(item => item.id === eventId);
+      if (!ev) return;
+
+      if (ev.token) {
+        const entered = ($('#attTokenInput').value || '').trim();
+        if (entered !== String(ev.token).trim()) {
+          showToast('Kode Token Presensi tidak sesuai!', 'error');
+          return;
+        }
+      }
+
+      const fullName = $('#attFullName').value.trim();
+      const idNumber = $('#attIdNumber').value.trim();
+      const phone = $('#attPhone').value.trim();
+      const email = $('#attEmail').value.trim();
+      const institution = $('#attInstitution').value.trim();
+
+      // Cek duplikasi presensi pada kegiatan yang sama
+      const duplicate = state.attendees.find(a =>
+        a.eventId === eventId &&
+        (a.email?.toLowerCase() === email.toLowerCase() || a.name?.toLowerCase() === fullName.toLowerCase())
+      );
+      if (duplicate) {
+        showToast('Anda sudah terdaftar hadir pada kegiatan ini. Silakan cek E-Sertifikat.', 'info');
+        closeModal('modalAttendance');
+        switchTab('sertifikat');
+        $('#certQueryInput').value = email;
+        searchCertificates();
+        return;
+      }
+
+      const certCode = `${state.settings.certPrefix || 'CERT'}-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const record = {
+        id: 'att_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        eventId,
+        eventTitle: ev.title || '',
+        name: fullName,
+        idNumber,
+        phone,
+        email,
+        institution,
+        certCode,
+        timestamp: new Date().toISOString()
+      };
+
+      const btn = $('#btnSubmitAtt');
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan...';
+
+      try {
+        if (state.isCloud && state.db && state.fsOps) {
+          await state.fsOps.setDoc(state.fsOps.doc(state.db, 'attendees', record.id), record);
+        }
+        state.attendees.unshift(record);
+        saveToLocalCache();
+
+        e.target.reset();
+        closeModal('modalAttendance');
+        showToast('Presensi berhasil dicatat! E-Sertifikat siap diunduh.', 'success');
+
+        switchTab('sertifikat');
+        $('#certQueryInput').value = email;
+        searchCertificates();
+      } catch (err) {
+        showToast('Gagal menyimpan presensi: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✔ Kirim Daftar Hadir';
+      }
+    }
+
+    function searchCertificates() {
+      const q = ($('#certQueryInput').value || '').trim().toLowerCase();
+      const evId = $('#certEventFilter').value;
+      const box = $('#certResultsContainer');
+
+      if (!q) return;
+
+      const matches = state.attendees.filter(a => {
+        if (evId !== 'ALL' && a.eventId !== evId) return false;
+        const hay = `${a.name || ''} ${a.email || ''} ${a.idNumber || ''} ${a.certCode || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      if (!matches.length) {
+        box.innerHTML = `<div class="glass-card" style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-secondary);">
+          Data peserta tidak ditemukan. Pastikan ejaan nama atau email sesuai dengan data saat mengisi daftar hadir.
+        </div>`;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const item of matches) {
+        const ev = state.events.find(e => e.id === item.eventId) || {};
+        const card = document.createElement('div');
+        card.className = 'glass-card';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '10px';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:99px; background:rgba(16,185,129,0.18); color:#34d399;">
+              ✔ Terverifikasi
+            </span>
+            <span style="font-size:11px; font-family:monospace; color:var(--text-secondary);">${esc(item.certCode || item.id)}</span>
+          </div>
+          <h4 style="font-size:16px; font-weight:800; color:#fff;">${esc(item.name)}</h4>
+          <div style="font-size:12px; color:var(--text-secondary);">
+            <div><strong>Kegiatan:</strong> ${esc(ev.title || item.eventTitle || '-')}</div>
+            <div><strong>Instansi:</strong> ${esc(item.institution || '-')}</div>
+            <div><strong>Tanggal:</strong> ${esc(ev.date || '-')}</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:auto; padding-top:10px;">
+            <button type="button" class="btn btn-primary btn-sm" data-action="dl-pdf" data-att-id="${esc(item.id)}">📄 Unduh PDF</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-action="dl-png" data-att-id="${esc(item.id)}">🖼️ Unduh PNG</button>
+          </div>
+        `;
+        frag.appendChild(card);
+      }
+
+      box.innerHTML = '';
+      box.appendChild(frag);
+    }
+
+    function verifyCertificateCode(codeInput) {
+      const code = (codeInput || $('#verifyCodeInput').value || '').trim().toLowerCase();
+      const out = $('#verifyResultBox');
+      if (!code) return;
+
+      const found = state.attendees.find(a =>
+        (a.certCode || '').toLowerCase() === code || (a.id || '').toLowerCase() === code
+      );
+
+      if (!found) {
+        out.innerHTML = `<div style="padding:14px; border-radius:12px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); color:#fda4af; font-size:13px;">
+          ❌ <strong>Dokumen Tidak Ditemukan:</strong> Kode verifikasi <code>${esc(code)}</code> tidak terdaftar di database sistem.
+        </div>`;
+        return;
+      }
+
+      const ev = state.events.find(e => e.id === found.eventId) || {};
+      out.innerHTML = `<div style="padding:16px; border-radius:12px; background:rgba(16,185,129,0.14); border:1px solid rgba(16,185,129,0.4); color:#d1fae5; font-size:13px; line-height:1.6;">
+        <div style="font-weight:800; font-size:14px; color:#34d399; margin-bottom:6px;">✅ SERTIFIKAT ASLI &amp; TERVERIFIKASI</div>
+        <div><strong>Nama Penerima:</strong> ${esc(found.name)}</div>
+        <div><strong>Instansi:</strong> ${esc(found.institution || '-')}</div>
+        <div><strong>Kegiatan:</strong> ${esc(ev.title || found.eventTitle || '-')}</div>
+        <div><strong>Nomor / Kode:</strong> ${esc(found.certCode || found.id)}</div>
+        <div><strong>Tanggal Pelaksanaan:</strong> ${esc(ev.date || '-')}</div>
+      </div>`;
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. GENERATOR E-SERTIFIKAT A4 LANDSCAPE (Resolusi Tinggi + QR Verifikasi)
+    // -------------------------------------------------------------------------
+    async function generateCertificateFile(attId, format = 'pdf') {
+      const att = state.attendees.find(a => a.id === attId);
+      if (!att) return;
+      const ev = state.events.find(e => e.id === att.eventId) || {};
+
+      if (!window.html2canvas) {
+        showToast('Library grafis masih dimuat, coba sesaat lagi.', 'info');
+        return;
+      }
+
+      showToast('Menyiapkan E-Sertifikat resolusi tinggi...', 'info');
+
+      const host = $('#certRenderHost');
+      const certCode = att.certCode || att.id;
+      const verifyUrl = `${window.location.origin}${window.location.pathname}?verify=${encodeURIComponent(certCode)}`;
+
+      host.innerHTML = `
+        <div id="certSheet" style="width:1123px; height:794px; padding:44px; background:linear-gradient(135deg,#091124 0%,#0f1e3d 55%,#091124 100%); color:#f8fafc; font-family:'Plus Jakarta Sans',sans-serif; position:relative; box-sizing:border-box;">
+          <div style="width:100%; height:100%; border:3px solid #d4af37; border-radius:16px; padding:38px 54px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; position:relative; background:radial-gradient(circle at 50% 20%, rgba(56,189,248,0.09), transparent 65%);">
+            <div style="text-align:center;">
+              <div style="font-size:14px; font-weight:700; letter-spacing:3px; color:#38bdf8; text-transform:uppercase;">${esc(state.settings.orgName || 'PUSAT KEGIATAN')}</div>
+              <h1 style="font-family:'Playfair Display',serif; font-size:48px; letter-spacing:2px; color:#f8fafc; margin:10px 0 4px;">SERTIFIKAT</h1>
+              <div style="font-size:13px; color:#cbd5e1; letter-spacing:1px;">Nomor: ${esc(certCode)}</div>
+            </div>
+
+            <div style="text-align:center; margin:10px 0;">
+              <div style="font-size:15px; color:#94a3b8; margin-bottom:10px;">Diberikan dengan bangga kepada:</div>
+              <div style="font-family:'Playfair Display',serif; font-size:38px; font-weight:700; color:#fbbf24; border-bottom:2px solid rgba(251,191,36,0.45); display:inline-block; padding:0 28px 8px; margin-bottom:12px;">
+                ${esc(att.name)}
+              </div>
+              ${att.institution ? `<div style="font-size:15px; color:#e2e8f0; font-weight:600; margin-bottom:12px;">${esc(att.institution)}</div>` : ''}
+              <p style="font-size:15px; color:#cbd5e1; max-width:820px; margin:0 auto; line-height:1.6;">
+                Atas partisipasi aktifnya sebagai <strong style="color:#fff;">PESERTA</strong> dalam kegiatan
+                <strong style="color:#38bdf8;">"${esc(ev.title || att.eventTitle || 'Kegiatan Resmi')}"</strong>
+                ${ev.date ? `yang diselenggarakan pada tanggal <strong style="color:#fff;">${esc(ev.date)}</strong>` : ''}
+                ${ev.jp ? `dengan bobot <strong style="color:#fff;">${esc(ev.jp)} Jam Pelajaran (JP)</strong>` : ''}.
+              </p>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; padding:0 18px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div id="certQrMount" style="background:#fff; padding:6px; border-radius:8px; width:86px; height:86px;"></div>
+                <div style="font-size:11px; color:#94a3b8; max-width:210px; line-height:1.4;">
+                  Pindai QR Code ini untuk memverifikasi keaslian E-Sertifikat secara daring.
+                </div>
+              </div>
+
+              <div style="text-align:center; min-width:240px;">
+                <div style="font-size:13px; color:#cbd5e1; margin-bottom:6px;">${esc(ev.date || '')}</div>
+                <div style="font-size:13px; font-weight:600; color:#94a3b8;">${esc(state.settings.signerTitle || 'Ketua Panitia')}</div>
+                <div style="height:56px; display:flex; align-items:center; justify-content:center;">
+                  ${state.settings.signatureDataUrl ? `<img src="${esc(state.settings.signatureDataUrl)}" style="max-height:52px;" />` : ''}
+                </div>
+                <div style="font-size:15px; font-weight:700; color:#fff; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">
+                  ${esc(state.settings.signerName || 'Penanggung Jawab')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (window.QRCode) {
+        new window.QRCode(document.getElementById('certQrMount'), {
+          text: verifyUrl,
+          width: 74,
+          height: 74,
+          correctLevel: window.QRCode.CorrectLevel.M
+        });
+      }
+
+      await new Promise(r => setTimeout(r, 80));
+      const canvas = await window.html2canvas(document.getElementById('certSheet'), {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#091124'
+      });
+
+      const safeName = (att.name || 'Peserta').replace(/[^a-z0-9]/gi, '_');
+      if (format === 'png') {
+        const link = document.createElement('a');
+        link.download = `E-Sertifikat_${safeName}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } else {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1123, 794] });
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 1123, 794);
+        pdf.save(`E-Sertifikat_${safeName}.pdf`);
+      }
+
+      host.innerHTML = '';
+      showToast('E-Sertifikat berhasil diunduh!', 'success');
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. TAB SWITCHING, EVENT DELEGATION & DEEP LINKING
+    // -------------------------------------------------------------------------
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tabName);
+      });
+      document.querySelectorAll('.panel-section').forEach(p => {
+        p.classList.toggle('active', p.id === `panel-${tabName}`);
+      });
+    }
+
+    function handleDeepLinkParams() {
+      const params = new URLSearchParams(window.location.search);
+      const verifyParam = params.get('verify');
+      const attendParam = params.get('attend');
+      if (verifyParam) {
+        switchTab('verifikasi');
+        $('#verifyCodeInput').value = verifyParam;
+        verifyCertificateCode(verifyParam);
+      } else if (attendParam) {
+        openAttendanceModal(attendParam);
+      }
+    }
+
+    // Global Event Listeners (Ringan & Cepat)
+    $('#mainNavTabs').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (btn) switchTab(btn.dataset.tab);
+    });
+
+    document.addEventListener('click', (e) => {
+      const closeBtn = e.target.closest('[data-close-modal]');
+      if (closeBtn) {
+        closeModal(closeBtn.dataset.closeModal);
+        return;
+      }
+      if (e.target.classList.contains('modal-backdrop')) {
+        e.target.classList.remove('open');
+        return;
+      }
+
+      const actionBtn = e.target.closest('[data-action]');
+      if (!actionBtn) return;
+
+      const act = actionBtn.dataset.action;
+      const id = actionBtn.dataset.id;
+      const attId = actionBtn.dataset.attId;
+
+      if (act === 'detail') openDetailModal(id);
+      else if (act === 'attend') openAttendanceModal(id);
+      else if (act === 'attend-from-detail') {
+        closeModal('modalEventDetail');
+        openAttendanceModal(id);
+      } else if (act === 'cert-tab') {
+        switchTab('sertifikat');
+        $('#certEventFilter').value = id;
+      } else if (act === 'dl-pdf') generateCertificateFile(attId, 'pdf');
+      else if (act === 'dl-png') generateCertificateFile(attId, 'png');
+    });
+
+    $('#searchEventInput').addEventListener('input', debounce(renderEventsGrid, 120));
+    $('#filterCategory').addEventListener('change', renderEventsGrid);
+    $('#filterStatus').addEventListener('change', renderEventsGrid);
+
+    $('#searchMaterialInput').addEventListener('input', debounce(renderMaterialsGrid, 120));
+    $('#filterMaterialEvent').addEventListener('change', renderMaterialsGrid);
+
+    $('#formSubmitAttendance').addEventListener('submit', handleAttendanceSubmit);
+    $('#formSearchCert').addEventListener('submit', (e) => {
+      e.preventDefault();
+      searchCertificates();
+    });
+    $('#formVerifyCert').addEventListener('submit', (e) => {
+      e.preventDefault();
+      verifyCertificateCode();
+    });
+    $('#btnRefreshData').addEventListener('click', () => {
+      showToast('Menyinkronkan data terbaru...', 'info');
+      initCloudSync();
+    });
+
+    // Jalankan seketika saat halaman siap
+    loadFromLocalCache();
+    initCloudSync();
+  </script>
+</body>
+</html>

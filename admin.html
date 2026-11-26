@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — PUSAT KEGIATAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Defer script eksternal agar UI langsung muncul tanpa blocking -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-base: #070b14;
+      --bg-sidebar: rgba(11, 17, 32, 0.92);
+      --bg-surface: rgba(15, 23, 42, 0.76);
+      --bg-card: rgba(18, 28, 48, 0.88);
+      --bg-input: rgba(9, 14, 26, 0.9);
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-focus: rgba(56, 189, 248, 0.55);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-violet: #8b5cf6;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.65);
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.12), transparent 35%),
+        radial-gradient(circle at 90% 15%, rgba(6, 182, 212, 0.10), transparent 35%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: rgba(7, 11, 20, 0.85); }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.24); border-radius: 99px; }
+
+    /* Buttons & Inputs */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--transition-fast), filter var(--transition-fast), background var(--transition-fast);
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #2563eb, #0284c7); color: #fff; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28); }
+    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); color: #fff; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.24); }
+    .btn-amber { background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; }
+    .btn-rose { background: rgba(244, 63, 94, 0.18); border-color: rgba(244, 63, 94, 0.4); color: #fda4af; }
+    .btn-rose:hover { background: rgba(244, 63, 94, 0.3); color: #fff; }
+    .btn-ghost { background: rgba(30, 41, 59, 0.7); border-color: var(--border-subtle); color: var(--text-primary); }
+    .btn-ghost:hover { background: rgba(51, 65, 85, 0.8); }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+
+    .input-ctrl, .select-ctrl, .textarea-ctrl {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .input-ctrl:focus, .select-ctrl:focus, .textarea-ctrl:focus { border-color: var(--border-focus); }
+    .textarea-ctrl { min-height: 84px; resize: vertical; }
+
+    /* Login Overlay */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: radial-gradient(circle at 50% 20%, rgba(37, 99, 235, 0.18), rgba(7, 11, 20, 0.98) 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .login-screen.hidden { display: none; }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+    }
+    .login-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    /* App Shell Layout (Sidebar + Main Workspace) */
+    .admin-shell {
+      display: grid;
+      grid-template-columns: 265px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 4px 6px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .brand-box h1 { font-size: 14px; font-weight: 800; line-height: 1.2; }
+    .brand-box span { font-size: 11px; color: var(--text-secondary); }
+
+    .nav-list { display: flex; flex-direction: column; gap: 5px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .nav-item:hover { background: rgba(30, 41, 59, 0.55); color: #fff; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.24), rgba(6, 182, 212, 0.16));
+      border-color: rgba(56, 189, 248, 0.38);
+      color: #fff;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .user-chip {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    .user-chip strong { display: block; color: #fff; font-size: 13px; }
+    .user-chip span { color: var(--accent-cyan); font-size: 11px; font-weight: 600; }
+
+    /* Main Content & Topbar */
+    .main-area {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(7, 11, 20, 0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-amber); }
+    .status-dot.online { background: var(--accent-emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+
+    .workspace { padding: 22px; max-width: 1380px; width: 100%; }
+    .panel { display: none; animation: fadeIn 0.16s ease-out; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 18px;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .section-head h2 { font-size: 18px; font-weight: 800; }
+    .section-head p { font-size: 12px; color: var(--text-secondary); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+    .stat-card .lbl { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+    .stat-card .num { font-size: 22px; font-weight: 800; margin-top: 3px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
+
+    /* Tables & Lists */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 13px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+    th { background: rgba(10, 16, 30, 0.9); color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+    tr:hover td { background: rgba(30, 41, 59, 0.35); }
+
+    .badge { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .badge-open { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .badge-upcoming { background: rgba(59, 130, 246, 0.18); color: #60a5fa; }
+    .badge-closed { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+
+    /* Certificate Studio Preview Canvas */
+    .studio-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start; }
+    .cert-preview-stage {
+      background: #050811;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      overflow-x: auto;
+    }
+    .cert-canvas {
+      width: 780px;
+      height: 552px;
+      margin: 0 auto;
+      position: relative;
+      background: linear-gradient(135deg, #091124 0%, #0f1e3d 55%, #091124 100%);
+      border: 3px solid #d4af37;
+      border-radius: 12px;
+      overflow: hidden;
+      user-select: none;
+    }
+    .cert-draggable {
+      position: absolute;
+      cursor: move;
+      padding: 4px 10px;
+      border: 1px dashed transparent;
+      border-radius: 6px;
+      transition: border-color 0.12s;
+    }
+    .cert-draggable:hover, .cert-draggable.selected { border-color: rgba(56, 189, 248, 0.75); background: rgba(56, 189, 248, 0.08); }
+
+    /* Modal & Toast */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .toast-wrap { position: fixed; bottom: 18px; right: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { background: #1e293b; color: #fff; border-left: 4px solid var(--accent-cyan); padding: 10px 15px; border-radius: 10px; font-size: 13px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .toast.success { border-left-color: var(--accent-emerald); }
+    .toast.error { border-left-color: var(--accent-rose); }
+
+    @media (max-width: 960px) {
+      .admin-shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .studio-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LAYAR LOGIN MULTIUSER -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">PK</div>
+      <h2 style="font-size:20px; font-weight:800; margin-bottom:4px;">Login Admin &amp; Operator</h2>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:18px;">Masuk menggunakan akun Administrator, Panitia, atau Mode Lokal.</p>
+      <form id="formAdminLogin">
+        <div class="form-group">
+          <label for="loginUsername">Username / Email</label>
+          <input type="text" id="loginUsername" class="input-ctrl" placeholder="admin" value="admin" required />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Kata Sandi</label>
+          <input type="password" id="loginPassword" class="input-ctrl" placeholder="••••••" value="admin123" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:6px;">🔐 Masuk ke Panel Admin</button>
+      </form>
+      <div style="margin-top:14px; font-size:11px; color:var(--text-muted); text-align:center;">
+        Default Lokal: <strong>admin</strong> / <strong>admin123</strong> (dapat diubah di menu Multiuser)
+      </div>
+    </div>
+  </div>
+
+  <!-- SHELL UTAMA ADMIN -->
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand-box">
+        <div class="brand-icon" id="adminBrandBadge">PK</div>
+        <div>
+          <h1 id="adminOrgTitle">PUSAT KEGIATAN</h1>
+          <span>Admin &amp; E-Sertifikat</span>
+        </div>
+      </div>
+
+      <nav class="nav-list" id="adminNav">
+        <button type="button" class="nav-item active" data-panel="events">📅 Kelola Kegiatan &amp; Flyer</button>
+        <button type="button" class="nav-item" data-panel="studio">🎨 Studio E-Sertifikat</button>
+        <button type="button" class="nav-item" data-panel="attendees">👥 Daftar Hadir Peserta</button>
+        <button type="button" class="nav-item" data-panel="materials">📚 Materi &amp; Rekaman</button>
+        <button type="button" class="nav-item" data-panel="sync">☁️ Cloud Sync &amp; Backup</button>
+        <button type="button" class="nav-item" data-panel="settings">⚙️ Pengaturan &amp; TTD</button>
+        <button type="button" class="nav-item" data-panel="users">🛡️ Multiuser &amp; Hak Akses</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <strong id="currentUserName">Administrator</strong>
+          <span id="currentUserRole">SUPER ADMIN</span>
+        </div>
+        <a href="index.html" target="_blank" class="btn btn-ghost btn-sm">🌐 Buka Portal Peserta</a>
+        <button type="button" class="btn btn-rose btn-sm" id="btnLogout">🚪 Keluar</button>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <strong id="topbarPageTitle" style="font-size:15px;">Kelola Kegiatan &amp; Flyer</strong>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="status-pill">
+            <span class="status-dot" id="adminSyncDot"></span>
+            <span id="adminSyncText">Menghubungkan...</span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnAdminSyncNow">↻ Sinkron</button>
+        </div>
+      </header>
+<!-- STATISTIK RINGKAS DASHBOARD -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="lbl">Total Kegiatan</div>
+            <div class="num" id="admStatEvents">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">Presensi Aktif</div>
+            <div class="num" id="admStatOpen" style="color:#34d399;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">Total Peserta Hadir</div>
+            <div class="num" id="admStatAttendees" style="color:#38bdf8;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">Materi &amp; Rekaman</div>
+            <div class="num" id="admStatMaterials" style="color:#fbbf24;">0</div>
+          </div>
+        </div>
+
+        <!-- PANEL 1: KELOLA KEGIATAN & FLYER -->
+        <section class="panel active" id="panel-events">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Tambah / Edit Kegiatan &amp; Flyer</h2>
+                <p>Kelola jadwal acara, token presensi, bobot JP, dan gambar flyer portal peserta.</p>
+              </div>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnResetEventForm">+ Form Baru</button>
+            </div>
+
+            <form id="formSaveEvent">
+              <input type="hidden" id="evId" />
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="evTitle">Judul Kegiatan *</label>
+                  <input type="text" id="evTitle" class="input-ctrl" placeholder="Contoh: Workshop Pemanfaatan AI dalam Pembelajaran" required />
+                </div>
+                <div class="form-group">
+                  <label for="evCategory">Kategori *</label>
+                  <select id="evCategory" class="select-ctrl">
+                    <option value="Webinar">Webinar</option>
+                    <option value="Workshop">Workshop</option>
+                    <option value="Pelatihan">Pelatihan</option>
+                    <option value="Seminar">Seminar</option>
+                    <option value="Rapat / Forum">Rapat / Forum</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="evStatus">Status Presensi *</label>
+                  <select id="evStatus" class="select-ctrl">
+                    <option value="open">Presensi Dibuka (Aktif)</option>
+                    <option value="upcoming">Akan Datang</option>
+                    <option value="closed">Selesai / Ditutup</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="evDate">Tanggal Pelaksanaan *</label>
+                  <input type="text" id="evDate" class="input-ctrl" placeholder="Contoh: 28 November 2026" required />
+                </div>
+                <div class="form-group">
+                  <label for="evTime">Waktu / Pukul</label>
+                  <input type="text" id="evTime" class="input-ctrl" placeholder="08.30 - 12.00 WIB" />
+                </div>
+                <div class="form-group">
+                  <label for="evLocation">Lokasi / Tautan Ruang</label>
+                  <input type="text" id="evLocation" class="input-ctrl" placeholder="Zoom Meeting / Aula Utama" />
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="evSpeaker">Narasumber / Pemateri</label>
+                  <input type="text" id="evSpeaker" class="input-ctrl" placeholder="Nama Narasumber" />
+                </div>
+                <div class="form-group">
+                  <label for="evJp">Bobot Jam Pelajaran (JP)</label>
+                  <input type="text" id="evJp" class="input-ctrl" placeholder="Contoh: 4 atau 32 (opsional)" />
+                </div>
+                <div class="form-group">
+                  <label for="evToken">Token Presensi (Opsional)</label>
+                  <input type="text" id="evToken" class="input-ctrl" placeholder="Kosongkan jika tanpa token" />
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="evFlyerUrl">URL Gambar Flyer (atau Unggah Lokal)</label>
+                  <input type="text" id="evFlyerUrl" class="input-ctrl" placeholder="https://... atau pilih file di sebelah" />
+                </div>
+                <div class="form-group">
+                  <label for="evFlyerFile">Unggah File Flyer (Otomatis Kompres Cepat)</label>
+                  <input type="file" id="evFlyerFile" accept="image/*" class="input-ctrl" style="padding:6px;" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="evDescription">Deskripsi / Informasi Kegiatan</label>
+                <textarea id="evDescription" class="textarea-ctrl" placeholder="Rincian agenda, fasilitas peserta, tautan grup koordinasi, dll..."></textarea>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button type="submit" class="btn btn-primary">💾 Simpan Kegiatan</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Daftar Kegiatan Terpublikasi</h2>
+                <p>Klik QR Presensi untuk membagikan tautan/kode QR langsung ke peserta.</p>
+              </div>
+              <input type="text" id="admSearchEvent" class="input-ctrl" style="max-width:260px;" placeholder="🔎 Cari kegiatan..." />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Kegiatan &amp; Kategori</th>
+                    <th>Jadwal &amp; Lokasi</th>
+                    <th>Status &amp; Token</th>
+                    <th>Peserta</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admEventsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL 2: STUDIO E-SERTIFIKAT (DRAG & DROP + TEMPLATE) -->
+        <section class="panel" id="panel-studio">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Studio Desain E-Sertifikat (A4 Landscape)</h2>
+                <p>Geser (drag &amp; drop) posisi elemen pada kanvas pratinjau atau unggah latar belakang sertifikat khusus.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost btn-sm" id="btnResetStudioLayout">↺ Reset Posisi Default</button>
+                <button type="button" class="btn btn-emerald btn-sm" id="btnSaveStudioLayout">💾 Simpan Desain Studio</button>
+              </div>
+            </div>
+
+            <div class="studio-wrap">
+              <div>
+                <div class="form-group">
+                  <label for="studioBgFile">Latar Belakang Kustom (JPG/PNG A4 Landscape)</label>
+                  <input type="file" id="studioBgFile" accept="image/*" class="input-ctrl" style="padding:6px;" />
+                </div>
+                <div class="form-group">
+                  <label for="studioTextColor">Warna Teks Utama Sertifikat</label>
+                  <input type="color" id="studioTextColor" value="#f8fafc" style="width:100%; height:38px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--bg-input);" />
+                </div>
+                <div class="form-group">
+                  <label for="studioAccentColor">Warna Aksen Nama Peserta</label>
+                  <input type="color" id="studioAccentColor" value="#fbbf24" style="width:100%; height:38px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--bg-input);" />
+                </div>
+                <div class="form-group">
+                  <label for="studioBodyTemplate">Redaksi Kalimat Sertifikat</label>
+                  <textarea id="studioBodyTemplate" class="textarea-ctrl">Atas partisipasi aktifnya sebagai PESERTA dalam kegiatan "{KEGIATAN}" yang diselenggarakan pada tanggal {TANGGAL}.</textarea>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnClearStudioBg" style="width:100%;">🗑️ Hapus Gambar Latar Kustom</button>
+              </div>
+
+              <div class="cert-preview-stage">
+                <div class="cert-canvas" id="studioCanvas">
+                  <div class="cert-draggable" data-key="header" style="top:34px; left:220px; text-align:center;">
+                    <div style="font-size:11px; letter-spacing:2px; color:#38bdf8; font-weight:700;" id="prevOrgName">PUSAT KEGIATAN</div>
+                    <div style="font-family:'Playfair Display',serif; font-size:34px; font-weight:700;">SERTIFIKAT</div>
+                    <div style="font-size:11px; opacity:0.8;">Nomor: CERT-2026-SAMPLE</div>
+                  </div>
+
+                  <div class="cert-draggable" data-key="recipient" style="top:175px; left:170px; text-align:center; width:440px;">
+                    <div style="font-size:12px; opacity:0.8; margin-bottom:4px;">Diberikan dengan bangga kepada:</div>
+                    <div id="prevRecipientName" style="font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#fbbf24;">Dr. Ahmad Fauzi, M.Pd.</div>
+                    <div style="font-size:12px; margin-top:4px;">Instansi / Unit Kerja Peserta</div>
+                  </div>
+
+                  <div class="cert-draggable" data-key="body" style="top:285px; left:110px; width:560px; text-align:center; font-size:12px; line-height:1.55;" id="prevBodyText">
+                    Atas partisipasi aktifnya sebagai PESERTA dalam kegiatan "Workshop Pemanfaatan AI" yang diselenggarakan pada tanggal 28 November 2026.
+                  </div>
+
+                  <div class="cert-draggable" data-key="qr" style="bottom:36px; left:48px; display:flex; align-items:center; gap:8px;">
+                    <div style="width:54px; height:54px; background:#fff; color:#000; display:grid; place-items:center; font-size:10px; font-weight:800; border-radius:6px;">QR</div>
+                    <div style="font-size:9px; max-width:130px; opacity:0.8;">Pindai untuk verifikasi keaslian dokumen</div>
+                  </div>
+
+                  <div class="cert-draggable" data-key="signer" style="bottom:32px; right:48px; text-align:center; min-width:180px;">
+                    <div style="font-size:11px;" id="prevSignerTitle">Ketua Panitia Pelaksana</div>
+                    <div style="height:38px; display:flex; align-items:center; justify-content:center;" id="prevSigImgWrap"></div>
+                    <div style="font-size:12px; font-weight:700; border-top:1px solid rgba(255,255,255,0.3); padding-top:3px;" id="prevSignerName">Penanggung Jawab</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL 3: DAFTAR HADIR PESERTA -->
+        <section class="panel" id="panel-attendees">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Data Daftar Hadir &amp; Penerbitan E-Sertifikat</h2>
+                <p>Filter peserta per kegiatan, tambah manual, import CSV, atau export laporan kehadiran.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddAttendee">+ Tambah Peserta</button>
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
+                  📥 Import CSV
+                  <input type="file" id="inputImportCsv" accept=".csv" style="display:none;" />
+                </label>
+                <button type="button" class="btn btn-emerald btn-sm" id="btnExportCsv">📤 Export CSV</button>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:14px;">
+              <input type="text" id="admSearchAttendee" class="input-ctrl" placeholder="🔎 Cari nama, email, instansi, atau kode sertifikat..." />
+              <select id="admFilterAttEvent" class="select-ctrl">
+                <option value="ALL">Semua Kegiatan</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nama Peserta</th>
+                    <th>Instansi &amp; Kontak</th>
+                    <th>Kegiatan</th>
+                    <th>Kode Sertifikat</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admAttendeesTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      <main class="workspace">
+        <!-- PANEL 4: MATERI & REKAMAN -->
+        <section class="panel" id="panel-materials">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Publikasi Materi, Modul &amp; Rekaman</h2>
+                <p>Tambahkan tautan Google Drive, PDF materi, slide presentasi, atau rekaman video agar dapat diunduh peserta.</p>
+              </div>
+            </div>
+
+            <form id="formSaveMaterial">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="matEventId">Kegiatan Terkait *</label>
+                  <select id="matEventId" class="select-ctrl" required></select>
+                </div>
+                <div class="form-group">
+                  <label for="matType">Jenis Dokumen *</label>
+                  <select id="matType" class="select-ctrl">
+                    <option value="Modul / PDF">Modul / PDF</option>
+                    <option value="Slide Presentasi">Slide Presentasi</option>
+                    <option value="Rekaman Video">Rekaman Video</option>
+                    <option value="Template / Bahan Praktik">Template / Bahan Praktik</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="matTitle">Judul Materi *</label>
+                  <input type="text" id="matTitle" class="input-ctrl" placeholder="Contoh: Slide Materi Sesi 1 - Pengenalan" required />
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="matUrl">Tautan Materi / Video (URL) *</label>
+                  <input type="url" id="matUrl" class="input-ctrl" placeholder="https://drive.google.com/..." required />
+                </div>
+                <div class="form-group">
+                  <label for="matDescription">Keterangan Singkat</label>
+                  <input type="text" id="matDescription" class="input-ctrl" placeholder="Narasumber / catatan unduhan (opsional)" />
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary">➕ Publikasikan Materi</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="glass-card">
+            <div class="section-head">
+              <h2>Daftar Materi Terpublikasi</h2>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Judul &amp; Jenis</th>
+                    <th>Kegiatan</th>
+                    <th>Tautan</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admMaterialsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL 5: CLOUD SYNC & BACKUP JSON -->
+        <section class="panel" id="panel-sync">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Sinkronisasi Cloud &amp; Cadangan Data (Backup/Restore)</h2>
+                <p>Kelola sinkronisasi Firebase Firestore secara real-time maupun cadangan file JSON lokal.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="glass-card" style="margin-bottom:0; background:rgba(10,16,30,0.75);">
+                <h3 style="font-size:15px; margin-bottom:6px;">☁️ Sinkronisasi Firebase Cloud</h3>
+                <p style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+                  Dorong seluruh data lokal (kegiatan, peserta, materi, pengaturan) ke Firebase atau tarik pembaruan terbaru dari Cloud.
+                </p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-primary btn-sm" id="btnPushCloud">⬆️ Push Lokal ke Cloud</button>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btnPullCloud">⬇️ Pull dari Cloud</button>
+                </div>
+              </div>
+
+              <div class="glass-card" style="margin-bottom:0; background:rgba(10,16,30,0.75);">
+                <h3 style="font-size:15px; margin-bottom:6px;">💾 Backup &amp; Restore JSON</h3>
+                <p style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">
+                  Unduh seluruh database aplikasi dalam satu file <code>.json</code> atau pulihkan dari cadangan sebelumnya.
+                </p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-emerald btn-sm" id="btnExportJson">📥 Unduh Backup JSON</button>
+                  <label class="btn btn-amber btn-sm" style="cursor:pointer;">
+                    📤 Restore JSON
+                    <input type="file" id="inputRestoreJson" accept=".json" style="display:none;" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL 6: PENGATURAN INSTANSI & TTD DIGITAL -->
+        <section class="panel" id="panel-settings">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Identitas Lembaga, Penomoran &amp; Tanda Tangan Digital</h2>
+                <p>Pengaturan ini otomatis tampil pada Portal Peserta dan dokumen E-Sertifikat resmi.</p>
+              </div>
+            </div>
+
+            <form id="formSaveSettings">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="setOrgName">Nama Lembaga / Penyelenggara *</label>
+                  <input type="text" id="setOrgName" class="input-ctrl" required />
+                </div>
+                <div class="form-group">
+                  <label for="setOrgSubtitle">Subjudul Portal</label>
+                  <input type="text" id="setOrgSubtitle" class="input-ctrl" />
+                </div>
+                <div class="form-group">
+                  <label for="setCertPrefix">Awalan Nomor Sertifikat (Prefix)</label>
+                  <input type="text" id="setCertPrefix" class="input-ctrl" placeholder="CERT" />
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="setSignerName">Nama Pejabat Penandatangan *</label>
+                  <input type="text" id="setSignerName" class="input-ctrl" required />
+                </div>
+                <div class="form-group">
+                  <label for="setSignerTitle">Jabatan Penandatangan *</label>
+                  <input type="text" id="setSignerTitle" class="input-ctrl" required />
+                </div>
+                <div class="form-group">
+                  <label for="setSigFile">Unggah Gambar TTD / Stempel (PNG Transparan)</label>
+                  <input type="file" id="setSigFile" accept="image/*" class="input-ctrl" style="padding:6px;" />
+                </div>
+              </div>
+
+              <div id="sigPreviewBox" style="margin-bottom:14px; display:none; align-items:center; gap:14px; background:rgba(10,16,30,0.8); padding:10px 14px; border-radius:10px; border:1px solid var(--border-subtle);">
+                <img id="sigPreviewImg" src="" alt="Pratinjau TTD" style="max-height:54px; background:#fff; padding:4px 10px; border-radius:6px;" />
+                <button type="button" class="btn btn-rose btn-sm" id="btnRemoveSig">Hapus TTD</button>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary">💾 Simpan Pengaturan</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- PANEL 7: MULTIUSER & HAK AKSES -->
+        <section class="panel" id="panel-users">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h2>Manajemen Akun Admin &amp; Operator</h2>
+                <p>Tambahkan akun panitia/operator untuk membantu verifikasi daftar hadir dan pengelolaan materi.</p>
+              </div>
+            </div>
+
+            <form id="formAddUser" style="margin-bottom:18px;">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="usrFullName">Nama Lengkap *</label>
+                  <input type="text" id="usrFullName" class="input-ctrl" placeholder="Nama Operator" required />
+                </div>
+                <div class="form-group">
+                  <label for="usrUsername">Username Login *</label>
+                  <input type="text" id="usrUsername" class="input-ctrl" placeholder="operator1" required />
+                </div>
+                <div class="form-group">
+                  <label for="usrPassword">Kata Sandi *</label>
+                  <input type="text" id="usrPassword" class="input-ctrl" placeholder="Minimal 6 karakter" required />
+                </div>
+                <div class="form-group">
+                  <label for="usrRole">Peran / Hak Akses</label>
+                  <select id="usrRole" class="select-ctrl">
+                    <option value="SUPER ADMIN">SUPER ADMIN (Akses Penuh)</option>
+                    <option value="OPERATOR">OPERATOR (Kegiatan &amp; Presensi)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-emerald">+ Tambah Akun Pengguna</button>
+              </div>
+            </form>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nama Lengkap</th>
+                    <th>Username</th>
+                    <th>Hak Akses</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admUsersTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL 1: QR CODE PRESENSI & TAUTAN PESERTA -->
+  <div class="modal-backdrop" id="modalQrShare">
+    <div class="modal-box" style="max-width:440px; text-align:center;">
+      <div class="modal-header">
+        <h3 id="qrModalEventTitle">QR Code Presensi Peserta</h3>
+        <button type="button" class="btn btn-ghost btn-sm" data-close-modal="modalQrShare">✕</button>
+      </div>
+      <div id="qrCanvasMount" style="background:#fff; padding:14px; border-radius:12px; display:inline-block; margin:8px auto 12px;"></div>
+      <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+        Bagikan QR Code atau tautan di bawah ini agar peserta langsung masuk ke formulir daftar hadir:
+      </p>
+      <input type="text" id="qrShareLinkInput" class="input-ctrl" readonly style="text-align:center; font-size:12px; margin-bottom:12px;" />
+      <div style="display:flex; justify-content:center; gap:8px;">
+        <button type="button" class="btn btn-primary btn-sm" id="btnCopyQrLink">📋 Salin Tautan</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-close-modal="modalQrShare">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: TAMBAH PESERTA MANUAL -->
+  <div class="modal-backdrop" id="modalAddAttendee">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Tambah Peserta Hadir Manual</h3>
+        <button type="button" class="btn btn-ghost btn-sm" data-close-modal="modalAddAttendee">✕</button>
+      </div>
+      <form id="formManualAttendee">
+        <div class="form-group">
+          <label for="manAttEvent">Pilih Kegiatan *</label>
+          <select id="manAttEvent" class="select-ctrl" required></select>
+        </div>
+        <div class="form-group">
+          <label for="manAttName">Nama Lengkap &amp; Gelar *</label>
+          <input type="text" id="manAttName" class="input-ctrl" required />
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="manAttEmail">Email *</label>
+            <input type="email" id="manAttEmail" class="input-ctrl" required />
+          </div>
+          <div class="form-group">
+            <label for="manAttPhone">No. WhatsApp / HP</label>
+            <input type="text" id="manAttPhone" class="input-ctrl" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="manAttInst">Instansi / Unit Kerja</label>
+          <input type="text" id="manAttInst" class="input-ctrl" />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-ghost" data-close-modal="modalAddAttendee">Batal</button>
+          <button type="submit" class="btn btn-emerald">✔ Simpan Peserta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+  <div id="admCertRenderHost" style="position:fixed; left:-9999px; top:0; pointer-events:none;"></div>
+  <script type="module">
+    // =========================================================================
+    // FAST-RESPONSE ADMIN ENGINE (100% Sinkron dengan index.html Portal Peserta)
+    // =========================================================================
+    const KEYS = {
+      EVENTS: 'pk_events_v3',
+      ATTENDEES: 'pk_attendees_v3',
+      MATERIALS: 'pk_materials_v3',
+      SETTINGS: 'pk_settings_v3',
+      USERS: 'pk_users_v3',
+      SESSION: 'pk_admin_session_v3'
+    };
+
+    const state = {
+      events: [],
+      attendees: [],
+      materials: [],
+      users: [
+        { id: 'usr_default', name: 'Administrator Utama', username: 'admin', password: 'admin123', role: 'SUPER ADMIN' }
+      ],
+      settings: {
+        orgName: 'PUSAT KEGIATAN',
+        orgSubtitle: 'Portal Informasi, Presensi & E-Sertifikat Peserta',
+        certPrefix: 'CERT',
+        signerName: 'Ketua Panitia Pelaksana',
+        signerTitle: 'Penanggung Jawab Kegiatan',
+        signatureDataUrl: '',
+        studioBgDataUrl: '',
+        studioTextColor: '#f8fafc',
+        studioAccentColor: '#fbbf24',
+        studioBodyTemplate: 'Atas partisipasi aktifnya sebagai PESERTA dalam kegiatan "{KEGIATAN}" yang diselenggarakan pada tanggal {TANGGAL}.',
+        studioPositions: {}
+      },
+      currentUser: null,
+      isCloud: false,
+      db: null,
+      fsOps: null
+    };
+
+    const $ = (s) => document.querySelector(s);
+    const esc = (str) => String(str ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const debounce = (fn, delay = 130) => {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    };
+
+    function toast(msg, type = 'info') {
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.textContent = msg;
+      $('#toastWrap').appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.2s'; setTimeout(() => el.remove(), 220); }, 2800);
+    }
+
+    function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+    function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+    // Kompresi gambar otomatis agar localStorage & Firestore tetap super ringan & cepat
+    function compressImageFile(file, maxWidth = 1000, quality = 0.78) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. INSTANT CACHE BOOT & CLOUD SYNC
+    // -------------------------------------------------------------------------
+    function loadCache() {
+      try {
+        const ev = JSON.parse(localStorage.getItem(KEYS.EVENTS) || '[]');
+        const at = JSON.parse(localStorage.getItem(KEYS.ATTENDEES) || '[]');
+        const mt = JSON.parse(localStorage.getItem(KEYS.MATERIALS) || '[]');
+        const us = JSON.parse(localStorage.getItem(KEYS.USERS) || 'null');
+        const st = JSON.parse(localStorage.getItem(KEYS.SETTINGS) || 'null');
+        const sess = JSON.parse(sessionStorage.getItem(KEYS.SESSION) || 'null');
+
+        if (Array.isArray(ev)) state.events = ev;
+        if (Array.isArray(at)) state.attendees = at;
+        if (Array.isArray(mt)) state.materials = mt;
+        if (Array.isArray(us) && us.length) state.users = us;
+        if (st && typeof st === 'object') Object.assign(state.settings, st);
+        if (sess) state.currentUser = sess;
+      } catch (e) { console.warn(e); }
+
+      checkAuthUI();
+      syncFormSettingsUI();
+      renderAll();
+    }
+
+    function saveCache() {
+      try {
+        localStorage.setItem(KEYS.EVENTS, JSON.stringify(state.events));
+        localStorage.setItem(KEYS.ATTENDEES, JSON.stringify(state.attendees));
+        localStorage.setItem(KEYS.MATERIALS, JSON.stringify(state.materials));
+        localStorage.setItem(KEYS.USERS, JSON.stringify(state.users));
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(state.settings));
+      } catch (e) {
+        toast('Peringatan: Penyimpanan lokal hampir penuh. Gunakan URL gambar eksternal atau hapus flyer lama.', 'error');
+      }
+    }
+
+    async function initFirebaseSync(pull = true) {
+      const dot = $('#adminSyncDot');
+      const txt = $('#adminSyncText');
+      try {
+        const cfgMod = await import('./firebase-config.js');
+        const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+        const fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+
+        const firebaseConfig = cfgMod.firebaseConfig || cfgMod.default;
+        if (!firebaseConfig || !firebaseConfig.projectId) throw new Error('Config kosong');
+
+        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        state.db = fs.getFirestore(app);
+        state.fsOps = fs;
+        state.isCloud = true;
+
+        dot.classList.add('online');
+        txt.textContent = 'Cloud Terhubung';
+
+        if (pull) await pullFromCloud(true);
+      } catch (err) {
+        state.isCloud = false;
+        dot.classList.remove('online');
+        txt.textContent = 'Mode Lokal';
+      }
+    }
+
+    async function cloudWrite(col, id, data) {
+      if (!state.isCloud || !state.db || !state.fsOps) return;
+      try {
+        await state.fsOps.setDoc(state.fsOps.doc(state.db, col, id), data);
+      } catch (e) { console.warn('Cloud write gagal:', e); }
+    }
+
+    async function cloudDelete(col, id) {
+      if (!state.isCloud || !state.db || !state.fsOps) return;
+      try {
+        await state.fsOps.deleteDoc(state.fsOps.doc(state.db, col, id));
+      } catch (e) { console.warn('Cloud delete gagal:', e); }
+    }
+
+    async function pullFromCloud(silent = false) {
+      if (!state.isCloud) { if (!silent) toast('Mode lokal aktif (Firebase belum terkonfigurasi).', 'info'); return; }
+      const { db, fsOps: fs } = state;
+      const [evSnap, atSnap, mtSnap, stSnap] = await Promise.all([
+        fs.getDocs(fs.collection(db, 'events')),
+        fs.getDocs(fs.collection(db, 'attendees')),
+        fs.getDocs(fs.collection(db, 'materials')),
+        fs.getDoc(fs.doc(db, 'settings', 'general')).catch(() => null)
+      ]);
+      if (!evSnap.empty) state.events = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!atSnap.empty) state.attendees = atSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!mtSnap.empty) state.materials = mtSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (stSnap && stSnap.exists()) Object.assign(state.settings, stSnap.data());
+
+      saveCache();
+      syncFormSettingsUI();
+      renderAll();
+      if (!silent) toast('Data berhasil ditarik dari Cloud!', 'success');
+    }
+
+    async function pushAllToCloud() {
+      if (!state.isCloud) { toast('Firebase belum terhubung.', 'error'); return; }
+      toast('Mengunggah seluruh data ke Cloud...', 'info');
+      const tasks = [
+        ...state.events.map(e => cloudWrite('events', e.id, e)),
+        ...state.attendees.map(a => cloudWrite('attendees', a.id, a)),
+        ...state.materials.map(m => cloudWrite('materials', m.id, m)),
+        cloudWrite('settings', 'general', state.settings)
+      ];
+      await Promise.all(tasks);
+      toast('Seluruh data lokal berhasil disinkronkan ke Cloud!', 'success');
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. MULTIUSER AUTHENTICATION
+    // -------------------------------------------------------------------------
+    function checkAuthUI() {
+      const screen = $('#loginScreen');
+      if (state.currentUser) {
+        screen.classList.add('hidden');
+        $('#currentUserName').textContent = state.currentUser.name;
+        $('#currentUserRole').textContent = state.currentUser.role;
+      } else {
+        screen.classList.remove('hidden');
+      }
+    }
+
+    $('#formAdminLogin').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const u = $('#loginUsername').value.trim().toLowerCase();
+      const p = $('#loginPassword').value;
+      const found = state.users.find(x => x.username.toLowerCase() === u && x.password === p);
+      if (!found) {
+        toast('Username atau kata sandi salah!', 'error');
+        return;
+      }
+      state.currentUser = { id: found.id, name: found.name, username: found.username, role: found.role };
+      sessionStorage.setItem(KEYS.SESSION, JSON.stringify(state.currentUser));
+      checkAuthUI();
+      toast(`Selamat datang, ${found.name}!`, 'success');
+    });
+
+    $('#btnLogout').addEventListener('click', () => {
+      state.currentUser = null;
+      sessionStorage.removeItem(KEYS.SESSION);
+      checkAuthUI();
+    });
+
+    // -------------------------------------------------------------------------
+    // 3. FAST RENDERING SEMUA TABEL & DROPDOWN
+    // -------------------------------------------------------------------------
+    function renderAll() {
+      $('#admStatEvents').textContent = state.events.length;
+      $('#admStatOpen').textContent = state.events.filter(e => (e.status || 'open') === 'open').length;
+      $('#admStatAttendees').textContent = state.attendees.length;
+      $('#admStatMaterials').textContent = state.materials.length;
+
+      const org = state.settings.orgName || 'PUSAT KEGIATAN';
+      $('#adminOrgTitle').textContent = org;
+      $('#adminBrandBadge').textContent = org.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || '').join('') || 'PK';
+
+      populateAdminDropdowns();
+      renderEventsTable();
+      renderAttendeesTable();
+      renderMaterialsTable();
+      renderUsersTable();
+    }
+
+    function populateAdminDropdowns() {
+      const opts = state.events.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('');
+      $('#admFilterAttEvent').innerHTML = `<option value="ALL">Semua Kegiatan</option>${opts}`;
+      $('#matEventId').innerHTML = opts || '<option value="">-- Buat Kegiatan Dulu --</option>';
+      $('#manAttEvent').innerHTML = opts || '<option value="">-- Buat Kegiatan Dulu --</option>';
+    }
+
+    function renderEventsTable() {
+      const tbody = $('#admEventsTbody');
+      const q = ($('#admSearchEvent').value || '').trim().toLowerCase();
+      const list = state.events.filter(e => !q || `${e.title} ${e.category} ${e.location}`.toLowerCase().includes(q));
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:22px;">Belum ada data kegiatan.</td></tr>';
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const ev of list) {
+        const count = state.attendees.filter(a => a.eventId === ev.id).length;
+        const st = ev.status || 'open';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <strong>${esc(ev.title)}</strong>
+            <div style="font-size:11px; color:var(--accent-cyan);">${esc(ev.category || 'Umum')} ${ev.jp ? '• ' + esc(ev.jp) + ' JP' : ''}</div>
+          </td>
+          <td>
+            <div>${esc(ev.date || '-')}</div>
+            <div style="font-size:11px; color:var(--text-secondary);">${esc(ev.location || '-')}</div>
+          </td>
+          <td>
+            <span class="badge badge-${st}">${st === 'open' ? 'Dibuka' : st === 'upcoming' ? 'Akan Datang' : 'Ditutup'}</span>
+            ${ev.token ? `<div style="font-size:11px; color:#fbbf24; margin-top:3px;">Token: <code>${esc(ev.token)}</code></div>` : ''}
+          </td>
+          <td><strong>${count}</strong> peserta</td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-ghost btn-sm" data-act="qr-ev" data-id="${esc(ev.id)}">📱 QR</button>
+              <button type="button" class="btn btn-primary btn-sm" data-act="edit-ev" data-id="${esc(ev.id)}">✏️ Edit</button>
+              <button type="button" class="btn btn-rose btn-sm" data-act="del-ev" data-id="${esc(ev.id)}">🗑️</button>
+            </div>
+          </td>
+        `;
+        frag.appendChild(tr);
+      }
+      tbody.innerHTML = '';
+      tbody.appendChild(frag);
+    }
+
+    function renderAttendeesTable() {
+      const tbody = $('#admAttendeesTbody');
+      const q = ($('#admSearchAttendee').value || '').trim().toLowerCase();
+      const evF = $('#admFilterAttEvent').value;
+
+      const list = state.attendees.filter(a => {
+        if (evF !== 'ALL' && a.eventId !== evF) return false;
+        if (q && !`${a.name} ${a.email} ${a.institution} ${a.certCode}`.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:22px;">Belum ada data peserta hadir.</td></tr>';
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      for (const a of list.slice(0, 250)) {
+        const ev = state.events.find(e => e.id === a.eventId);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${esc(a.name)}</strong>${a.idNumber ? `<div style="font-size:11px; color:var(--text-secondary);">ID: ${esc(a.idNumber)}</div>` : ''}</td>
+          <td><div>${esc(a.institution || '-')}</div><div style="font-size:11px; color:var(--text-secondary);">${esc(a.email || '-')} • ${esc(a.phone || '-')}</div></td>
+          <td style="font-size:12px;">${esc(ev?.title || a.eventTitle || '-')}</td>
+          <td><code style="color:#34d399;">${esc(a.certCode || a.id)}</code></td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn btn-primary btn-sm" data-act="cert-pdf" data-id="${esc(a.id)}">🎓 PDF</button>
+              <button type="button" class="btn btn-rose btn-sm" data-act="del-att" data-id="${esc(a.id)}">🗑️</button>
+            </div>
+          </td>
+        `;
+        frag.appendChild(tr);
+      }
+      tbody.innerHTML = '';
+      tbody.appendChild(frag);
+    }
+
+    function renderMaterialsTable() {
+      const tbody = $('#admMaterialsTbody');
+      if (!state.materials.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary); padding:20px;">Belum ada materi terpublikasi.</td></tr>';
+        return;
+      }
+      const frag = document.createDocumentFragment();
+      for (const m of state.materials) {
+        const ev = state.events.find(e => e.id === m.eventId);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${esc(m.title)}</strong><div style="font-size:11px; color:var(--accent-cyan);">${esc(m.type)}</div></td>
+          <td style="font-size:12px;">${esc(ev?.title || '-')}</td>
+          <td><a href="${esc(m.url)}" target="_blank" class="btn btn-ghost btn-sm">↗ Buka Link</a></td>
+          <td><button type="button" class="btn btn-rose btn-sm" data-act="del-mat" data-id="${esc(m.id)}">🗑️ Hapus</button></td>
+        `;
+        frag.appendChild(tr);
+      }
+      tbody.innerHTML = '';
+      tbody.appendChild(frag);
+    }
+
+    function renderUsersTable() {
+      const tbody = $('#admUsersTbody');
+      tbody.innerHTML = state.users.map(u => `
+        <tr>
+          <td><strong>${esc(u.name)}</strong></td>
+          <td><code>${esc(u.username)}</code></td>
+          <td><span class="badge badge-open">${esc(u.role)}</span></td>
+          <td>${u.username !== 'admin' ? `<button type="button" class="btn btn-rose btn-sm" data-act="del-usr" data-id="${esc(u.id)}">Hapus</button>` : '<span style="font-size:11px; color:var(--text-muted);">Utama</span>'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. CRUD KEGIATAN, MATERI, PESERTA, PENGATURAN & STUDIO DRAG-AND-DROP
+    // -------------------------------------------------------------------------
+    $('#evFlyerFile').addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      toast('Mengompres gambar flyer...', 'info');
+      const dataUrl = await compressImageFile(file, 960, 0.78);
+      $('#evFlyerUrl').value = dataUrl;
+      toast('Gambar flyer siap disimpan!', 'success');
+    });
+
+    $('#formSaveEvent').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const existingId = $('#evId').value;
+      const id = existingId || ('ev_' + Date.now());
+      const item = {
+        id,
+        title: $('#evTitle').value.trim(),
+        category: $('#evCategory').value,
+        status: $('#evStatus').value,
+        date: $('#evDate').value.trim(),
+        time: $('#evTime').value.trim(),
+        location: $('#evLocation').value.trim(),
+        speaker: $('#evSpeaker').value.trim(),
+        jp: $('#evJp').value.trim(),
+        token: $('#evToken').value.trim(),
+        flyerUrl: $('#evFlyerUrl').value.trim(),
+        description: $('#evDescription').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      const idx = state.events.findIndex(x => x.id === id);
+      if (idx >= 0) state.events[idx] = item;
+      else state.events.unshift(item);
+
+      saveCache();
+      await cloudWrite('events', id, item);
+      e.target.reset();
+      $('#evId').value = '';
+      renderAll();
+      toast('Kegiatan berhasil disimpan & dipublikasikan!', 'success');
+    });
+
+    $('#btnResetEventForm').addEventListener('click', () => {
+      $('#formSaveEvent').reset();
+      $('#evId').value = '';
+    });
+
+    $('#formSaveMaterial').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const item = {
+        id: 'mat_' + Date.now(),
+        eventId: $('#matEventId').value,
+        type: $('#matType').value,
+        title: $('#matTitle').value.trim(),
+        url: $('#matUrl').value.trim(),
+        description: $('#matDescription').value.trim(),
+        createdAt: new Date().toISOString()
+      };
+      state.materials.unshift(item);
+      saveCache();
+      await cloudWrite('materials', item.id, item);
+      e.target.reset();
+      renderAll();
+      toast('Materi berhasil ditambahkan!', 'success');
+    });
+
+    $('#formManualAttendee').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const eventId = $('#manAttEvent').value;
+      const ev = state.events.find(x => x.id === eventId) || {};
+      const item = {
+        id: 'att_' + Date.now(),
+        eventId,
+        eventTitle: ev.title || '',
+        name: $('#manAttName').value.trim(),
+        email: $('#manAttEmail').value.trim(),
+        phone: $('#manAttPhone').value.trim(),
+        institution: $('#manAttInst').value.trim(),
+        certCode: `${state.settings.certPrefix || 'CERT'}-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        timestamp: new Date().toISOString()
+      };
+      state.attendees.unshift(item);
+      saveCache();
+      await cloudWrite('attendees', item.id, item);
+      e.target.reset();
+      closeModal('modalAddAttendee');
+      renderAll();
+      toast('Peserta berhasil ditambahkan!', 'success');
+    });
+
+    // Studio Drag-and-Drop
+    let dragEl = null, offsetX = 0, offsetY = 0;
+    $('#studioCanvas').addEventListener('mousedown', (e) => {
+      const target = e.target.closest('.cert-draggable');
+      if (!target) return;
+      dragEl = target;
+      const rect = target.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!dragEl) return;
+      const parentRect = $('#studioCanvas').getBoundingClientRect();
+      const x = Math.max(0, Math.min(parentRect.width - dragEl.offsetWidth, e.clientX - parentRect.left - offsetX));
+      const y = Math.max(0, Math.min(parentRect.height - dragEl.offsetHeight, e.clientY - parentRect.top - offsetY));
+      dragEl.style.left = x + 'px';
+      dragEl.style.top = y + 'px';
+      dragEl.style.right = 'auto';
+      dragEl.style.bottom = 'auto';
+    });
+    window.addEventListener('mouseup', () => { dragEl = null; });
+
+    $('#studioBgFile').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const url = await compressImageFile(f, 1123, 0.85);
+      state.settings.studioBgDataUrl = url;
+      $('#studioCanvas').style.backgroundImage = `url(${url})`;
+      $('#studioCanvas').style.backgroundSize = 'cover';
+    });
+
+    $('#btnClearStudioBg').addEventListener('click', () => {
+      state.settings.studioBgDataUrl = '';
+      $('#studioCanvas').style.backgroundImage = '';
+      toast('Latar kustom dihapus.', 'info');
+    });
+
+    $('#btnSaveStudioLayout').addEventListener('click', async () => {
+      state.settings.studioTextColor = $('#studioTextColor').value;
+      state.settings.studioAccentColor = $('#studioAccentColor').value;
+      state.settings.studioBodyTemplate = $('#studioBodyTemplate').value;
+      const positions = {};
+      document.querySelectorAll('.cert-draggable').forEach(el => {
+        positions[el.dataset.key] = { top: el.style.top, left: el.style.left };
+      });
+      state.settings.studioPositions = positions;
+      saveCache();
+      await cloudWrite('settings', 'general', state.settings);
+      toast('Desain Studio E-Sertifikat berhasil disimpan!', 'success');
+    });
+
+    // Settings & TTD
+    function syncFormSettingsUI() {
+      $('#setOrgName').value = state.settings.orgName || '';
+      $('#setOrgSubtitle').value = state.settings.orgSubtitle || '';
+      $('#setCertPrefix').value = state.settings.certPrefix || 'CERT';
+      $('#setSignerName').value = state.settings.signerName || '';
+      $('#setSignerTitle').value = state.settings.signerTitle || '';
+      $('#prevOrgName').textContent = state.settings.orgName || 'PUSAT KEGIATAN';
+      $('#prevSignerName').textContent = state.settings.signerName || 'Penanggung Jawab';
+      $('#prevSignerTitle').textContent = state.settings.signerTitle || 'Ketua Panitia';
+
+      if (state.settings.signatureDataUrl) {
+        $('#sigPreviewBox').style.display = 'flex';
+        $('#sigPreviewImg').src = state.settings.signatureDataUrl;
+        $('#prevSigImgWrap').innerHTML = `<img src="${esc(state.settings.signatureDataUrl)}" style="max-height:36px;" />`;
+      } else {
+        $('#sigPreviewBox').style.display = 'none';
+        $('#prevSigImgWrap').innerHTML = '';
+      }
+    }
+
+    $('#setSigFile').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      state.settings.signatureDataUrl = await compressImageFile(f, 400, 0.9);
+      syncFormSettingsUI();
+    });
+
+    $('#btnRemoveSig').addEventListener('click', () => {
+      state.settings.signatureDataUrl = '';
+      syncFormSettingsUI();
+    });
+
+    $('#formSaveSettings').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      state.settings.orgName = $('#setOrgName').value.trim();
+      state.settings.orgSubtitle = $('#setOrgSubtitle').value.trim();
+      state.settings.certPrefix = $('#setCertPrefix').value.trim() || 'CERT';
+      state.settings.signerName = $('#setSignerName').value.trim();
+      state.settings.signerTitle = $('#setSignerTitle').value.trim();
+      saveCache();
+      await cloudWrite('settings', 'general', state.settings);
+      syncFormSettingsUI();
+      renderAll();
+      toast('Pengaturan lembaga & TTD berhasil disimpan!', 'success');
+    });
+
+    // Multiuser
+    $('#formAddUser').addEventListener('submit', (e) => {
+      e.preventDefault();
+      state.users.push({
+        id: 'usr_' + Date.now(),
+        name: $('#usrFullName').value.trim(),
+        username: $('#usrUsername').value.trim(),
+        password: $('#usrPassword').value,
+        role: $('#usrRole').value
+      });
+      saveCache();
+      e.target.reset();
+      renderUsersTable();
+      toast('Akun pengguna baru berhasil ditambahkan!', 'success');
+    });
+
+    // Export / Import CSV & Backup JSON
+    $('#btnExportCsv').addEventListener('click', () => {
+      const rows = [['Nama', 'ID/NIP', 'Email', 'HP', 'Instansi', 'Kegiatan', 'Kode Sertifikat', 'Waktu']];
+      for (const a of state.attendees) {
+        const ev = state.events.find(e => e.id === a.eventId);
+        rows.push([a.name, a.idNumber || '', a.email || '', a.phone || '', a.institution || '', ev?.title || a.eventTitle || '', a.certCode || a.id, a.timestamp || '']);
+      }
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Daftar_Hadir_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+    });
+
+    $('#inputImportCsv').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const defaultEv = state.events[0];
+      if (!defaultEv) { toast('Buat minimal 1 kegiatan terlebih dahulu sebelum import CSV.', 'error'); return; }
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const lines = String(ev.target.result).split(/\r?\n/).filter(Boolean);
+        let added = 0;
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+          if (!cols[0]) continue;
+          state.attendees.unshift({
+            id: 'att_' + Date.now() + '_' + i,
+            eventId: defaultEv.id,
+            eventTitle: defaultEv.title,
+            name: cols[0],
+            idNumber: cols[1] || '',
+            email: cols[2] || '',
+            phone: cols[3] || '',
+            institution: cols[4] || '',
+            certCode: `${state.settings.certPrefix || 'CERT'}-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            timestamp: new Date().toISOString()
+          });
+          added++;
+        }
+        saveCache();
+        renderAll();
+        toast(`${added} peserta berhasil diimpor ke kegiatan "${defaultEv.title}"!`, 'success');
+      };
+      reader.readAsText(file);
+    });
+
+    $('#btnExportJson').addEventListener('click', () => {
+      const payload = { events: state.events, attendees: state.attendees, materials: state.materials, settings: state.settings, users: state.users };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Backup_PusatKegiatan_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    });
+
+    $('#inputRestoreJson').addEventListener('change', (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (Array.isArray(data.events)) state.events = data.events;
+          if (Array.isArray(data.attendees)) state.attendees = data.attendees;
+          if (Array.isArray(data.materials)) state.materials = data.materials;
+          if (Array.isArray(data.users)) state.users = data.users;
+          if (data.settings) Object.assign(state.settings, data.settings);
+          saveCache();
+          syncFormSettingsUI();
+          renderAll();
+          toast('Database berhasil dipulihkan dari file backup JSON!', 'success');
+        } catch (err) {
+          toast('File JSON tidak valid.', 'error');
+        }
+      };
+      r.readAsText(f);
+    });
+
+    // Generator E-Sertifikat PDF langsung dari Admin
+    async function renderAdminCertPdf(attId) {
+      const att = state.attendees.find(a => a.id === attId);
+      if (!att || !window.html2canvas) return;
+      const ev = state.events.find(e => e.id === att.eventId) || {};
+      const host = $('#admCertRenderHost');
+      const certCode = att.certCode || att.id;
+      const portalBase = window.location.href.replace(/[^/]*$/, 'index.html');
+      const verifyUrl = `${portalBase}?verify=${encodeURIComponent(certCode)}`;
+
+      toast('Membuat PDF E-Sertifikat...', 'info');
+      host.innerHTML = `
+        <div id="admCertSheet" style="width:1123px; height:794px; padding:44px; background:linear-gradient(135deg,#091124 0%,#0f1e3d 55%,#091124 100%); color:#f8fafc; font-family:'Plus Jakarta Sans',sans-serif; box-sizing:border-box;">
+          <div style="width:100%; height:100%; border:3px solid #d4af37; border-radius:16px; padding:38px 54px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="text-align:center;">
+              <div style="font-size:14px; font-weight:700; letter-spacing:3px; color:#38bdf8;">${esc(state.settings.orgName)}</div>
+              <h1 style="font-family:'Playfair Display',serif; font-size:48px; margin:10px 0 4px;">SERTIFIKAT</h1>
+              <div style="font-size:13px; color:#cbd5e1;">Nomor: ${esc(certCode)}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:15px; color:#94a3b8; margin-bottom:10px;">Diberikan dengan bangga kepada:</div>
+              <div style="font-family:'Playfair Display',serif; font-size:38px; font-weight:700; color:#fbbf24; border-bottom:2px solid rgba(251,191,36,0.45); display:inline-block; padding:0 28px 8px; margin-bottom:12px;">${esc(att.name)}</div>
+              <div style="font-size:15px; font-weight:600; margin-bottom:10px;">${esc(att.institution || '')}</div>
+              <p style="font-size:15px; color:#cbd5e1; max-width:820px; margin:0 auto;">
+                Atas partisipasi aktifnya sebagai <strong>PESERTA</strong> dalam kegiatan <strong>"${esc(ev.title || att.eventTitle || '')}"</strong> (${esc(ev.date || '')}).
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+              <div id="admQrMount" style="background:#fff; padding:6px; border-radius:8px; width:86px; height:86px;"></div>
+              <div style="text-align:center; min-width:240px;">
+                <div style="font-size:13px; color:#94a3b8;">${esc(state.settings.signerTitle)}</div>
+                <div style="height:56px; display:flex; align-items:center; justify-content:center;">
+                  ${state.settings.signatureDataUrl ? `<img src="${esc(state.settings.signatureDataUrl)}" style="max-height:52px;" />` : ''}
+                </div>
+                <div style="font-size:15px; font-weight:700; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${esc(state.settings.signerName)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      if (window.QRCode) new window.QRCode(document.getElementById('admQrMount'), { text: verifyUrl, width: 74, height: 74 });
+      await new Promise(r => setTimeout(r, 80));
+      const canvas = await window.html2canvas(document.getElementById('admCertSheet'), { scale: 2 });
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1123, 794] });
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 1123, 794);
+      pdf.save(`Sertifikat_${(att.name || 'Peserta').replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      host.innerHTML = '';
+      toast('PDF E-Sertifikat berhasil diunduh!', 'success');
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. NAVIGATION & EVENT DELEGATION
+    // -------------------------------------------------------------------------
+    $('#adminNav').addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-item');
+      if (!btn) return;
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const p = btn.dataset.panel;
+      document.querySelectorAll('.panel').forEach(sec => sec.classList.toggle('active', sec.id === `panel-${p}`));
+      $('#topbarPageTitle').textContent = btn.textContent.replace(/^[^\w]+/, '').trim();
+    });
+
+    document.addEventListener('click', async (e) => {
+      const closeBtn = e.target.closest('[data-close-modal]');
+      if (closeBtn) { closeModal(closeBtn.dataset.closeModal); return; }
+
+      const btn = e.target.closest('[data-act]');
+      if (!btn) return;
+      const act = btn.dataset.act;
+      const id = btn.dataset.id;
+
+      if (act === 'edit-ev') {
+        const ev = state.events.find(x => x.id === id);
+        if (!ev) return;
+        $('#evId').value = ev.id;
+        $('#evTitle').value = ev.title || '';
+        $('#evCategory').value = ev.category || 'Webinar';
+        $('#evStatus').value = ev.status || 'open';
+        $('#evDate').value = ev.date || '';
+        $('#evTime').value = ev.time || '';
+        $('#evLocation').value = ev.location || '';
+        $('#evSpeaker').value = ev.speaker || '';
+        $('#evJp').value = ev.jp || '';
+        $('#evToken').value = ev.token || '';
+        $('#evFlyerUrl').value = ev.flyerUrl || '';
+        $('#evDescription').value = ev.description || '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (act === 'del-ev') {
+        if (!confirm('Hapus kegiatan ini?')) return;
+        state.events = state.events.filter(x => x.id !== id);
+        saveCache();
+        await cloudDelete('events', id);
+        renderAll();
+        toast('Kegiatan dihapus.', 'info');
+      } else if (act === 'qr-ev') {
+        const ev = state.events.find(x => x.id === id);
+        if (!ev) return;
+        const portalUrl = `${window.location.href.replace(/[^/]*$/, 'index.html')}?attend=${encodeURIComponent(ev.id)}`;
+        $('#qrModalEventTitle').textContent = `QR Presensi: ${ev.title}`;
+        $('#qrShareLinkInput').value = portalUrl;
+        const mount = $('#qrCanvasMount');
+        mount.innerHTML = '';
+        if (window.QRCode) new window.QRCode(mount, { text: portalUrl, width: 180, height: 180 });
+        openModal('modalQrShare');
+      } else if (act === 'del-att') {
+        if (!confirm('Hapus data peserta ini?')) return;
+        state.attendees = state.attendees.filter(x => x.id !== id);
+        saveCache();
+        await cloudDelete('attendees', id);
+        renderAll();
+      } else if (act === 'cert-pdf') {
+        renderAdminCertPdf(id);
+      } else if (act === 'del-mat') {
+        state.materials = state.materials.filter(x => x.id !== id);
+        saveCache();
+        await cloudDelete('materials', id);
+        renderAll();
+      } else if (act === 'del-usr') {
+        state.users = state.users.filter(x => x.id !== id);
+        saveCache();
+        renderUsersTable();
+      }
+    });
+
+    $('#btnOpenAddAttendee').addEventListener('click', () => openModal('modalAddAttendee'));
+    $('#btnCopyQrLink').addEventListener('click', () => {
+      navigator.clipboard?.writeText($('#qrShareLinkInput').value);
+      toast('Tautan presensi berhasil disalin!', 'success');
+    });
+    $('#admSearchEvent').addEventListener('input', debounce(renderEventsTable, 120));
+    $('#admSearchAttendee').addEventListener('input', debounce(renderAttendeesTable, 120));
+    $('#admFilterAttEvent').addEventListener('change', renderAttendeesTable);
+    $('#btnAdminSyncNow').addEventListener('click', () => pullFromCloud(false));
+    $('#btnPullCloud').addEventListener('click', () => pullFromCloud(false));
+    $('#btnPushCloud').addEventListener('click', () => pushAllToCloud());
+
+    // Boot Instan
+    loadCache();
+    initFirebaseSync(true);
+  </script>
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Peserta — PUSAT KEGIATAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Library dimuat dengan defer agar render halaman instan tanpa blocking -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-base: #070b14;
+      --bg-surface: rgba(15, 23, 42, 0.72);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --bg-input: rgba(10, 16, 30, 0.85);
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-focus: rgba(56, 189, 248, 0.55);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-violet: #8b5cf6;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --transition-fast: 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(59, 130, 246, 0.13), transparent 36%),
+        radial-gradient(circle at 88% 15%, rgba(6, 182, 212, 0.11), transparent 38%),
+        radial-gradient(circle at 50% 95%, rgba(16, 185, 129, 0.08), transparent 40%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: rgba(7, 11, 20, 0.8); }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+
+    /* Top Navigation Bar (Identik dengan Admin) */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 24px;
+      background: rgba(7, 11, 20, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+      flex-shrink: 0;
+    }
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+    }
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: block;
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Status Pill & Buttons */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+    }
+    .status-dot.online { background: var(--accent-emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #0284c7);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-emerald {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+    }
+    .btn-emerald:hover { filter: brightness(1.08); }
+    .btn-ghost {
+      background: rgba(30, 41, 59, 0.65);
+      border-color: var(--border-subtle);
+      color: var(--text-primary);
+    }
+    .btn-ghost:hover {
+      background: rgba(51, 65, 85, 0.75);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+    .btn-sm { padding: 6px 11px; font-size: 12px; }
+
+    /* Container & Layout */
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 22px 24px 60px;
+    }
+
+    /* Hero Banner + Stats */
+    .hero-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 22px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow-card);
+    }
+    .hero-info h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #fff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-info p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      max-width: 620px;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(115px, 1fr));
+      gap: 12px;
+    }
+    .stat-box {
+      background: rgba(10, 16, 30, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+    }
+    .stat-box .label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .stat-box .val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    /* Navigation Tabs (Mirip Sidebar/Tab Admin) */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      background: var(--bg-surface);
+      padding: 8px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+    .tab-btn {
+      flex: 1 1 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .tab-btn:hover { color: #fff; background: rgba(30, 41, 59, 0.5); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(6, 182, 212, 0.2));
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+    }
+
+    .panel-section { display: none; animation: fadeIn 0.18s ease-out; }
+    .panel-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      background: var(--bg-surface);
+      padding: 12px 14px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+    .input-ctrl, .select-ctrl {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+    .input-ctrl:focus, .select-ctrl:focus { border-color: var(--border-focus); }
+    .search-wrap { flex: 1 1 260px; position: relative; }
+    .search-wrap input { width: 100%; padding-left: 34px; }
+    .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    /* Event Cards Grid (content-visibility untuk rendering super cepat) */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 18px;
+    }
+    .event-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+      content-visibility: auto;
+      contain-intrinsic-size: 380px;
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+    .flyer-box {
+      position: relative;
+      width: 100%;
+      height: 175px;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      overflow: hidden;
+    }
+    .flyer-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .flyer-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .badge-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+    }
+    .badge-open { background: rgba(16, 185, 129, 0.88); color: #fff; }
+    .badge-upcoming { background: rgba(59, 130, 246, 0.88); color: #fff; }
+    .badge-closed { background: rgba(100, 116, 139, 0.88); color: #fff; }
+    .badge-cat {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(7, 11, 20, 0.78);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+    }
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+    }
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .card-actions {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Card Box Generic (Materi, Sertifikat, Modal) */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .btn-close {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-close:hover { color: #fff; background: rgba(244, 63, 94, 0.25); }
+    .form-group { margin-bottom: 13px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; }
+
+    /* Toast Notification */
+    .toast-wrap {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1e293b;
+      color: #fff;
+      border-left: 4px solid var(--accent-cyan);
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      animation: fadeIn 0.16s ease-out;
+    }
+    .toast.success { border-left-color: var(--accent-emerald); }
+    .toast.error { border-left-color: var(--accent-rose); }
+
+    /* Hidden Certificate Canvas for Instant High-Res Rendering */
+    #certRenderHost {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 1123px;
+      height: 794px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 10px 14px; }
+      .container { padding: 16px 14px 48px; }
+      .stats-row { width: 100%; }
+      .card-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar (Identik dengan Admin) -->
+  <header class="topbar">
+    <a href="#" class="brand">
+      <div class="brand-icon" id="brandBadge">PK</div>
+      <div class="brand-text">
+        <h1 id="orgTitle">PUSAT KEGIATAN</h1>
+        <span id="orgSubtitle">Portal Informasi, Presensi &amp; E-Sertifikat Peserta</span>
+      </div>
+    </a>
+    <div class="topbar-actions">
+      <div class="status-pill" id="syncStatusPill">
+        <span class="status-dot" id="syncDot"></span>
+        <span id="syncText">Menghubungkan...</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btnRefreshData" title="Muat ulang data terbaru">↻ Sinkron</button>
+      <a href="kegiatan admin_3.html" class="btn btn-primary btn-sm">🔐 Panel Admin</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero & Statistik Ringkas -->
+    <section class="hero-panel">
+      <div class="hero-info">
+        <h2 id="heroHeading">Portal Kegiatan &amp; E-Sertifikat</h2>
+        <p id="heroDesc">Temukan jadwal pelatihan dan webinar terbaru, isi daftar hadir mandiri secara instan, akses materi &amp; rekaman, serta unduh E-Sertifikat resmi terverifikasi QR Code.</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="label">Total Kegiatan</div>
+          <div class="val" id="statTotalEvents">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Presensi Dibuka</div>
+          <div class="val" id="statOpenEvents" style="color:#34d399;">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Materi &amp; Rekaman</div>
+          <div class="val" id="statMaterials" style="color:#38bdf8;">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigasi Tab Utama -->
+    <nav class="nav-tabs" id="mainNavTabs" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="kegiatan">📅 Jadwal &amp; Presensi Kegiatan</button>
+      <button type="button" class="tab-btn" data-tab="sertifikat">🎓 Cek &amp; Unduh E-Sertifikat</button>
+      <button type="button" class="tab-btn" data-tab="materi">📚 Materi &amp; Rekaman</button>
+      <button type="button" class="tab-btn" data-tab="verifikasi">🔍 Verifikasi QR / Nomor Sertifikat</button>
+    </nav>

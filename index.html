@@ -19,8 +19,8 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- QRCode Generator -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <!-- QRCode Generator (Dual CDN + Fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- Firebase SDK (Compat v10.14.1) & Konfigurasi Terpusat -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -2005,6 +2005,88 @@ const DEFAULT_EVENTS = [
       }, 80);
     }
 
+    function generateQrDataUrlSafe(text, size = 240) {
+      return new Promise((resolve) => {
+        if (!text) return resolve('');
+        if (window.QRCode) {
+          try {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;visibility:hidden;';
+            document.body.appendChild(tempDiv);
+
+            new window.QRCode(tempDiv, {
+              text: String(text),
+              width: size,
+              height: size,
+              colorDark: '#0B1F3A',
+              colorLight: '#FFFFFF',
+              correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.M : 0
+            });
+
+            setTimeout(() => {
+              const canvas = tempDiv.querySelector('canvas');
+              const img = tempDiv.querySelector('img');
+              let dataUrl = '';
+              if (canvas) {
+                dataUrl = canvas.toDataURL('image/png');
+              } else if (img && img.src) {
+                dataUrl = img.src;
+              }
+              tempDiv.remove();
+              if (dataUrl) return resolve(dataUrl);
+              resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
+            }, 40);
+            return;
+          } catch (err) {
+            console.warn('QRCodeJS fallback ke API:', err);
+          }
+        }
+        resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
+      });
+    }
+
+    async function renderCertificateForAttendeeIndex(ev, foundIndex) {
+      const attendees = ev.attendees || [];
+      const attendee = attendees[foundIndex];
+      if (!attendee) return;
+
+      const notFoundBox = document.getElementById('cert-not-found');
+      const resultBox = document.getElementById('cert-result-wrapper');
+      const multiBox = document.getElementById('cert-multiple-matches');
+
+      notFoundBox.classList.add('hidden');
+      multiBox.classList.add('hidden');
+
+      const payload = buildCertificatePayloadForAttendee(ev, attendee, foundIndex);
+      activeCertPayload = payload;
+
+      document.getElementById('cert-view-number').textContent = `Nomor: ${payload.certNumber}`;
+      document.getElementById('cert-view-name').textContent = payload.name;
+      document.getElementById('cert-view-school').textContent = `${payload.school} — ${payload.region}`;
+      document.getElementById('cert-view-description').innerHTML = `
+        Atas partisipasi aktifnya sebagai <strong>${escapeHtml(payload.roleLabel)}</strong> dalam kegiatan <strong>${escapeHtml(payload.category)}</strong>:<br/>
+        <span class="font-display font-extrabold text-[15.5px] block my-1">"${escapeHtml(payload.eventTitle)}"</span>
+        yang diselenggarakan oleh ${escapeHtml(payload.orgSubText)} pada tanggal <strong>${escapeHtml(payload.dateRange)}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(payload.jp)}</strong>.
+      `;
+      document.getElementById('cert-view-code').textContent = payload.verCode;
+      document.getElementById('cert-view-issued').textContent = `Bandar Lampung, ${payload.issuedDate}`;
+      document.getElementById('cert-view-signer-title').textContent = payload.signerTitle;
+      document.getElementById('cert-view-signer-name').textContent = payload.signerName;
+
+      resultBox.classList.remove('hidden');
+      applyCertificateLayoutStyles(payload);
+
+      const qrImgEl = document.getElementById('cert-qr-img');
+      if (qrImgEl) qrImgEl.crossOrigin = 'anonymous';
+      const qrDataUrl = await generateQrDataUrlSafe(payload.verificationUrl, 240);
+      if (qrDataUrl && qrImgEl) {
+        qrImgEl.src = qrDataUrl;
+        if (activeCertPayload) activeCertPayload.qrDataUrl = qrDataUrl;
+      }
+
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
     function renderCertificateForAttendeeIndex(ev, foundIndex) {
       const attendees = ev.attendees || [];
       const attendee = attendees[foundIndex];
@@ -2245,6 +2327,7 @@ const DEFAULT_EVENTS = [
 
         if (p.qrDataUrl) {
           const qrImg = new Image();
+          qrImg.crossOrigin = 'anonymous';
           qrImg.onload = () => {
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
@@ -2270,12 +2353,12 @@ const DEFAULT_EVENTS = [
             ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(56 * S * qrScaleRatio));
             finishDownload();
           };
+          qrImg.onerror = () => finishDownload();
           qrImg.src = p.qrDataUrl;
         } else {
           finishDownload();
         }
-      }
-
+        
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, W, H);
 
@@ -2309,7 +2392,7 @@ const DEFAULT_EVENTS = [
       return lines;
     }
 
-    function renderVerificationPage(hashStr) {
+    async function renderVerificationPage(hashStr) {
       document.getElementById('catalog-page').classList.add('hidden');
       document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('verification-page').classList.remove('hidden');
@@ -2349,6 +2432,27 @@ const DEFAULT_EVENTS = [
             matchedIdx = idx;
             break;
           }
+        }
+      }
+
+      // Jika data belum ada di memori lokal dan Firebase aktif, ambil langsung dari Firestore
+      if (!matchedAtt && isFirebaseReady && db && decoded && decoded.evId && decoded.attId) {
+        try {
+          const evDoc = await db.collection('events').doc(decoded.evId).get();
+          const attDoc = await db.collection('events').doc(decoded.evId).collection('attendees').doc(decoded.attId).get();
+          if (evDoc.exists && attDoc.exists) {
+            matchedEv = normalizeEventItem({ id: evDoc.id, ...evDoc.data() });
+            matchedAtt = { id: attDoc.id, ...attDoc.data() };
+            const allAttSnap = await db.collection('events').doc(decoded.evId).collection('attendees').get();
+            const allList = [];
+            allAttSnap.forEach(d => allList.push({ id: d.id, ...d.data() }));
+            allList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            matchedEv.attendees = allList;
+            matchedIdx = allList.findIndex(a => a.id === decoded.attId);
+            if (matchedIdx === -1) matchedIdx = 0;
+          }
+        } catch (err) {
+          console.warn('Verifikasi langsung Firestore fallback ke payload QR:', err);
         }
       }
 
@@ -2414,7 +2518,7 @@ const DEFAULT_EVENTS = [
       }
       if (window.lucide) lucide.createIcons();
     }
-
+      
     function openGlobalCertModal() {
       document.getElementById('global-cert-modal').classList.remove('hidden');
       document.getElementById('global-cert-results').innerHTML = '';

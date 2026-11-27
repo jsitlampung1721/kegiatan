@@ -78,6 +78,10 @@
         radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.09), transparent 42%),
         #FFFFFF;
     }
+    #cert-qr-img {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
     @page {
       size: A4 landscape;
       margin: 0;
@@ -122,7 +126,6 @@
   <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-blue-800/60 text-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
       <div class="flex items-center gap-3 min-w-0">
-        <!-- Logo Web sebagai Tombol Login Admin -->
         <a href="admin.html" title="Login Admin / Pengelola" aria-label="Login Admin" class="w-10 h-10 rounded-xl bg-white border border-blue-300/40 p-1 flex items-center justify-center shadow-md shrink-0 overflow-hidden hover:ring-2 hover:ring-sky-400 transition">
           <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}else if(!this.dataset.f2){this.dataset.f2='1';this.src='https://drive.google.com/uc?export=view&id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
         </a>
@@ -155,7 +158,6 @@
       <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#60A5FA 1px, transparent 1px); background-size: 24px 24px;"></div>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-10">
         <div class="grid lg:grid-cols-12 gap-8 items-center">
-          <!-- Kolom Kiri: Judul & Pencarian -->
           <div class="lg:col-span-8 space-y-3">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-400/15 border border-sky-300/30 text-sky-200 text-xs font-semibold">
               <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
@@ -168,7 +170,6 @@
               Pilih kartu kegiatan di bawah ini untuk membuka ruang kegiatan lengkap yang memuat informasi acara, flyer resmi, pengisian daftar hadir, unduhan materi, video rekaman, serta E-Sertifikat digital.
             </p>
 
-            <!-- Search & Filter Bar -->
             <div class="pt-4 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/15 flex flex-col sm:flex-row gap-2 max-w-4xl">
               <div class="relative flex-1">
                 <i data-lucide="search" class="w-4 h-4 text-blue-200 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
@@ -183,7 +184,6 @@
             </div>
           </div>
 
-          <!-- Kolom Kanan: Statistik Portal Diklat -->
           <div class="lg:col-span-4">
             <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-5 shadow-xl space-y-3.5">
               <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
@@ -229,7 +229,6 @@
       </div>
     </section>
 
-    <!-- Category Pills & Grid -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2" id="category-pills">
@@ -560,7 +559,6 @@
               </button>
             </form>
 
-            <!-- Pilihan Jika Ditemukan Lebih Dari 1 Nama Serupa -->
             <div id="cert-multiple-matches" class="hidden p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-2.5 max-w-2xl">
               <p class="text-xs font-extrabold text-navy-900">Ditemukan beberapa peserta dengan nama serupa. Silakan pilih data Anda:</p>
               <div id="cert-multiple-matches-list" class="space-y-1.5"></div>
@@ -575,7 +573,7 @@
             </div>
           </div>
 
-          <!-- GENERATED A4 LANDSCAPE CERTIFICATE PREVIEW (100% PRESISI DENGAN STUDIO ADMIN) -->
+          <!-- GENERATED A4 LANDSCAPE CERTIFICATE PREVIEW -->
           <div id="cert-result-wrapper" class="hidden space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-blue-100">
               <div class="flex items-center gap-2.5">
@@ -632,12 +630,12 @@
                   </p>
                 </div>
 
-                <!-- Footer QR -->
+                <!-- Footer QR (Quiet Zone & Sharp Edge agar 100% Mudah Di-Scan HP) -->
                 <div id="cert-view-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" class="absolute z-20 flex items-center gap-3">
-                  <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-2xs shrink-0">
-                    <img id="cert-qr-img" src="" alt="QR Verifikasi" class="w-[78px] h-[78px]" />
+                  <div class="p-2.5 bg-white border-2 border-slate-300 rounded-xl shadow-xs shrink-0">
+                    <img id="cert-qr-img" src="" alt="QR Verifikasi" class="w-[86px] h-[86px] block" />
                   </div>
-                  <div id="cert-view-qr-text" class="text-[10.5px] text-slate-600 leading-tight bg-white/85 px-2.5 py-1.5 rounded-lg">
+                  <div id="cert-view-qr-text" class="text-[10.5px] text-slate-600 leading-tight bg-white/90 px-2.5 py-1.5 rounded-lg">
                     <span class="font-bold text-navy-900 block">Scan Barcode Verifikasi</span>
                     <span id="cert-view-qr-org">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span><br/>
                     <span id="cert-view-code" class="font-mono text-blue-700 font-bold">JSIT-001</span>
@@ -667,7 +665,7 @@
   </div>
 
   <!-- VIEW 3: HALAMAN VERIFIKASI KEASLIAN SERTIFIKAT (SCAN QR BARCODE) -->
-  <div id="verification-page" class="hidden flex-1 py-10 px-4 sm:px-6 lg:px-8">
+  <div id="verification-page" class="hidden flex-1 py-8 sm:py-10 px-4 sm:px-6 lg:px-8">
     <div class="max-w-2xl mx-auto space-y-5">
       <div class="flex items-center justify-between">
         <a href="#" onclick="showCatalogHome(event)" class="inline-flex items-center gap-2 text-xs font-bold text-blue-700 hover:underline">
@@ -678,12 +676,12 @@
       </div>
 
       <div id="verification-result-card" class="bg-white rounded-3xl border border-blue-100 shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-navy-900 to-blue-800 text-white p-6 text-center space-y-2">
+        <div id="ver-header-banner" class="bg-gradient-to-r from-navy-900 to-blue-800 text-white p-6 text-center space-y-2">
           <div id="ver-status-icon" class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-300/40 text-emerald-300 flex items-center justify-center mx-auto">
             <i data-lucide="shield-check" class="w-8 h-8"></i>
           </div>
-          <h1 id="ver-status-heading" class="font-display font-extrabold text-xl sm:text-2xl">E-Sertifikat Terverifikasi Asli</h1>
-          <p id="ver-status-subheading" class="text-xs text-blue-100">Dokumen ini terdaftar secara sah pada database JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</p>
+          <h1 id="ver-status-heading" class="font-display font-extrabold text-xl sm:text-2xl">Memverifikasi E-Sertifikat...</h1>
+          <p id="ver-status-subheading" class="text-xs text-blue-100">Memeriksa keabsahan data pada database JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</p>
         </div>
 
         <div id="verification-result-body" class="p-6 sm:p-7 space-y-3 text-sm">
@@ -1100,7 +1098,7 @@ const DEFAULT_EVENTS = [
           refreshActiveRoomHeaderAndPanels(activeEv);
         }
       }
-      if (window.location.hash.startsWith('#verifikasi')) {
+      if (isVerificationRoute()) {
         handleRoutingFromHash();
       }
       if (window.lucide) lucide.createIcons();
@@ -1227,9 +1225,15 @@ const DEFAULT_EVENTS = [
       if (orgSubEl) orgSubEl.textContent = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
     }
 
+    function isVerificationRoute() {
+      const hash = window.location.hash || '';
+      const searchParams = new URLSearchParams(window.location.search || '');
+      return hash.startsWith('#verifikasi') || searchParams.has('cert') || searchParams.has('ver');
+    }
+
     function handleRoutingFromHash() {
       const hash = window.location.hash || '';
-      if (hash.startsWith('#verifikasi')) {
+      if (isVerificationRoute()) {
         renderVerificationPage(hash);
         return;
       }
@@ -1422,7 +1426,7 @@ const DEFAULT_EVENTS = [
       document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('verification-page').classList.add('hidden');
       document.getElementById('catalog-page').classList.remove('hidden');
-      if (updateHash) history.replaceState(null, '', window.location.pathname + window.location.search);
+      if (updateHash) history.replaceState(null, '', window.location.pathname);
       renderEvents();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1796,26 +1800,9 @@ const DEFAULT_EVENTS = [
       const issuedDate = formatDateIndo(ev.dateEnd || ev.dateStart, '');
       const orgSubText = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
 
-      const compactPayload = {
-        no: certNumber,
-        kab: attendee.region || 'Provinsi Lampung',
-        tgl: dateRange,
-        ins: orgSubText,
-        ttd: `${signerName} - ${signerTitle}`,
-        hal: ev.title,
-        nama: attendee.name,
-        sek: attendee.school,
-        sts: roleLabel,
-        jp: jp,
-        iss: issuedDate,
-        evId: ev.id,
-        attId: attendee.id,
-        code: verCode
-      };
-
+      // URL Verifikasi dibuat ringkas (<= 140 karakter) agar pola kotak QR Code renggang, besar & 100% langsung terbaca kamera HP!
       const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const encoded = encodeCertPayloadBase64(compactPayload);
-      const verificationUrl = `${baseUrl}#verifikasi?cert=${encodeURIComponent(verCode)}&v=${encodeURIComponent(encoded)}`;
+      const verificationUrl = `${baseUrl}?cert=${encodeURIComponent(verCode)}&ev=${encodeURIComponent(ev.id)}&att=${encodeURIComponent(attendee.id)}#verifikasi`;
 
       return {
         certNumber,
@@ -1943,7 +1930,7 @@ const DEFAULT_EVENTS = [
       }
       if (qrText) {
         qrText.className = payload.showScanBg !== false
-          ? 'text-[10.5px] text-slate-600 leading-tight bg-white/85 px-2.5 py-1.5 rounded-lg'
+          ? 'text-[10.5px] text-slate-600 leading-tight bg-white/90 px-2.5 py-1.5 rounded-lg'
           : 'text-[10.5px] text-slate-700 leading-tight px-2.5 py-1.5 rounded-lg';
       }
 
@@ -2003,7 +1990,8 @@ const DEFAULT_EVENTS = [
       }, 80);
     }
 
-    function generateQrDataUrlSafe(text, size = 240) {
+    // Generator QR Resolusi Tinggi (512x512) + Level L (kotak besar & sangat mudah terbaca kamera HP)
+    function generateQrDataUrlSafe(text, size = 512) {
       return new Promise((resolve) => {
         if (!text) return resolve('');
         if (window.QRCode) {
@@ -2016,9 +2004,9 @@ const DEFAULT_EVENTS = [
               text: String(text),
               width: size,
               height: size,
-              colorDark: '#0B1F3A',
+              colorDark: '#000000',
               colorLight: '#FFFFFF',
-              correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.M : 0
+              correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.L : 1
             });
 
             setTimeout(() => {
@@ -2032,14 +2020,14 @@ const DEFAULT_EVENTS = [
               }
               tempDiv.remove();
               if (dataUrl) return resolve(dataUrl);
-              resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
-            }, 40);
+              resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=12&data=${encodeURIComponent(text)}`);
+            }, 60);
             return;
           } catch (err) {
             console.warn('QRCodeJS fallback ke API:', err);
           }
         }
-        resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
+        resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=12&data=${encodeURIComponent(text)}`);
       });
     }
 
@@ -2076,7 +2064,7 @@ const DEFAULT_EVENTS = [
 
       const qrImgEl = document.getElementById('cert-qr-img');
       if (qrImgEl) qrImgEl.crossOrigin = 'anonymous';
-      const qrDataUrl = await generateQrDataUrlSafe(payload.verificationUrl, 240);
+      const qrDataUrl = await generateQrDataUrlSafe(payload.verificationUrl, 512);
       if (qrDataUrl && qrImgEl) {
         qrImgEl.src = qrDataUrl;
         if (activeCertPayload) activeCertPayload.qrDataUrl = qrDataUrl;
@@ -2249,8 +2237,8 @@ const DEFAULT_EVENTS = [
         const qrScaleRatio = (p.qrScale || 100) / 100;
         const qrBottomY = (707 - 52 + (p.qrOffsetY || 0)) * S;
         const qrBaseX = (65 + (p.qrOffsetX || 0)) * S;
-        const qrSize = Math.round(78 * S * qrScaleRatio);
-        const qrPad = Math.round(6 * S * qrScaleRatio);
+        const qrSize = Math.round(86 * S * qrScaleRatio);
+        const qrPad = Math.round(12 * S * qrScaleRatio);
         const qrBaseY = qrBottomY - qrSize;
 
         const finishDownload = () => {
@@ -2285,28 +2273,31 @@ const DEFAULT_EVENTS = [
           const qrImg = new Image();
           qrImg.crossOrigin = 'anonymous';
           qrImg.onload = () => {
+            ctx.save();
+            ctx.imageSmoothingEnabled = false;
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
             ctx.strokeStyle = '#CBD5E1';
             ctx.lineWidth = 2;
             ctx.strokeRect(qrBaseX - qrPad, qrBaseY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2);
             ctx.drawImage(qrImg, qrBaseX, qrBaseY, qrSize, qrSize);
+            ctx.restore();
 
-            const textStartX = qrBaseX + qrSize + Math.round(14 * S * qrScaleRatio);
+            const textStartX = qrBaseX + qrSize + qrPad + Math.round(10 * S * qrScaleRatio);
             if (p.showScanBg !== false) {
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(4 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(68 * S * qrScaleRatio));
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.90)';
+              ctx.fillRect(textStartX - 6 * S, qrBaseY + Math.round(6 * S * qrScaleRatio), Math.round(255 * S * qrScaleRatio), Math.round(72 * S * qrScaleRatio));
             }
             ctx.textAlign = 'left';
             ctx.fillStyle = '#0B1F3A';
             ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px sans-serif`;
-            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(20 * S * qrScaleRatio));
+            ctx.fillText('Scan Barcode Verifikasi', textStartX, qrBaseY + Math.round(24 * S * qrScaleRatio));
             ctx.fillStyle = '#475569';
             ctx.font = `${Math.round(10 * S * qrScaleRatio)}px sans-serif`;
-            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(38 * S * qrScaleRatio));
+            ctx.fillText(p.orgSubText || DEFAULT_SETTINGS.orgSub, textStartX, qrBaseY + Math.round(42 * S * qrScaleRatio));
             ctx.fillStyle = '#1D4ED8';
             ctx.font = `bold ${Math.round(10.5 * S * qrScaleRatio)}px monospace`;
-            ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(56 * S * qrScaleRatio));
+            ctx.fillText(p.verCode, textStartX, qrBaseY + Math.round(60 * S * qrScaleRatio));
             finishDownload();
           };
           qrImg.onerror = () => finishDownload();
@@ -2354,11 +2345,19 @@ const DEFAULT_EVENTS = [
       document.getElementById('event-room-page').classList.add('hidden');
       document.getElementById('verification-page').classList.remove('hidden');
 
-      const queryPart = hashStr.includes('?') ? hashStr.split('?')[1] : '';
-      const params = new URLSearchParams(queryPart);
-      const encodedData = params.get('v');
-      const certCodeParam = params.get('cert');
+      // Baca parameter baik dari query string (?cert=...&ev=...&att=...) maupun dari hash (#verifikasi?...)
+      const searchParams = new URLSearchParams(window.location.search || '');
+      const hashQueryPart = hashStr.includes('?') ? hashStr.split('?')[1] : '';
+      const hashParams = new URLSearchParams(hashQueryPart);
+
+      const certCodeParam = searchParams.get('cert') || hashParams.get('cert') || '';
+      const evIdParam = searchParams.get('ev') || hashParams.get('ev') || '';
+      const attIdParam = searchParams.get('att') || hashParams.get('att') || '';
+      const encodedData = searchParams.get('v') || hashParams.get('v') || '';
+
       const bodyEl = document.getElementById('verification-result-body');
+      const headingEl = document.getElementById('ver-status-heading');
+      const subheadingEl = document.getElementById('ver-status-subheading');
 
       let decoded = encodedData ? decodeCertPayloadBase64(encodedData) : null;
 
@@ -2366,11 +2365,15 @@ const DEFAULT_EVENTS = [
       let matchedAtt = null;
       let matchedIdx = -1;
 
-      if (decoded && decoded.evId) {
-        matchedEv = eventsData.find(e => e.id === decoded.evId) || null;
-        if (matchedEv && decoded.attId) {
+      const targetEvId = evIdParam || (decoded && decoded.evId) || '';
+      const targetAttId = attIdParam || (decoded && decoded.attId) || '';
+
+      // 1. Cari di memori lokal / cache realtime
+      if (targetEvId) {
+        matchedEv = eventsData.find(e => e.id === targetEvId) || null;
+        if (matchedEv && targetAttId) {
           const list = matchedEv.attendees || [];
-          matchedIdx = list.findIndex(a => a.id === decoded.attId);
+          matchedIdx = list.findIndex(a => a.id === targetAttId);
           if (matchedIdx !== -1) matchedAtt = list[matchedIdx];
         }
       }
@@ -2392,23 +2395,33 @@ const DEFAULT_EVENTS = [
         }
       }
 
-      if (!matchedAtt && isFirebaseReady && db && decoded && decoded.evId && decoded.attId) {
+      // 2. Jika belum termuat di memori lokal, tarik langsung dari Firestore Cloud secara spesifik
+      if (!matchedAtt && isFirebaseReady && db && targetEvId) {
         try {
-          const evDoc = await db.collection('events').doc(decoded.evId).get();
-          const attDoc = await db.collection('events').doc(decoded.evId).collection('attendees').doc(decoded.attId).get();
-          if (evDoc.exists && attDoc.exists) {
+          const evDoc = await db.collection('events').doc(targetEvId).get();
+          if (evDoc.exists) {
             matchedEv = normalizeEventItem({ id: evDoc.id, ...evDoc.data() });
-            matchedAtt = { id: attDoc.id, ...attDoc.data() };
-            const allAttSnap = await db.collection('events').doc(decoded.evId).collection('attendees').get();
+            const allAttSnap = await db.collection('events').doc(targetEvId).collection('attendees').get();
             const allList = [];
             allAttSnap.forEach(d => allList.push({ id: d.id, ...d.data() }));
             allList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             matchedEv.attendees = allList;
-            matchedIdx = allList.findIndex(a => a.id === decoded.attId);
-            if (matchedIdx === -1) matchedIdx = 0;
+
+            if (targetAttId) {
+              matchedIdx = allList.findIndex(a => a.id === targetAttId);
+              if (matchedIdx !== -1) matchedAtt = allList[matchedIdx];
+            }
+            if (!matchedAtt && certCodeParam) {
+              matchedIdx = allList.findIndex((a, i) => {
+                const seq = String(allList.length - i).padStart(3, '0');
+                const code = `JSIT-${String(matchedEv.id || '001').slice(-3).toUpperCase()}-${seq}`;
+                return code.toLowerCase() === certCodeParam.toLowerCase();
+              });
+              if (matchedIdx !== -1) matchedAtt = allList[matchedIdx];
+            }
           }
         } catch (err) {
-          console.warn('Verifikasi langsung Firestore fallback ke payload QR:', err);
+          console.warn('Verifikasi langsung Firestore warning:', err);
         }
       }
 
@@ -2419,8 +2432,9 @@ const DEFAULT_EVENTS = [
           kab: livePayload.region,
           tgl: livePayload.dateRange,
           ins: settingsData.orgSub || DEFAULT_SETTINGS.orgSub,
-          ttd: `${livePayload.signerName} - ${livePayload.signerTitle}`,
+          ttd: `${livePayload.signerName} — ${livePayload.signerTitle}`,
           hal: livePayload.eventTitle,
+          kat: livePayload.category,
           nama: livePayload.name,
           sek: livePayload.school,
           sts: livePayload.roleLabel,
@@ -2432,25 +2446,34 @@ const DEFAULT_EVENTS = [
       }
 
       if (decoded && decoded.nama) {
+        if (headingEl) headingEl.textContent = 'E-Sertifikat Terverifikasi Asli';
+        if (subheadingEl) subheadingEl.textContent = 'Dokumen ini terdaftar secara sah pada database JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung';
+
         const rows = [
-          ['Nomor Sertifikat', decoded.no || '-'],
-          ['Kode Validasi Barcode', decoded.code || certCodeParam || '-'],
           ['Nama Pemilik Sertifikat', decoded.nama || '-'],
           ['Asal Sekolah / Instansi', decoded.sek || '-'],
           ['Kabupaten / Kota', decoded.kab || 'Provinsi Lampung'],
           ['Status / Peran', decoded.sts || 'Peserta'],
-          ['Perihal / Nama Kegiatan', decoded.hal || '-'],
+          ['Nomor Sertifikat Resmi', decoded.no || '-'],
+          ['Kode Validasi Barcode', decoded.code || certCodeParam || '-'],
+          ['Nama Kegiatan', decoded.hal || '-'],
           ['Tanggal Pelaksanaan', decoded.tgl || '-'],
           ['Bobot Jam Pelajaran (JP)', decoded.jp || '8 JP'],
           ['Instansi Penyelenggara', decoded.ins || settingsData.orgSub || DEFAULT_SETTINGS.orgSub],
-          ['Penandatangan Resmi', decoded.ttd || 'Muslimin, M.Pd.I.,Gr. - Ketua JSIT Indonesia Wilayah Lampung']
+          ['Penandatangan Resmi', decoded.ttd || 'Muslimin, M.Pd.I.,Gr. — Ketua JSIT Indonesia Wilayah Lampung']
         ];
 
         const openEventBtn = decoded.evId && eventsData.some(e => e.id === decoded.evId)
-          ? `<button type="button" onclick="openEventRoom('${escapeHtml(decoded.evId)}', 'sertifikat')" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition">Lihat &amp; Unduh E-Sertifikat di Ruang Kegiatan &rarr;</button>`
+          ? `<button type="button" onclick="openEventRoom('${escapeHtml(decoded.evId)}', 'sertifikat'); setTimeout(()=>{ const inp=document.getElementById('cert-search-query'); if(inp){ inp.value=${JSON.stringify(decoded.nama)}; } }, 150);" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition">Lihat &amp; Unduh E-Sertifikat di Ruang Kegiatan &rarr;</button>`
           : '';
 
-        bodyEl.innerHTML = rows.map(([label, val]) => `
+        bodyEl.innerHTML = `
+          <div class="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 text-center space-y-1 mb-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 block">Pemilik Sah E-Sertifikat</span>
+            <div class="font-display font-extrabold text-lg sm:text-xl text-navy-900">${escapeHtml(decoded.nama)}</div>
+            <div class="text-xs font-semibold text-slate-600">${escapeHtml(decoded.sek || '-')} &bull; ${escapeHtml(decoded.kab || 'Provinsi Lampung')}</div>
+          </div>
+        ` + rows.map(([label, val]) => `
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 py-2.5 border-b border-slate-100 last:border-b-0">
             <span class="text-xs font-semibold text-slate-500">${escapeHtml(label)}</span>
             <span class="text-xs sm:text-sm font-bold text-navy-900 sm:text-right">${escapeHtml(val)}</span>
@@ -2465,10 +2488,14 @@ const DEFAULT_EVENTS = [
           </div>
         `;
       } else {
+        if (headingEl) headingEl.textContent = 'Pencarian Data E-Sertifikat';
+        if (subheadingEl) subheadingEl.textContent = 'Validasi Barcode Resmi JSIT Wilayah Lampung';
+
         bodyEl.innerHTML = `
           <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
             <p class="font-bold">Kode Verifikasi: ${escapeHtml(certCodeParam || 'Tidak Terbaca')}</p>
-            <p>Silakan gunakan menu <strong>Cek E-Sertifikat</strong> pada beranda portal untuk mencari nomor sertifikat secara langsung.</p>
+            <p>Data sertifikat sedang disinkronkan atau belum ditemukan. Silakan gunakan menu <strong>Cek E-Sertifikat</strong> di bawah ini untuk memverifikasi menggunakan Nama Lengkap atau Nomor WhatsApp pemilik sertifikat.</p>
+            <button type="button" onclick="openGlobalCertModal()" class="mt-1 px-4 py-2 rounded-xl bg-navy-900 text-white font-bold text-xs">Cari Nama Pemilik Sertifikat</button>
           </div>
         `;
       }

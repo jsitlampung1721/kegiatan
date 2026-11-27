@@ -19,7 +19,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- QRCode Generator (Dual CDN + Fallback) -->
+  <!-- QRCode Generator (qrcodejs + Cadangan Otomatis) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- Firebase SDK (Compat v10.14.1) & Konfigurasi Terpusat -->
@@ -262,10 +262,10 @@
     </main>
   </div>
 
-  <!-- VIEW 2: HALAMAN RUANG KEGIATAN (DENGAN SIDEBAR MENU SEPERTI PANEL ADMIN) -->
+  <!-- VIEW 2: HALAMAN RUANG KEGIATAN -->
   <div id="event-room-page" class="hidden flex-1 flex flex-col lg:flex-row">
     
-    <!-- LEFT SIDEBAR MENU KEGIATAN (BISA DISEMBUNYIKAN DENGAN TOMBOL GARIS TIGA / HAMBURGER) -->
+    <!-- LEFT SIDEBAR MENU KEGIATAN -->
     <aside id="room-sidebar" class="w-full lg:w-72 bg-navy-950 text-white flex flex-col justify-between shrink-0 lg:min-h-[calc(100vh-4rem)] border-r border-blue-900/60 transition-all duration-200">
       <div>
         <div class="p-4 border-b border-blue-900/60 flex items-center justify-between gap-2">
@@ -343,7 +343,7 @@
         </div>
       </div>
 
-      <!-- TAB 1: INFORMASI KEGIATAN (DENGAN FLYER RESMI DI DALAM KOLOM NARASUMBER & FASILITATOR) -->
+      <!-- TAB 1: INFORMASI KEGIATAN -->
       <section id="room-panel-info" class="room-panel space-y-5">
         <div class="grid md:grid-cols-3 gap-5 items-start">
           <div class="md:col-span-2 bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
@@ -374,7 +374,7 @@
             <h3 class="font-display font-bold text-base text-navy-900 border-b border-slate-100 pb-2.5">Narasumber &amp; Fasilitator</h3>
             <div id="info-speakers" class="space-y-3"></div>
 
-            <!-- Flyer Resmi Kegiatan (Tampil apabila diunggah oleh Admin) -->
+            <!-- Flyer Resmi Kegiatan -->
             <div id="info-flyer-container" class="hidden pt-3 border-t border-slate-100 space-y-2.5">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
@@ -522,7 +522,7 @@
       <!-- TAB 5: E-SERTIFIKAT (OTOMATIS RILIS SETELAH JAM KEGIATAN BERAKHIR) -->
       <section id="room-panel-sertifikat" class="room-panel hidden space-y-6">
         
-        <!-- LOCKED / SCHEDULE NOTICE (MUNCUL JIKA KEGIATAN BELUM BERAKHIR) -->
+        <!-- LOCKED / SCHEDULE NOTICE -->
         <div id="cert-locked-box" class="hidden bg-white rounded-3xl border-2 border-amber-200 p-6 sm:p-8 shadow-xs text-center max-w-2xl mx-auto space-y-4">
           <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
             <i data-lucide="clock" class="w-8 h-8"></i>
@@ -597,10 +597,10 @@
             <!-- Responsive Scaled Virtual Stage (1000x707 = Rasio Presisi A4 Landscape 297x210) -->
             <div id="cert-stage-wrapper" class="w-full max-w-[960px] mx-auto aspect-[297/210] relative overflow-hidden rounded-2xl shadow-xl bg-white border border-slate-200">
               <div id="cert-printable-area" style="width: 1000px; height: 707px; transform-origin: top left;" class="cert-paper relative overflow-hidden select-none">
-                <!-- Background Template Image (Tag <img> asli agar 100% muncul saat Cetak / PDF) -->
+                <!-- Background Template Image -->
                 <img id="cert-view-bg-img" src="" alt="" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none z-0" />
 
-                <!-- Bingkai Default (Disembunyikan jika menggunakan full template custom) -->
+                <!-- Bingkai Default -->
                 <div id="cert-view-outer-border" class="absolute inset-0 pointer-events-none z-[1] border-[10px] border-double border-blue-900"></div>
                 <div id="cert-view-inner-frame" class="absolute inset-[20px] pointer-events-none z-[1] border-2 border-amber-500/75"></div>
 
@@ -632,7 +632,7 @@
                   </p>
                 </div>
 
-                <!-- Footer QR (Posisi Presisi Sinkron dengan Studio Admin) -->
+                <!-- Footer QR -->
                 <div id="cert-view-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" class="absolute z-20 flex items-center gap-3">
                   <div class="p-1.5 bg-white border border-slate-200 rounded-xl shadow-2xs shrink-0">
                     <img id="cert-qr-img" src="" alt="QR Verifikasi" class="w-[78px] h-[78px]" />
@@ -644,7 +644,7 @@
                   </div>
                 </div>
 
-                <!-- Footer Signature (Posisi Presisi Sinkron dengan Studio Admin) -->
+                <!-- Footer Signature -->
                 <div id="cert-view-signer-block" style="right: 65px; bottom: 52px; width: 320px; transform-origin: bottom center;" class="absolute z-20 text-center space-y-0.5">
                   <p id="cert-view-issued" class="text-[11.5px] text-slate-600">Bandar Lampung, 2026</p>
                   <p id="cert-view-signer-title" class="text-[12.5px] font-semibold text-slate-800">Ketua JSIT Indonesia Wilayah Lampung</p>
@@ -1501,7 +1501,6 @@ const DEFAULT_EVENTS = [
         </div>
       `).join('') : '<p class="text-xs text-slate-400">Informasi narasumber menyusul.</p>';
 
-      // Tampilkan Flyer Kegiatan di dalam kolom Narasumber & Fasilitator jika tersedia
       const flyerContainer = document.getElementById('info-flyer-container');
       const flyerImgEl = document.getElementById('info-flyer-img');
       if (ev.flyerImg && ev.flyerImg.trim() !== '') {
@@ -1974,7 +1973,6 @@ const DEFAULT_EVENTS = [
 
       const clonedStage = sourceStage.cloneNode(true);
       clonedStage.removeAttribute('id');
-      // 297mm = 1122.52px pada 96dpi -> scale(1.12252) mengisi tepat 297mm x 210mm penuh!
       clonedStage.style.width = '1000px';
       clonedStage.style.height = '707px';
       clonedStage.style.transformOrigin = 'top left';
@@ -2084,48 +2082,6 @@ const DEFAULT_EVENTS = [
         if (activeCertPayload) activeCertPayload.qrDataUrl = qrDataUrl;
       }
 
-      resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function renderCertificateForAttendeeIndex(ev, foundIndex) {
-      const attendees = ev.attendees || [];
-      const attendee = attendees[foundIndex];
-      if (!attendee) return;
-
-      const notFoundBox = document.getElementById('cert-not-found');
-      const resultBox = document.getElementById('cert-result-wrapper');
-      const multiBox = document.getElementById('cert-multiple-matches');
-
-      notFoundBox.classList.add('hidden');
-      multiBox.classList.add('hidden');
-
-      const payload = buildCertificatePayloadForAttendee(ev, attendee, foundIndex);
-      activeCertPayload = payload;
-
-      document.getElementById('cert-view-number').textContent = `Nomor: ${payload.certNumber}`;
-      document.getElementById('cert-view-name').textContent = payload.name;
-      document.getElementById('cert-view-school').textContent = `${payload.school} — ${payload.region}`;
-      document.getElementById('cert-view-description').innerHTML = `
-        Atas partisipasi aktifnya sebagai <strong>${escapeHtml(payload.roleLabel)}</strong> dalam kegiatan <strong>${escapeHtml(payload.category)}</strong>:<br/>
-        <span class="font-display font-extrabold text-[15.5px] block my-1">"${escapeHtml(payload.eventTitle)}"</span>
-        yang diselenggarakan oleh ${escapeHtml(payload.orgSubText)} pada tanggal <strong>${escapeHtml(payload.dateRange)}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(payload.jp)}</strong>.
-      `;
-      document.getElementById('cert-view-code').textContent = payload.verCode;
-      document.getElementById('cert-view-issued').textContent = `Bandar Lampung, ${payload.issuedDate}`;
-      document.getElementById('cert-view-signer-title').textContent = payload.signerTitle;
-      document.getElementById('cert-view-signer-name').textContent = payload.signerName;
-
-      resultBox.classList.remove('hidden');
-      applyCertificateLayoutStyles(payload);
-
-      if (window.QRCode) {
-        QRCode.toDataURL(payload.verificationUrl, { width: 220, margin: 1 }, (err, url) => {
-          if (!err && url) {
-            document.getElementById('cert-qr-img').src = url;
-            activeCertPayload.qrDataUrl = url;
-          }
-        });
-      }
       resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
@@ -2358,7 +2314,8 @@ const DEFAULT_EVENTS = [
         } else {
           finishDownload();
         }
-        
+      }
+
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, W, H);
 
@@ -2435,7 +2392,6 @@ const DEFAULT_EVENTS = [
         }
       }
 
-      // Jika data belum ada di memori lokal dan Firebase aktif, ambil langsung dari Firestore
       if (!matchedAtt && isFirebaseReady && db && decoded && decoded.evId && decoded.attId) {
         try {
           const evDoc = await db.collection('events').doc(decoded.evId).get();

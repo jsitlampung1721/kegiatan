@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- Firebase SDK (Compat v10.14.1) & Konfigurasi Terpusat -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -2283,6 +2283,61 @@ const DEFAULT_EVENTS = [
     }
 
     // MODAL QR CODE & LINK PRESENSI KEGIATAN
+    function generateAdminQrDataUrlSafe(text, size = 260) {
+      return new Promise((resolve) => {
+        if (!text) return resolve('');
+        if (window.QRCode) {
+          try {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;visibility:hidden;';
+            document.body.appendChild(tempDiv);
+
+            new window.QRCode(tempDiv, {
+              text: String(text),
+              width: size,
+              height: size,
+              colorDark: '#0B1F3A',
+              colorLight: '#FFFFFF',
+              correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.M : 0
+            });
+
+            setTimeout(() => {
+              const canvas = tempDiv.querySelector('canvas');
+              const img = tempDiv.querySelector('img');
+              let dataUrl = '';
+              if (canvas) {
+                dataUrl = canvas.toDataURL('image/png');
+              } else if (img && img.src) {
+                dataUrl = img.src;
+              }
+              tempDiv.remove();
+              if (dataUrl) return resolve(dataUrl);
+              resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
+            }, 40);
+            return;
+          } catch (err) {
+            console.warn('Admin QRCodeJS fallback ke API:', err);
+          }
+        }
+        resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=4&data=${encodeURIComponent(text)}`);
+      });
+    }
+
+    async function openEventQrModal(eventId) {
+      const ev = events.find(e => e.id === eventId);
+      if (!ev) return;
+      const presensiUrl = `${getPortalIndexBaseUrl()}#kegiatan/${encodeURIComponent(ev.id)}/absensi`;
+      activeQrModalUrl = presensiUrl;
+      activeQrModalTitle = ev.title;
+      document.getElementById('qr-modal-event-title').textContent = ev.title;
+      document.getElementById('qr-modal-url-text').textContent = presensiUrl;
+
+      document.getElementById('event-qr-modal').classList.remove('hidden');
+      const qrDataUrl = await generateAdminQrDataUrlSafe(presensiUrl, 320);
+      if (qrDataUrl) {
+        document.getElementById('qr-modal-img').src = qrDataUrl;
+      }
+    }
     function openEventQrModal(eventId) {
       const ev = events.find(e => e.id === eventId);
       if (!ev) return;

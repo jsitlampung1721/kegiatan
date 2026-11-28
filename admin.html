@@ -80,7 +80,7 @@
 <body class="min-h-screen flex flex-col font-sans antialiased">
 
   <!-- ===================================================================== -->
-  <!-- LAYAR LOGIN ADMIN                                                     -->
+  <!-- LAYAR LOGIN & DAFTAR MULTIUSER ADMIN / PANITIA                        -->
   <!-- ===================================================================== -->
   <div id="admin-login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-900">
     <div class="bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-blue-100 space-y-6">
@@ -88,15 +88,16 @@
         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-600/25">
           <i data-lucide="shield-check" class="w-7 h-7"></i>
         </div>
-        <h1 class="font-display font-extrabold text-xl sm:text-2xl text-navy-900">Admin Portal Kegiatan &amp; LMS</h1>
+        <h1 id="admin-auth-heading" class="font-display font-extrabold text-xl sm:text-2xl text-navy-900">Login Admin &amp; Panitia</h1>
         <p class="text-xs text-slate-500">JSIT Wilayah Lampung &mdash; Tim Diklat Wilayah Lampung</p>
       </div>
 
       <div id="login-error" class="hidden p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
 
-      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+      <!-- FORM LOGIN -->
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Email Admin Firebase atau Username</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email atau Username</label>
           <input type="text" id="login-username" required placeholder="admin atau admin@jsitlampung.or.id" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
@@ -106,6 +107,49 @@
         <button type="submit" id="btn-admin-login" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/25 transition">
           Masuk ke Dashboard Admin
         </button>
+
+        <div class="pt-3 border-t border-slate-100 text-center text-xs text-slate-600">
+          Belum punya akun?
+          <button type="button" onclick="toggleAdminAuthForm('register')" class="font-extrabold text-blue-600 hover:underline ml-1">
+            Daftar sekarang!
+          </button>
+        </div>
+      </form>
+
+      <!-- FORM DAFTAR PANITIA BARU -->
+      <form id="admin-register-form" onsubmit="handleAdminRegister(event)" class="hidden space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Panitia *</label>
+          <input type="text" id="adm-reg-name" required placeholder="Nama & Gelar" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email *</label>
+            <input type="text" id="adm-reg-user" required placeholder="panitia.diklat" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+            <input type="tel" id="adm-reg-phone" required placeholder="0812xxxxxxxx" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+          <input type="password" id="adm-reg-pass" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kode Undangan Panitia JSIT *</label>
+          <input type="text" id="adm-reg-code" required placeholder="Masukkan kode undangan panitia" class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50/50 text-sm" />
+        </div>
+        <button type="submit" id="btn-admin-register" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition">
+          Daftar Akun Panitia &amp; Masuk
+        </button>
+
+        <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-600">
+          Sudah punya akun?
+          <button type="button" onclick="toggleAdminAuthForm('login')" class="font-extrabold text-blue-600 hover:underline ml-1">
+            Login di sini
+          </button>
+        </div>
       </form>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -119,7 +163,6 @@
   <!-- DASHBOARD ADMIN TERPADU                                               -->
   <!-- ===================================================================== -->
   <div id="admin-dashboard-shell" class="hidden min-h-screen flex flex-col">
-    <!-- Top Navbar -->
     <header class="sticky top-0 z-40 bg-navy-900 text-white border-b border-blue-800/70 shadow-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -128,7 +171,7 @@
           </div>
           <div>
             <span class="font-display font-extrabold text-sm sm:text-base block leading-none">Dashboard Admin JSIT Lampung</span>
-            <span class="text-[11px] text-sky-300">Manajemen Kegiatan, LMS, Peserta &amp; E-Sertifikat</span>
+            <span id="admin-active-operator" class="text-[11px] text-sky-300">Manajemen Kegiatan, LMS, Peserta &amp; E-Sertifikat</span>
           </div>
         </div>
 
@@ -151,7 +194,6 @@
     </header>
 
     <div class="flex-1 flex flex-col lg:flex-row">
-      <!-- Sidebar Admin -->
       <aside id="admin-sidebar" class="w-full lg:w-72 bg-navy-900 text-white border-b lg:border-b-0 lg:border-r border-blue-900/80 shrink-0 flex flex-col justify-between transition-all duration-200">
         <div>
           <div class="hidden lg:flex items-center justify-between px-5 py-3.5 border-b border-blue-800/70">
@@ -181,7 +223,7 @@
               <i data-lucide="award" class="w-4 h-4 text-sky-300 shrink-0"></i>
               <span class="admin-sidebar-label truncate">Sertifikat</span>
             </button>
-            <button onclick="switchAdminTab('settings')" id="admin-nav-settings" title="Pengaturan Portal" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+            <button onclick="switchAdminTab('settings')" id="admin-nav-settings" title="Pengaturan Portal & Akun" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
               <i data-lucide="settings" class="w-4 h-4 text-slate-300 shrink-0"></i>
               <span class="admin-sidebar-label truncate">Pengaturan</span>
             </button>
@@ -194,9 +236,7 @@
         </div>
       </aside>
 
-      <!-- Main Admin Content -->
       <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-        <!-- Ringkasan Statistik Cepat -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
             <div class="text-xs font-semibold text-slate-500">Total Kegiatan</div>
@@ -310,7 +350,6 @@
                 </div>
               </div>
 
-              <!-- Upload / Link Flyer Kegiatan -->
               <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -354,7 +393,6 @@
             </form>
           </div>
 
-          <!-- Tabel Daftar Kegiatan -->
           <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
             <h3 class="font-display font-bold text-base text-navy-900">Daftar Kegiatan Terpublikasi</h3>
             <div class="overflow-x-auto">
@@ -393,7 +431,6 @@
               </div>
             </div>
 
-            <!-- Tambah Peserta Manual -->
             <form onsubmit="addManualAttendee(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
               <input type="text" id="man-att-name" required placeholder="Nama Lengkap & Gelar" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
               <input type="text" id="man-att-school" required placeholder="Asal Sekolah" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
@@ -440,7 +477,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <!-- Tambah Modul Sesi LMS -->
               <form onsubmit="addLmsModuleAdmin(event)" class="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-100 space-y-3">
                 <h3 class="font-display font-bold text-sm text-navy-900">Tambah Modul Sesi Pembelajaran</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -456,14 +492,12 @@
                 <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">+ Tambahkan Modul Sesi</button>
               </form>
 
-              <!-- Daftar Modul Sesi -->
               <div class="space-y-3">
                 <h3 class="font-display font-bold text-sm text-navy-900">Daftar Modul Sesi Aktif</h3>
                 <div id="admin-lms-modules-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
               </div>
             </div>
 
-            <!-- Rekap Progres & Penilaian Peserta LMS -->
             <div class="pt-4 border-t border-slate-100 space-y-3">
               <h3 class="font-display font-bold text-base text-navy-900">Monitoring Progres Belajar, Tautan Tugas &amp; Input Nilai</h3>
               <div class="overflow-x-auto">
@@ -498,7 +532,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <!-- Form & List Materi -->
               <div class="space-y-4">
                 <form onsubmit="addMaterialAdmin(event)" class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-3">
                   <h3 class="font-display font-bold text-sm text-navy-900">Tambah Materi Baru</h3>
@@ -513,7 +546,6 @@
                 <div id="admin-materials-list" class="space-y-2"></div>
               </div>
 
-              <!-- Form & List Rekaman -->
               <div class="space-y-4">
                 <form onsubmit="addRecordingAdmin(event)" class="p-4 rounded-2xl bg-sky-50/50 border border-sky-100 space-y-3">
                   <h3 class="font-display font-bold text-sm text-navy-900">Tambah Rekaman Video Baru</h3>
@@ -527,154 +559,162 @@
             </div>
           </div>
         </section>
+
         <!-- =============================================================== -->
-        <!-- TAB 5: DESAIN E-SERTIFIKAT & TATA LETAK                         -->
+        <!-- TAB 5: DESAIN E-SERTIFIKAT (KIRI SCROLL, KANAN PREVIEW, BAWAH TABEL) -->
         <!-- =============================================================== -->
         <section id="admin-panel-certificate" class="admin-panel hidden space-y-6">
           <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
                 <h2 class="font-display font-bold text-lg text-navy-900">Desain &amp; Tata Letak E-Sertifikat (A4 Landscape)</h2>
-                <p class="text-xs text-slate-500">Atur nomor surat, bobot JP, penandatangan, serta posisi elemen pada template sertifikat.</p>
+                <p class="text-xs text-slate-500">Atur tata letak di panel kiri (dapat digulir), lihat pratinjau langsung di kanan, dan kelola daftar penerima di bawah.</p>
               </div>
               <select id="cert-admin-event-select" onchange="loadCertConfigIntoForm()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-navy-900 bg-white max-w-xs"></select>
             </div>
 
+            <!-- GRID ATAS: KIRI FORM SCROLLABLE, KANAN PREVIEW -->
             <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-              <!-- Form Pengaturan Sertifikat -->
-              <form onsubmit="saveCertConfig(event)" class="xl:col-span-5 space-y-4 text-xs">
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Prefix Nomor Sertifikat</label>
-                    <input type="text" id="cert-cfg-prefix" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Bobot Pelatihan (JP)</label>
-                    <input type="text" id="cert-cfg-jp" placeholder="8 JP" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tempat Terbit</label>
-                    <input type="text" id="cert-cfg-place" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tanggal Terbit (Teks)</label>
-                    <input type="text" id="cert-cfg-date" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nama Penandatangan</label>
-                    <input type="text" id="cert-cfg-signer-name" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                  <div>
-                    <label class="block font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
-                    <input type="text" id="cert-cfg-signer-title" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
-                  </div>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-                  <div class="flex items-center justify-between">
-                    <label class="font-bold text-navy-900">Template Background Khusus Kegiatan</label>
-                    <label class="cursor-pointer px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px]">
-                      Upload Gambar
-                      <input type="file" accept="image/*" onchange="handleEventCertBgUpload(event)" class="hidden" />
-                    </label>
-                  </div>
-                  <input type="text" id="cert-cfg-bg-url" oninput="updateLiveCertPreview()" placeholder="Kosongkan untuk pakai Template Default Global" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
-                </div>
-
-                <!-- Opsi Elemen Visual -->
-                <div class="p-3.5 rounded-2xl bg-blue-50/40 border border-blue-100 space-y-3">
-                  <div class="font-bold text-navy-900">Opsi Tampilan &amp; Posisi Elemen</div>
-                  <div class="flex flex-wrap gap-4">
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" id="lay-show-border" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
-                      <span>Bingkai Bawaan</span>
-                    </label>
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" id="lay-show-header" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
-                      <span>Kop Bawaan</span>
-                    </label>
-                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" id="lay-show-heading" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
-                      <span>Judul Besar</span>
-                    </label>
+              <!-- SISI KIRI: PENGATURAN TATA LETAK (BISA DI-SCROLL) -->
+              <div class="xl:col-span-5 max-h-[680px] overflow-y-auto pr-2 space-y-4 border border-slate-200/80 rounded-2xl p-4 bg-slate-50/40">
+                <form onsubmit="saveCertConfig(event)" class="space-y-4 text-xs">
+                  <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span class="font-display font-bold text-sm text-navy-900">Pengaturan &amp; Posisi Elemen</span>
+                    <button type="button" onclick="resetCertLayoutToDefault()" class="px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-[11px]">
+                      Reset Posisi
+                    </button>
                   </div>
 
                   <div class="grid grid-cols-2 gap-3">
                     <div>
-                      <label class="block text-[11px] font-semibold text-slate-600">Teks Judul Besar</label>
-                      <input type="text" id="lay-heading-text" oninput="updateLiveCertPreview()" value="SERTIFIKAT" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      <label class="block font-bold text-slate-700 mb-1">Prefix Nomor Sertifikat</label>
+                      <input type="text" id="cert-cfg-prefix" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
                     </div>
                     <div>
-                      <label class="block text-[11px] font-semibold text-slate-600">Posisi Atas Konten (px)</label>
-                      <input type="number" id="lay-center-top" oninput="updateLiveCertPreview()" value="158" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[11px] font-semibold text-slate-600">Ukuran Nama Peserta (px)</label>
-                      <input type="number" id="lay-name-size" oninput="updateLiveCertPreview()" value="28" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[11px] font-semibold text-slate-600">Ukuran Teks Deskripsi (px)</label>
-                      <input type="number" step="0.5" id="lay-desc-size" oninput="updateLiveCertPreview()" value="13.5" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      <label class="block font-bold text-slate-700 mb-1">Bobot Pelatihan (JP)</label>
+                      <input type="text" id="cert-cfg-jp" oninput="updateLiveCertPreview()" placeholder="8 JP" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-3 gap-2 pt-1 border-t border-blue-100">
+                  <div class="grid grid-cols-2 gap-3">
                     <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">QR Kiri (px)</label>
-                      <input type="number" id="lay-qr-left" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      <label class="block font-bold text-slate-700 mb-1">Tempat Terbit</label>
+                      <input type="text" id="cert-cfg-place" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
                     </div>
                     <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">QR Bawah (px)</label>
-                      <input type="number" id="lay-qr-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">Skala QR (%)</label>
-                      <input type="number" id="lay-qr-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">TTD Kanan (px)</label>
-                      <input type="number" id="lay-signer-right" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">TTD Bawah (px)</label>
-                      <input type="number" id="lay-signer-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
-                    </div>
-                    <div>
-                      <label class="block text-[10px] font-semibold text-slate-600">Skala TTD (%)</label>
-                      <input type="number" id="lay-signer-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      <label class="block font-bold text-slate-700 mb-1">Tanggal Terbit (Teks)</label>
+                      <input type="text" id="cert-cfg-date" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
                     </div>
                   </div>
-                </div>
 
-                <div class="flex gap-2">
-                  <button type="submit" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition">
-                    Simpan Desain Sertifikat
-                  </button>
-                  <button type="button" onclick="resetCertLayoutToDefault()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">
-                    Reset Posisi
-                  </button>
-                </div>
-              </form>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Nama Penandatangan</label>
+                      <input type="text" id="cert-cfg-signer-name" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
+                      <input type="text" id="cert-cfg-signer-title" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
+                    </div>
+                  </div>
 
-              <!-- Live Preview Kanvas Sertifikat -->
+                  <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                      <label class="font-bold text-navy-900">Template Background Khusus</label>
+                      <label class="cursor-pointer px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px]">
+                        Upload Gambar
+                        <input type="file" accept="image/*" onchange="handleEventCertBgUpload(event)" class="hidden" />
+                      </label>
+                    </div>
+                    <input type="text" id="cert-cfg-bg-url" oninput="updateLiveCertPreview()" placeholder="Kosongkan untuk pakai Template Default Global" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50" />
+                  </div>
+
+                  <!-- Opsi Elemen Visual -->
+                  <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-3">
+                    <div class="font-bold text-navy-900">Opsi Tampilan &amp; Koordinat Tata Letak</div>
+                    <div class="flex flex-wrap gap-3">
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="lay-show-border" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                        <span>Bingkai Bawaan</span>
+                      </label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="lay-show-header" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                        <span>Kop Bawaan</span>
+                      </label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="lay-show-heading" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                        <span>Judul Besar</span>
+                      </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-[11px] font-semibold text-slate-600">Teks Judul Besar</label>
+                        <input type="text" id="lay-heading-text" oninput="updateLiveCertPreview()" value="SERTIFIKAT" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[11px] font-semibold text-slate-600">Posisi Atas Konten (px)</label>
+                        <input type="number" id="lay-center-top" oninput="updateLiveCertPreview()" value="158" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[11px] font-semibold text-slate-600">Ukuran Nama Peserta (px)</label>
+                        <input type="number" id="lay-name-size" oninput="updateLiveCertPreview()" value="28" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[11px] font-semibold text-slate-600">Ukuran Teks Deskripsi (px)</label>
+                        <input type="number" step="0.5" id="lay-desc-size" oninput="updateLiveCertPreview()" value="13.5" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-blue-100">
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">QR Kiri (px)</label>
+                        <input type="number" id="lay-qr-left" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">QR Bawah (px)</label>
+                        <input type="number" id="lay-qr-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">Skala QR (%)</label>
+                        <input type="number" id="lay-qr-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">TTD Kanan (px)</label>
+                        <input type="number" id="lay-signer-right" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">TTD Bawah (px)</label>
+                        <input type="number" id="lay-signer-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-slate-600">Skala TTD (%)</label>
+                        <input type="number" id="lay-signer-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition">
+                    Simpan Desain &amp; Tata Letak Sertifikat
+                  </button>
+                </form>
+              </div>
+
+              <!-- SISI KANAN: PREVIEW LANGSUNG SERTIFIKAT -->
               <div class="xl:col-span-7 space-y-2.5">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="font-bold text-navy-900">Pratinjau Langsung (Skala A4 Landscape 1000x707)</span>
-                  <span class="text-slate-500">Contoh Nama: Ahmad Fauzi, S.Pd., M.Pd.</span>
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-bold text-navy-900">Pratinjau Langsung (A4 Landscape 1000x707)</span>
+                  <span id="pv-sample-owner-badge" class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
+                    Pratinjau: Ahmad Fauzi, S.Pd., M.Pd.
+                  </span>
                 </div>
                 <div class="pv-stage-wrapper" id="pv-stage-wrapper">
                   <div id="pv-printable-area">
                     <img id="pv-bg-img" src="" alt="Preview Background" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
-                    <div id="pv-outer-border" class="absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
-                    <div id="pv-inner-frame" class="absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
+                    <div id="pv-outer-border" class="hidden absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
+                    <div id="pv-inner-frame" class="hidden absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
 
-                    <div id="pv-default-header" class="absolute left-0 right-0 text-center px-12" style="top: 42px;">
+                    <div id="pv-default-header" class="hidden absolute left-0 right-0 text-center px-12" style="top: 42px;">
                       <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold tracking-widest uppercase">
                         Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
                       </div>
@@ -682,7 +722,7 @@
                     </div>
 
                     <div id="pv-dynamic-block" class="absolute left-0 right-0 px-14 text-center" style="top: 158px;">
-                      <div id="pv-heading" class="font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
+                      <div id="pv-heading" class="hidden font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
                         SERTIFIKAT
                       </div>
                       <div id="pv-number" class="text-sm font-bold text-slate-600 mt-1">Nomor: 001/SERT-JSIT-LPG/2026</div>
@@ -690,7 +730,7 @@
                       <div id="pv-name" class="font-display font-extrabold text-navy-900 mt-2 px-6 inline-block border-b-2 border-amber-500 pb-1" style="font-size: 28px;">
                         Ahmad Fauzi, S.Pd., M.Pd.
                       </div>
-                      <div class="text-sm font-bold text-blue-800 mt-1.5">SDIT Permata Bunda — Kota Bandar Lampung</div>
+                      <div id="pv-school" class="text-sm font-bold text-blue-800 mt-1.5">SDIT Permata Bunda — Kota Bandar Lampung</div>
                       <p id="pv-description" class="text-slate-700 leading-relaxed max-w-3xl mx-auto mt-3" style="font-size: 13.5px;">
                         Atas partisipasi aktifnya sebagai Peserta dalam kegiatan...
                       </p>
@@ -703,7 +743,7 @@
                       <div class="text-left text-[10.5px] text-slate-700 leading-snug max-w-[195px]">
                         <div class="font-bold text-navy-900">Scan Barcode Verifikasi</div>
                         <div id="pv-qr-org" class="font-medium text-slate-600">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</div>
-                        <div class="font-mono font-bold text-blue-700 mt-0.5">JSIT-VER-001</div>
+                        <div id="pv-qr-code-text" class="font-mono font-bold text-blue-700 mt-0.5">JSIT-VER-001</div>
                       </div>
                     </div>
 
@@ -723,51 +763,106 @@
                 </div>
               </div>
             </div>
+
+            <!-- BAGIAN BAWAH: TABEL DATA KEGIATAN & NAMA PEMILIK SERTIFIKAT -->
+            <div class="pt-5 border-t border-slate-200 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 class="font-display font-bold text-base text-navy-900">Daftar Kegiatan &amp; Nama Pemilik E-Sertifikat</h3>
+                  <p class="text-xs text-slate-500">Klik tombol <strong>Pratinjau di Kanvas</strong> untuk mengecek tampilan nama &amp; nomor sertifikat setiap penerima.</p>
+                </div>
+                <span id="cert-owners-count-badge" class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 self-start">
+                  0 Pemilik Sertifikat
+                </span>
+              </div>
+
+              <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+                    <tr>
+                      <th class="py-3 px-3">No</th>
+                      <th class="py-3 px-3">Nomor Sertifikat</th>
+                      <th class="py-3 px-3">Nama Pemilik Sertifikat</th>
+                      <th class="py-3 px-3">Asal Sekolah / Instansi</th>
+                      <th class="py-3 px-3">Nama Kegiatan</th>
+                      <th class="py-3 px-3">Status Rilis</th>
+                      <th class="py-3 px-3 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-cert-owners-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </section>
 
         <!-- =============================================================== -->
-        <!-- TAB 6: PENGATURAN PORTAL & IDENTITAS GLOBAL                     -->
+        <!-- TAB 6: PENGATURAN PORTAL, IDENTITAS & DAFTAR AKUN MULTIUSER     -->
         <!-- =============================================================== -->
         <section id="admin-panel-settings" class="admin-panel hidden space-y-6">
-          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs max-w-3xl space-y-5">
-            <div class="border-b border-slate-100 pb-3">
-              <h2 class="font-display font-bold text-lg text-navy-900">Pengaturan Identitas Organisasi &amp; Template Default</h2>
-              <p class="text-xs text-slate-500">Perubahan di sini berlaku sebagai identitas utama portal dan penandatangan default kegiatan baru.</p>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-6 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+              <div class="border-b border-slate-100 pb-3">
+                <h2 class="font-display font-bold text-lg text-navy-900">Pengaturan Identitas Organisasi &amp; Template Default</h2>
+                <p class="text-xs text-slate-500">Perubahan di sini berlaku sebagai identitas utama portal dan penandatangan default kegiatan baru.</p>
+              </div>
+
+              <form onsubmit="saveGlobalSettings(event)" class="space-y-4 text-xs sm:text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi Utama</label>
+                    <input type="text" id="set-org-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul / Tim Pelaksana</label>
+                    <input type="text" id="set-org-sub" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Penandatangan Default Sertifikat</label>
+                    <input type="text" id="set-signer-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan Default</label>
+                    <input type="text" id="set-signer-title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <label class="block text-xs font-bold text-navy-900">URL Template Background Sertifikat Default (Google Drive / Direct Link)</label>
+                  <input type="text" id="set-default-template" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs" />
+                </div>
+
+                <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition">
+                  Simpan Pengaturan Global
+                </button>
+              </form>
             </div>
 
-            <form onsubmit="saveGlobalSettings(event)" class="space-y-4 text-xs sm:text-sm">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Manajemen Akun Multiuser Terdaftar -->
+            <div class="lg:col-span-6 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
+              <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi Utama</label>
-                  <input type="text" id="set-org-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul / Tim Pelaksana</label>
-                  <input type="text" id="set-org-sub" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                  <h2 class="font-display font-bold text-lg text-navy-900">Akun Pengguna Terdaftar (Multiuser)</h2>
+                  <p class="text-xs text-slate-500">Kode undangan pendaftaran panitia baru: <strong class="text-blue-700 font-mono">JSITLAMPUNG2026</strong></p>
                 </div>
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Penandatangan Default Sertifikat</label>
-                  <input type="text" id="set-signer-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan Default</label>
-                  <input type="text" id="set-signer-title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
-                </div>
+              <div class="overflow-x-auto max-h-96">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase">
+                    <tr>
+                      <th class="py-2.5 px-2">Nama Lengkap</th>
+                      <th class="py-2.5 px-2">Username</th>
+                      <th class="py-2.5 px-2">Peran</th>
+                      <th class="py-2.5 px-2 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
               </div>
-
-              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <label class="block text-xs font-bold text-navy-900">URL Template Background Sertifikat Default (Google Drive / Direct Link)</label>
-                <input type="text" id="set-default-template" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs" />
-              </div>
-
-              <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition">
-                Simpan Pengaturan Global
-              </button>
-            </form>
+            </div>
           </div>
         </section>
       </main>
@@ -777,7 +872,10 @@
   <script>
     const STORAGE_KEY_EVENTS = 'jsit_lampung_events_v3';
     const STORAGE_KEY_SETTINGS = 'jsit_lampung_settings_v3';
+    const STORAGE_KEY_USERS = 'jsit_lampung_users_v3';
+    const SESSION_KEY_CURRENT_USER = 'jsit_lampung_current_user_v3';
     const ADMIN_SESSION_KEY = 'jsit_lampung_admin_auth_v3';
+    const PANITIA_INVITE_CODE = 'JSITLAMPUNG2026';
 
     const DEFAULT_SETTINGS = {
       orgName: 'JSIT Wilayah Lampung',
@@ -809,11 +907,13 @@
 
     let eventsData = [];
     let settingsData = { ...DEFAULT_SETTINGS };
+    let registeredUsers = [];
     let db = null;
     let auth = null;
     let isFirebaseReady = false;
     let isAdminSidebarCollapsed = false;
     let adminAttendeesUnsub = null;
+    let previewSampleAttendee = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -846,6 +946,27 @@
       const trimmed = normalizeGoogleDriveImageUrl(url);
       if (/^(https?:\/\/|data:image\/|mailto:|tel:|#)/i.test(trimmed)) return trimmed;
       return 'https://' + trimmed;
+    }
+
+    function applyImageWithDriveFallback(imgEl, rawUrl) {
+      if (!imgEl) return;
+      const cleanUrl = sanitizeUrl(rawUrl);
+      const driveId = extractGoogleDriveFileId(rawUrl);
+      imgEl.dataset.fallbackStage = '0';
+      imgEl.onerror = function() {
+        const stage = Number(this.dataset.fallbackStage || '0');
+        if (driveId && stage === 0) {
+          this.dataset.fallbackStage = '1';
+          this.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+        } else if (driveId && stage === 1) {
+          this.dataset.fallbackStage = '2';
+          this.src = `https://drive.google.com/uc?export=view&id=${driveId}`;
+        } else {
+          this.classList.add('hidden');
+        }
+      };
+      imgEl.src = cleanUrl;
+      imgEl.classList.remove('hidden');
     }
 
     function formatDateIndo(startStr, endStr) {
@@ -915,12 +1036,20 @@
           if (Array.isArray(parsed)) eventsData = parsed.map(normalizeEventItem);
         }
       } catch (e) {}
+
+      try {
+        const rawUsers = localStorage.getItem(STORAGE_KEY_USERS);
+        registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
+      } catch (e) {
+        registeredUsers = [];
+      }
     }
 
     function saveLocalCache() {
       try {
         localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(eventsData));
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settingsData));
+        localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(registeredUsers));
       } catch (e) {}
     }
 
@@ -957,6 +1086,22 @@
       if (window.lucide) lucide.createIcons();
     }
 
+    function toggleAdminAuthForm(mode) {
+      const loginF = document.getElementById('admin-login-form');
+      const regF = document.getElementById('admin-register-form');
+      const heading = document.getElementById('admin-auth-heading');
+      document.getElementById('login-error').classList.add('hidden');
+      if (mode === 'register') {
+        loginF.classList.add('hidden');
+        regF.classList.remove('hidden');
+        heading.textContent = 'Daftar Akun Panitia';
+      } else {
+        regF.classList.add('hidden');
+        loginF.classList.remove('hidden');
+        heading.textContent = 'Login Admin & Panitia';
+      }
+    }
+
     async function handleAdminLogin(e) {
       e.preventDefault();
       const userVal = document.getElementById('login-username').value.trim();
@@ -969,20 +1114,50 @@
       btn.textContent = 'Memverifikasi...';
 
       try {
-        if (auth && userVal.includes('@')) {
-          await auth.signInWithEmailAndPassword(userVal, passVal);
-          sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-          enterDashboard();
-          return;
-        }
-
         if ((userVal.toLowerCase() === 'admin' || userVal.toLowerCase() === 'admin@jsitlampung.or.id') && passVal === 'jsitlampung2026') {
+          const masterObj = { id: 'admin-master', username: 'admin', fullName: 'Administrator Utama', role: 'admin' };
           sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+          sessionStorage.setItem(SESSION_KEY_CURRENT_USER, JSON.stringify(masterObj));
           enterDashboard();
           return;
         }
 
-        throw new Error('Username/Email atau Kata Sandi Admin tidak sesuai.');
+        if (auth && userVal.includes('@')) {
+          try {
+            const cred = await auth.signInWithEmailAndPassword(userVal, passVal);
+            const staffObj = { id: cred.user.uid, username: userVal, fullName: cred.user.displayName || userVal, role: 'admin' };
+            sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+            sessionStorage.setItem(SESSION_KEY_CURRENT_USER, JSON.stringify(staffObj));
+            enterDashboard();
+            return;
+          } catch (fbErr) {}
+        }
+
+        let matched = registeredUsers.find(u =>
+          (u.role === 'admin' || u.role === 'panitia') &&
+          (u.username || '').toLowerCase() === userVal.toLowerCase() &&
+          u.password === passVal
+        );
+
+        if (!matched && isFirebaseReady && db) {
+          const snap = await db.collection('users').get();
+          snap.forEach(doc => {
+            const u = { id: doc.id, ...doc.data() };
+            if ((u.role === 'admin' || u.role === 'panitia') && (u.username || '').toLowerCase() === userVal.toLowerCase() && u.password === passVal) {
+              matched = u;
+            }
+          });
+        }
+
+        if (matched) {
+          const { password, ...safeUser } = matched;
+          sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+          sessionStorage.setItem(SESSION_KEY_CURRENT_USER, JSON.stringify(safeUser));
+          enterDashboard();
+          return;
+        }
+
+        throw new Error('Username/Email atau Kata Sandi Admin/Panitia tidak sesuai.');
       } catch (err) {
         errBox.textContent = err.message;
         errBox.classList.remove('hidden');
@@ -992,8 +1167,53 @@
       }
     }
 
+    async function handleAdminRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('adm-reg-name').value.trim();
+      const username = document.getElementById('adm-reg-user').value.trim();
+      const phone = document.getElementById('adm-reg-phone').value.trim();
+      const password = document.getElementById('adm-reg-pass').value;
+      const code = document.getElementById('adm-reg-code').value.trim();
+      const errBox = document.getElementById('login-error');
+
+      errBox.classList.add('hidden');
+      if (code.toUpperCase() !== PANITIA_INVITE_CODE) {
+        errBox.textContent = 'Kode Undangan Panitia JSIT tidak valid.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const userId = 'usr-' + Date.now();
+      const newStaff = {
+        id: userId,
+        fullName,
+        username,
+        phone,
+        school: 'JSIT Wilayah Lampung',
+        region: 'Kota Bandar Lampung',
+        password,
+        role: 'panitia',
+        createdAt: Date.now()
+      };
+
+      registeredUsers.push(newStaff);
+      saveLocalCache();
+      if (isFirebaseReady && db) {
+        try {
+          await db.collection('users').doc(userId).set(newStaff);
+        } catch (err) {}
+      }
+
+      const { password: _, ...safeUser } = newStaff;
+      sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+      sessionStorage.setItem(SESSION_KEY_CURRENT_USER, JSON.stringify(safeUser));
+      enterDashboard();
+    }
+
     function handleAdminLogout() {
       sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      sessionStorage.removeItem(SESSION_KEY_CURRENT_USER);
+      localStorage.removeItem(SESSION_KEY_CURRENT_USER);
       if (auth) auth.signOut().catch(() => {});
       document.getElementById('admin-dashboard-shell').classList.add('hidden');
       document.getElementById('admin-login-screen').classList.remove('hidden');
@@ -1002,6 +1222,15 @@
     function enterDashboard() {
       document.getElementById('admin-login-screen').classList.add('hidden');
       document.getElementById('admin-dashboard-shell').classList.remove('hidden');
+
+      try {
+        const rawCur = sessionStorage.getItem(SESSION_KEY_CURRENT_USER);
+        if (rawCur) {
+          const op = JSON.parse(rawCur);
+          const opEl = document.getElementById('admin-active-operator');
+          if (opEl) opEl.textContent = `Operator Aktif: ${op.fullName || op.username}`;
+        }
+      } catch (e) {}
 
       populateSettingsForm();
       refreshAllAdminViews();
@@ -1012,6 +1241,16 @@
             settingsData = { ...DEFAULT_SETTINGS, ...doc.data() };
             saveLocalCache();
             populateSettingsForm();
+          }
+        }, () => {});
+
+        db.collection('users').onSnapshot((snap) => {
+          const uList = [];
+          snap.forEach(d => uList.push({ id: d.id, ...d.data() }));
+          if (uList.length > 0) {
+            registeredUsers = uList;
+            saveLocalCache();
+            renderAdminUsersTable();
           }
         }, () => {});
 
@@ -1078,6 +1317,7 @@
         loadCertConfigIntoForm();
         setTimeout(fitPreviewToStage, 30);
       }
+      if (tabName === 'settings') renderAdminUsersTable();
       if (window.lucide) lucide.createIcons();
     }
 
@@ -1097,6 +1337,8 @@
       renderAdminAttendeesTable();
       renderAdminLmsPanel();
       renderAdminResourcesLists();
+      renderCertOwnersTable();
+      renderAdminUsersTable();
     }
 
     function syncEventSelectDropdowns() {
@@ -1152,7 +1394,7 @@
       const wrap = document.getElementById('ev-flyer-preview-wrap');
       const img = document.getElementById('ev-flyer-preview-img');
       if (val) {
-        img.src = sanitizeUrl(val);
+        applyImageWithDriveFallback(img, val);
         wrap.classList.remove('hidden');
       } else {
         img.src = '';
@@ -1344,6 +1586,7 @@
           ev.attendees = list;
           saveLocalCache();
           paintAttendeesRows(ev);
+          renderCertOwnersTable();
         }, () => {});
       }
 
@@ -1393,6 +1636,7 @@
       ev.attendees = [record, ...(ev.attendees || [])];
       saveLocalCache();
       paintAttendeesRows(ev);
+      renderCertOwnersTable();
       e.target.reset();
       document.getElementById('man-att-role').value = 'Peserta';
 
@@ -1408,6 +1652,7 @@
       ev.attendees = (ev.attendees || []).filter(a => a.id !== attId);
       saveLocalCache();
       paintAttendeesRows(ev);
+      renderCertOwnersTable();
       if (isFirebaseReady && db) {
         await db.collection('events').doc(evId).collection('attendees').doc(attId).delete();
       }
@@ -1620,11 +1865,16 @@
       refreshAllAdminViews();
     }
 
+    /* ===================================================================== */
+    /* DESAIN E-SERTIFIKAT & TABEL PEMILIK SERTIFIKAT                        */
+    /* ===================================================================== */
     function loadCertConfigIntoForm() {
       const sel = document.getElementById('cert-admin-event-select');
       if (!sel || !sel.value) return;
       const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
+
+      previewSampleAttendee = (ev.attendees && ev.attendees.length > 0) ? ev.attendees[0] : null;
 
       const c = ev.certificate || {};
       const l = { ...DEFAULT_LAYOUT, ...(c.layout || {}) };
@@ -1652,6 +1902,68 @@
       document.getElementById('lay-signer-scale').value = l.signerScale || 100;
 
       updateLiveCertPreview();
+      renderCertOwnersTable();
+    }
+
+    function previewSpecificCertOwner(evId, attId) {
+      const sel = document.getElementById('cert-admin-event-select');
+      if (sel && sel.value !== evId) {
+        sel.value = evId;
+        loadCertConfigIntoForm();
+      }
+      const ev = eventsData.find(item => item.id === evId);
+      if (!ev) return;
+      const att = (ev.attendees || []).find(a => a.id === attId);
+      if (!att) return;
+
+      previewSampleAttendee = att;
+      updateLiveCertPreview();
+      document.getElementById('pv-stage-wrapper').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function renderCertOwnersTable() {
+      const tbody = document.getElementById('admin-cert-owners-tbody');
+      const badge = document.getElementById('cert-owners-count-badge');
+      if (!tbody) return;
+
+      const allRows = [];
+      eventsData.forEach(ev => {
+        const list = ev.attendees || [];
+        const prefix = (ev.certificate && ev.certificate.prefix) || 'SERT-JSIT-LPG/2026';
+        const released = isCertificateReleased(ev);
+        list.forEach((att, idx) => {
+          const seqNum = list.length - idx;
+          const certNo = `${String(seqNum).padStart(3, '0')}/${prefix}`;
+          allRows.push({ ev, att, certNo, released });
+        });
+      });
+
+      if (badge) badge.textContent = `${allRows.length} Pemilik Sertifikat`;
+
+      if (allRows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Belum ada data pemilik sertifikat. Peserta yang mengisi daftar hadir akan otomatis muncul di sini.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = allRows.map((row, i) => `
+        <tr class="hover:bg-blue-50/40 transition">
+          <td class="py-2.5 px-3 text-slate-500">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-blue-700">${escapeHtml(row.certNo)}</td>
+          <td class="py-2.5 px-3 font-bold text-navy-900">${escapeHtml(row.att.name)}</td>
+          <td class="py-2.5 px-3 text-slate-600">${escapeHtml(row.att.school)}</td>
+          <td class="py-2.5 px-3 text-slate-700 max-w-xs truncate">${escapeHtml(row.ev.title)}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${row.released ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${row.released ? 'Sudah Rilis' : 'Terjadwal'}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-right whitespace-nowrap">
+            <button type="button" onclick="previewSpecificCertOwner('${escapeHtml(row.ev.id)}', '${escapeHtml(row.att.id)}')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] transition">
+              Pratinjau di Kanvas
+            </button>
+          </td>
+        </tr>
+      `).join('');
     }
 
     function handleEventCertBgUpload(e) {
@@ -1696,11 +2008,22 @@
       const bgImg = document.getElementById('pv-bg-img');
 
       if (bgUrl) {
-        bgImg.src = sanitizeUrl(bgUrl);
-        bgImg.classList.remove('hidden');
+        applyImageWithDriveFallback(bgImg, bgUrl);
       } else {
         bgImg.classList.add('hidden');
       }
+
+      const sampleName = previewSampleAttendee ? previewSampleAttendee.name : 'Ahmad Fauzi, S.Pd., M.Pd.';
+      const sampleSchool = previewSampleAttendee
+        ? `${previewSampleAttendee.school}${previewSampleAttendee.region ? ' — ' + previewSampleAttendee.region : ''}`
+        : 'SDIT Permata Bunda — Kota Bandar Lampung';
+      const sampleRole = previewSampleAttendee ? (previewSampleAttendee.role || 'Peserta') : 'Peserta';
+      const list = ev.attendees || [];
+      const idx = previewSampleAttendee ? list.findIndex(a => a.id === previewSampleAttendee.id) : -1;
+      const seqNum = idx !== -1 ? (list.length - idx) : 1;
+
+      const ownerBadge = document.getElementById('pv-sample-owner-badge');
+      if (ownerBadge) ownerBadge.textContent = `Pratinjau: ${sampleName}`;
 
       document.getElementById('pv-outer-border').classList.toggle('hidden', !layout.showBorder);
       document.getElementById('pv-inner-frame').classList.toggle('hidden', !layout.showBorder);
@@ -1711,20 +2034,24 @@
       hEl.textContent = layout.headingText;
 
       document.getElementById('pv-dynamic-block').style.top = `${layout.centerTop}px`;
-      document.getElementById('pv-name').style.fontSize = `${layout.nameSize}px`;
-      document.getElementById('pv-number').textContent = `Nomor: 001/${document.getElementById('cert-cfg-prefix').value || 'SERT-JSIT-LPG/2026'}`;
+      const nameEl = document.getElementById('pv-name');
+      nameEl.textContent = sampleName;
+      nameEl.style.fontSize = `${layout.nameSize}px`;
+      document.getElementById('pv-school').textContent = sampleSchool;
+      document.getElementById('pv-number').textContent = `Nomor: ${String(seqNum).padStart(3, '0')}/${document.getElementById('cert-cfg-prefix').value || 'SERT-JSIT-LPG/2026'}`;
 
       const jp = document.getElementById('cert-cfg-jp').value || '8 JP';
       const orgSub = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
       const descEl = document.getElementById('pv-description');
       descEl.style.fontSize = `${layout.descSize}px`;
-      descEl.innerHTML = `Atas partisipasi aktifnya sebagai <strong>Peserta</strong> dalam kegiatan <strong>“${escapeHtml(ev.title)}”</strong> yang diselenggarakan oleh <strong>${escapeHtml(orgSub)}</strong> pada tanggal <strong>${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(jp)}</strong>.`;
+      descEl.innerHTML = `Atas partisipasi aktifnya sebagai <strong>${escapeHtml(sampleRole)}</strong> dalam kegiatan <strong>“${escapeHtml(ev.title)}”</strong> yang diselenggarakan oleh <strong>${escapeHtml(orgSub)}</strong> pada tanggal <strong>${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(jp)}</strong>.`;
 
       const qrBlock = document.getElementById('pv-qr-block');
       qrBlock.style.left = `${layout.qrLeft}px`;
       qrBlock.style.bottom = `${layout.qrBottom}px`;
       qrBlock.style.transform = `scale(${layout.qrScale / 100})`;
       document.getElementById('pv-qr-org').textContent = orgSub;
+      document.getElementById('pv-qr-code-text').textContent = `JSIT-${ev.id.slice(-4).toUpperCase()}-${String(seqNum).padStart(3, '0')}`;
 
       const sBlock = document.getElementById('pv-signer-block');
       sBlock.style.right = `${layout.signerRight}px`;
@@ -1784,7 +2111,43 @@
       };
 
       await persistEventDocument(ev);
+      renderCertOwnersTable();
       alert('Desain & tata letak E-Sertifikat berhasil disimpan!');
+    }
+
+    function renderAdminUsersTable() {
+      const tbody = document.getElementById('admin-users-tbody');
+      if (!tbody) return;
+      if (registeredUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Belum ada akun tambahan yang terdaftar.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = registeredUsers.map(u => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-2 font-bold text-navy-900">${escapeHtml(u.fullName || '-')}</td>
+          <td class="py-2.5 px-2 text-slate-600">${escapeHtml(u.username || '-')}</td>
+          <td class="py-2.5 px-2">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${u.role === 'panitia' || u.role === 'admin' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'}">
+              ${escapeHtml(u.role || 'peserta')}
+            </span>
+          </td>
+          <td class="py-2.5 px-2 text-right">
+            <button onclick="deleteUserAccount('${escapeHtml(u.id)}')" class="text-rose-600 hover:underline font-bold">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteUserAccount(userId) {
+      if (!confirm('Hapus akun pengguna ini?')) return;
+      registeredUsers = registeredUsers.filter(u => u.id !== userId);
+      saveLocalCache();
+      renderAdminUsersTable();
+      if (isFirebaseReady && db) {
+        try {
+          await db.collection('users').doc(userId).delete();
+        } catch (err) {}
+      }
     }
 
     function populateSettingsForm() {

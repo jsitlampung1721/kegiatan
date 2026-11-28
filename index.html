@@ -151,7 +151,7 @@
           <span>Cek E-Sertifikat</span>
         </button>
 
-        <!-- Tombol Login Multiuser (menggantikan tombol Admin Panitia) -->
+        <!-- Tombol Login Akun -->
         <button id="nav-login-btn" onclick="openAuthModal('login')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-navy-950 text-xs sm:text-sm font-extrabold shadow-md transition">
           <i data-lucide="log-in" class="w-4 h-4"></i>
           <span>Login</span>
@@ -669,7 +669,6 @@
             <!-- Stage Responsif Kanvas Sertifikat 1000x707 -->
             <div class="cert-stage-wrapper border border-slate-200" id="cert-stage-wrapper">
               <div id="cert-printable-area">
-                <!-- PENTING: Tanpa atribut crossorigin="anonymous" agar gambar dari Google Drive / lh3 langsung tampil di browser! -->
                 <img id="cert-view-bg-img" src="" alt="Template Sertifikat" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
 
                 <div id="cert-view-outer-border" class="hidden absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
@@ -781,7 +780,7 @@
     </div>
   </div>
 
-  <!-- MODAL MULTIUSER LOGIN & PENDAFTARAN AKUN -->
+  <!-- MODAL LOGIN & DAFTAR AKUN PESERTA -->
   <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-blue-100 space-y-5 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -791,7 +790,7 @@
           </div>
           <div>
             <h3 id="auth-modal-title" class="font-display font-extrabold text-base sm:text-lg text-navy-900">Login Portal JSIT Lampung</h3>
-            <p id="auth-modal-subtitle" class="text-[11px] text-slate-500">Masuk sebagai Peserta, Panitia, atau Admin</p>
+            <p id="auth-modal-subtitle" class="text-[11px] text-slate-500">Masuk dengan akun Peserta atau Admin Anda</p>
           </div>
         </div>
         <button onclick="closeAuthModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
@@ -805,7 +804,7 @@
       <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email / No. WhatsApp</label>
-          <input type="text" id="auth-login-user" required placeholder="Contoh: ahmad@sitlampung.id atau admin" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="text" id="auth-login-user" required placeholder="Contoh: ahmad@sitlampung.id" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
@@ -816,15 +815,18 @@
         </button>
 
         <div class="pt-3 border-t border-slate-100 text-center text-xs text-slate-600">
-          Belum punya akun?
+          Belum punya akun peserta?
           <button type="button" onclick="switchAuthMode('register')" class="font-extrabold text-blue-600 hover:text-blue-800 underline ml-1">
             Daftar sekarang!
           </button>
         </div>
       </form>
 
-      <!-- FORM DAFTAR AKUN BARU -->
+      <!-- FORM DAFTAR AKUN PESERTA BARU -->
       <form id="portal-register-form" onsubmit="handlePortalRegister(event)" class="hidden space-y-3.5">
+        <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 text-[11px] text-blue-900">
+          Pendaftaran mandiri ini otomatis membuat <strong>Akun Peserta</strong> untuk memudahkan presensi, LMS, dan pengunduhan E-Sertifikat Anda.
+        </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap &amp; Gelar (Untuk Sertifikat) *</label>
           <input type="text" id="reg-fullname" required placeholder="Contoh: Ahmad Fauzi, S.Pd." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
@@ -866,26 +868,13 @@
             </select>
           </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
-            <input type="password" id="reg-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Sebagai</label>
-            <select id="reg-role" onchange="togglePanitiaCodeInput()" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
-              <option value="peserta">Peserta Umum / Guru SIT</option>
-              <option value="panitia">Admin / Panitia Diklat</option>
-            </select>
-          </div>
-        </div>
-        <div id="reg-panitia-code-wrap" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200">
-          <label class="block text-xs font-bold text-amber-900 mb-1">Kode Akses Panitia JSIT *</label>
-          <input type="text" id="reg-panitia-code" placeholder="Masukkan kode undangan panitia" class="w-full px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-xs" />
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+          <input type="password" id="reg-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
         </div>
 
         <button type="submit" id="btn-portal-register" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition">
-          Buat Akun &amp; Masuk
+          Daftar Akun Peserta &amp; Masuk
         </button>
 
         <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-600">
@@ -942,7 +931,7 @@
       </div>
       <div class="flex items-center gap-4">
         <a href="#beranda" onclick="showCatalogHome(event)" class="hover:text-white transition">Katalog Kegiatan</a>
-        <button onclick="openAuthModal('login')" class="text-sky-300 hover:text-white font-semibold transition">Login Akun / Panitia</button>
+        <button onclick="openAuthModal('login')" class="text-sky-300 hover:text-white font-semibold transition">Login Akun / Admin</button>
       </div>
     </div>
   </footer>
@@ -953,7 +942,6 @@
     const STORAGE_KEY_USERS = 'jsit_lampung_users_v3';
     const SESSION_KEY_CURRENT_USER = 'jsit_lampung_current_user_v3';
     const ADMIN_SESSION_KEY = 'jsit_lampung_admin_auth_v3';
-    const PANITIA_INVITE_CODE = 'JSITLAMPUNG2026';
 
     const DEFAULT_SETTINGS = {
       orgName: 'JSIT Wilayah Lampung',
@@ -1265,7 +1253,7 @@
     }
 
     /* ===================================================================== */
-    /* MULTIUSER AUTHENTICATION (PESERTA & PANITIA / ADMIN)                  */
+    /* AUTHENTICATION PESERTA & LOGIN ADMIN                                  */
     /* ===================================================================== */
     function getStoredUsers() {
       try {
@@ -1299,15 +1287,13 @@
           const serialized = JSON.stringify(userObj);
           sessionStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
           localStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
-          if (userObj.role === 'admin' || userObj.role === 'panitia') {
+          if (userObj.role === 'superadmin' || userObj.role === 'admin' || userObj.role === 'panitia') {
             sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-            sessionStorage.setItem('jsit_lampung_admin_user_v3', serialized);
           }
         } else {
           sessionStorage.removeItem(SESSION_KEY_CURRENT_USER);
           localStorage.removeItem(SESSION_KEY_CURRENT_USER);
           sessionStorage.removeItem(ADMIN_SESSION_KEY);
-          sessionStorage.removeItem('jsit_lampung_admin_user_v3');
         }
       } catch (e) {}
       updateNavbarAuthUI();
@@ -1325,8 +1311,9 @@
         userMenu.classList.remove('hidden');
         userMenu.classList.add('flex');
         document.getElementById('nav-user-name').textContent = currentUser.fullName || currentUser.username;
-        const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia';
-        document.getElementById('nav-user-role-badge').textContent = isStaff ? 'Admin' : 'Peserta';
+        const isStaff = currentUser.role === 'superadmin' || currentUser.role === 'admin' || currentUser.role === 'panitia';
+        const roleLabel = currentUser.role === 'superadmin' ? 'Akun Utama' : (isStaff ? 'Admin' : 'Peserta');
+        document.getElementById('nav-user-role-badge').textContent = roleLabel;
         if (adminLink) adminLink.classList.toggle('hidden', !isStaff);
       } else {
         loginBtn.classList.remove('hidden');
@@ -1373,26 +1360,13 @@
       if (mode === 'register') {
         loginForm.classList.add('hidden');
         regForm.classList.remove('hidden');
-        document.getElementById('auth-modal-title').textContent = 'Daftar Akun Baru';
-        document.getElementById('auth-modal-subtitle').textContent = 'Buat akun Peserta atau Panitia JSIT Wilayah Lampung';
+        document.getElementById('auth-modal-title').textContent = 'Daftar Akun Peserta';
+        document.getElementById('auth-modal-subtitle').textContent = 'Buat akun peserta kegiatan JSIT Wilayah Lampung';
       } else {
         regForm.classList.add('hidden');
         loginForm.classList.remove('hidden');
         document.getElementById('auth-modal-title').textContent = 'Login Portal JSIT Lampung';
         document.getElementById('auth-modal-subtitle').textContent = 'Masuk dengan Username/Email dan Password Anda';
-      }
-    }
-
-    function togglePanitiaCodeInput() {
-      const role = document.getElementById('reg-role').value;
-      const wrap = document.getElementById('reg-panitia-code-wrap');
-      const inp = document.getElementById('reg-panitia-code');
-      if (role === 'panitia') {
-        wrap.classList.remove('hidden');
-        inp.required = true;
-      } else {
-        wrap.classList.add('hidden');
-        inp.required = false;
       }
     }
 
@@ -1414,17 +1388,18 @@
       btn.textContent = 'Memverifikasi...';
 
       try {
-        // 1. Cek Admin Utama bawaan
+        // 1. Cek Akun Utama (Super Admin)
         if ((loginId.toLowerCase() === 'admin' || loginId.toLowerCase() === 'admin@jsitlampung.or.id') && pass === 'jsitlampung2026') {
-          const adminUser = {
-            id: 'admin-master',
+          const masterUser = {
+            id: 'superadmin-master',
             username: 'admin',
-            fullName: 'Administrator Utama JSIT Lampung',
+            fullName: 'Akun Utama (Super Admin)',
             school: 'JSIT Wilayah Lampung',
             region: 'Kota Bandar Lampung',
-            role: 'admin'
+            role: 'superadmin',
+            permissions: { events: true, attendees: true, lms: true, resources: true, certificate: true, settings: true }
           };
-          setSessionUser(adminUser);
+          setSessionUser(masterUser);
           closeAuthModal();
           window.location.href = 'admin.html';
           return;
@@ -1439,15 +1414,14 @@
               username: loginId,
               fullName: cred.user.displayName || loginId.split('@')[0],
               school: 'JSIT Wilayah Lampung',
-              role: 'admin'
+              role: 'superadmin',
+              permissions: { events: true, attendees: true, lms: true, resources: true, certificate: true, settings: true }
             };
             setSessionUser(staffUser);
             closeAuthModal();
             window.location.href = 'admin.html';
             return;
-          } catch (fbErr) {
-            // Lanjut cek database users Firestore / lokal
-          }
+          } catch (fbErr) {}
         }
 
         // 3. Cek database users Firestore & LocalStorage
@@ -1458,7 +1432,7 @@
             snap.forEach(doc => {
               const u = { id: doc.id, ...doc.data() };
               const idMatch = (u.username || '').toLowerCase() === loginId.toLowerCase() ||
-                (u.phone || '').replace(/\D/g, '') === loginId.replace(/\D/g, '') && loginId.replace(/\D/g, '').length >= 6;
+                ((u.phone || '').replace(/\D/g, '') === loginId.replace(/\D/g, '') && loginId.replace(/\D/g, '').length >= 6);
               if (idMatch && u.password === pass) {
                 matchedUser = u;
               }
@@ -1483,7 +1457,7 @@
         setSessionUser(safeUser);
         closeAuthModal();
 
-        if (safeUser.role === 'admin' || safeUser.role === 'panitia') {
+        if (safeUser.role === 'superadmin' || safeUser.role === 'admin' || safeUser.role === 'panitia') {
           window.location.href = 'admin.html';
         }
       } catch (err) {
@@ -1502,13 +1476,6 @@
       const school = document.getElementById('reg-school').value.trim();
       const region = document.getElementById('reg-region').value;
       const password = document.getElementById('reg-password').value;
-      const role = document.getElementById('reg-role').value;
-      const inviteCode = document.getElementById('reg-panitia-code').value.trim();
-
-      if (role === 'panitia' && inviteCode.toUpperCase() !== PANITIA_INVITE_CODE) {
-        showAuthFeedback('Kode Akses Panitia JSIT tidak sesuai. Pilih peran "Peserta Umum / Guru SIT" jika Anda peserta kegiatan.', true);
-        return;
-      }
 
       const btn = document.getElementById('btn-portal-register');
       btn.disabled = true;
@@ -1521,6 +1488,7 @@
         }
 
         const userId = 'usr-' + Date.now();
+        // Pendaftaran publik di portal selalu berstatus 'peserta'
         const newUser = {
           id: userId,
           fullName,
@@ -1529,7 +1497,8 @@
           school,
           region,
           password,
-          role: role === 'panitia' ? 'panitia' : 'peserta',
+          role: 'peserta',
+          permissions: { events: false, attendees: false, lms: false, resources: false, certificate: false, settings: false },
           createdAt: Date.now()
         };
 
@@ -1545,29 +1514,29 @@
         const { password: _, ...safeUser } = newUser;
         setSessionUser(safeUser);
         closeAuthModal();
-
-        if (safeUser.role === 'panitia') {
-          window.location.href = 'admin.html';
-        }
       } catch (err) {
         showAuthFeedback(err.message, true);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Buat Akun & Masuk';
+        btn.textContent = 'Daftar Akun Peserta & Masuk';
       }
     }
 
     function openUserProfileModal() {
       if (!currentUser) return;
       const box = document.getElementById('user-profile-details');
-      const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia';
+      const isStaff = currentUser.role === 'superadmin' || currentUser.role === 'admin' || currentUser.role === 'panitia';
+      const roleTitle = currentUser.role === 'superadmin'
+        ? 'Akun Utama (Super Admin)'
+        : (isStaff ? 'Admin / Panitia Diklat' : 'Peserta Kegiatan');
+
       box.innerHTML = `
         <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-1.5">
           <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap</span><strong class="text-navy-900">${escapeHtml(currentUser.fullName)}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Username / Email</span><strong class="text-navy-900">${escapeHtml(currentUser.username)}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Sekolah / Instansi</span><strong class="text-navy-900">${escapeHtml(currentUser.school || '-')}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Wilayah</span><strong class="text-navy-900">${escapeHtml(currentUser.region || '-')}</strong></div>
-          <div class="flex justify-between"><span class="text-slate-500">Hak Akses</span><strong class="uppercase text-blue-700">${isStaff ? 'Admin / Panitia' : 'Peserta Kegiatan'}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Status Akun</span><strong class="uppercase text-blue-700">${roleTitle}</strong></div>
         </div>
       `;
       const goAdminBtn = document.getElementById('profile-go-admin-btn');
@@ -2238,7 +2207,6 @@
 
       if (tabName === 'sertifikat') {
         setTimeout(fitCertificateToStage, 30);
-        // Jika user sedang login, otomatis cari dan tampilkan sertifikatnya!
         const ev = eventsData.find(item => item.id === activeEventId);
         if (ev && currentUser && isCertificateReleased(ev)) {
           const matchedAtt = (ev.attendees || []).find(a =>
@@ -2635,7 +2603,6 @@
         if (bgLoaded) {
           ctx.drawImage(bgLoaded, 0, 0, 1000, 707);
         } else {
-          // Jika background Google Drive memblokir CORS canvas export, arahkan ke Print/Save PDF A4 agar template tetap tercetak 100% utuh!
           printCertificateA4();
           return;
         }

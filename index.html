@@ -123,6 +123,9 @@
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased">
 
+  <!-- GLOBAL TOAST NOTIFICATION -->
+  <div id="portal-toast-container" class="fixed top-20 right-4 z-[9999] space-y-2 pointer-events-none"></div>
+
   <!-- TOP NAVBAR -->
   <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-blue-800/60 text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
@@ -151,7 +154,7 @@
           <span>Cek E-Sertifikat</span>
         </button>
 
-        <!-- Tombol Login Akun -->
+        <!-- Tombol Login Multiuser -->
         <button id="nav-login-btn" onclick="openAuthModal('login')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-navy-950 text-xs sm:text-sm font-extrabold shadow-md transition">
           <i data-lucide="log-in" class="w-4 h-4"></i>
           <span>Login</span>
@@ -431,18 +434,23 @@
         </div>
       </div>
 
-      <!-- TAB LMS: RUANG BELAJAR & TUGAS -->
+      <!-- TAB LMS: RUANG BELAJAR & PERSENTASE PROGRES -->
       <div id="room-panel-lms" class="room-panel hidden space-y-6">
-        <div class="bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs space-y-4">
+        <div class="bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs space-y-5">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold">LMS Diklat JSIT Lampung</span>
               <h3 class="font-display font-bold text-lg text-navy-900 mt-1">Modul Sesi, Evaluasi &amp; Pengumpulan Tugas</h3>
-              <p class="text-xs text-slate-500">Masukkan Nama Lengkap atau Nomor WhatsApp (sesuai Daftar Hadir) untuk mencatat progres belajar dan mengunggah tugas.</p>
+              <p class="text-xs text-slate-500">Pantau persentase progres pembelajaran Anda dan unggah tautan tugas tiap sesi.</p>
             </div>
-            <div id="lms-progress-pill" class="hidden px-4 py-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs">
-              <div class="font-bold text-indigo-950" id="lms-user-progress-text">0/0 Sesi Selesai</div>
-              <div class="text-[11px] text-indigo-700">Progres tersimpan otomatis ke Cloud</div>
+            <div id="lms-progress-pill" class="hidden px-4 py-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs min-w-[200px]">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="font-bold text-indigo-950" id="lms-user-progress-text">0/0 Sesi</span>
+                <span class="font-display font-extrabold text-indigo-700 text-sm" id="lms-user-progress-pct">0%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-indigo-200 overflow-hidden">
+                <div id="lms-user-progress-bar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
             </div>
           </div>
 
@@ -455,7 +463,7 @@
               class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition shrink-0">
-              Aktifkan Akun Peserta LMS
+              Cek Progres Belajar Saya
             </button>
           </form>
 
@@ -463,23 +471,40 @@
             Nama/WhatsApp belum ditemukan pada daftar hadir kegiatan ini. Silakan isi <button type="button" onclick="switchRoomTab('presensi')" class="underline font-bold">Daftar Hadir</button> terlebih dahulu agar progres LMS Anda tercatat.
           </div>
 
-          <div id="lms-active-learner-bar" class="hidden p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-950">
-            <div>
-              <span class="font-bold">Peserta Aktif:</span> <span id="lms-learner-name-display">-</span> (<span id="lms-learner-school-display">-</span>)
+          <!-- DASHBOARD PROGRES BELAJAR PESERTA AKTIF -->
+          <div id="lms-active-learner-bar" class="hidden p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-emerald-50 border border-indigo-200 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="text-navy-900">
+                <span class="font-bold">Peserta Aktif:</span> <span id="lms-learner-name-display" class="font-extrabold text-indigo-950">-</span> (<span id="lms-learner-school-display">-</span>)
+              </div>
+              <span id="lms-learner-score-display" class="px-3 py-1 rounded-full bg-white border border-indigo-200 font-extrabold text-indigo-800 shadow-2xs">Progres: 0%</span>
             </div>
-            <span id="lms-learner-score-display" class="px-2.5 py-1 rounded-full bg-white border border-emerald-200 font-bold text-emerald-800">Progres: 0%</span>
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] font-bold text-slate-700">
+                <span>Persentase Penyelesaian Modul LMS</span>
+                <span id="lms-detail-pct-label">0% Selesai</span>
+              </div>
+              <div class="w-full h-3 rounded-full bg-white border border-indigo-200 overflow-hidden">
+                <div id="lms-detail-pct-bar" class="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+            </div>
           </div>
 
           <div id="lms-modules-container" class="space-y-4 pt-2"></div>
         </div>
       </div>
 
-      <!-- TAB 2: DAFTAR HADIR ONLINE -->
+      <!-- TAB 2: DAFTAR HADIR ONLINE (MENDUKUNG KEGIATAN 1 HARI & MULTI-HARI) -->
       <div id="room-panel-presensi" class="room-panel hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
             <div>
-              <h3 class="font-display font-bold text-lg text-navy-900">Formulir Daftar Hadir Peserta</h3>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-display font-bold text-lg text-navy-900">Formulir Daftar Hadir Peserta</h3>
+                <span id="att-multiday-badge" class="hidden px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-bold">
+                  Presensi Multi-Hari
+                </span>
+              </div>
               <p class="text-xs text-slate-500 mt-1">Pastikan penulisan nama lengkap beserta gelar sudah benar karena akan otomatis dicetak pada E-Sertifikat Anda.</p>
             </div>
 
@@ -496,6 +521,13 @@
             </div>
 
             <form id="attendance-form" onsubmit="submitAttendance(event)" class="space-y-4">
+              <!-- PEMILIHAN HARI KEGIATAN (OTOMATIS MUNCUL JIKA KEGIATAN BERHARI-HARI) -->
+              <div id="att-day-selector-box" class="hidden p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 space-y-1.5">
+                <label class="block text-xs font-extrabold text-indigo-950">Pilih Hari Kehadiran Kegiatan *</label>
+                <select id="att-day-select" class="w-full px-3.5 py-2.5 rounded-xl border border-indigo-300 bg-white text-sm font-bold text-navy-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                <p class="text-[11px] text-indigo-700">Kegiatan ini berlangsung lebih dari 1 hari. Silakan isi daftar hadir setiap hari pelaksanaan.</p>
+              </div>
+
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap &amp; Gelar (Untuk Sertifikat) *</label>
                 <input type="text" id="att-name" required placeholder="Contoh: Ahmad Fauzi, S.Pd., M.Pd." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -569,6 +601,26 @@
               <span id="att-live-count" class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold">0 Peserta</span>
             </div>
             <div id="att-live-list" class="space-y-2.5 max-h-[430px] overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+        <!-- TABEL REKAPAN KEHADIRAN MULTI-HARI (MUNCUL OTOMATIS JIKA KEGIATAN > 1 HARI) -->
+        <div id="att-multiday-recap-card" class="hidden bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-display font-bold text-base sm:text-lg text-navy-900 flex items-center gap-2">
+                <i data-lucide="table-2" class="w-5 h-5 text-indigo-600"></i>
+                <span>Tabel Rekapitulasi Kehadiran Per Hari</span>
+              </h3>
+              <p class="text-xs text-slate-500">Rekap otomatis status kehadiran peserta dari Hari ke-1 hingga hari terakhir kegiatan.</p>
+            </div>
+            <span id="att-recap-days-badge" class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold">0 Hari</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead id="att-recap-thead"></thead>
+              <tbody id="att-recap-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -780,7 +832,7 @@
     </div>
   </div>
 
-  <!-- MODAL LOGIN & DAFTAR AKUN PESERTA -->
+  <!-- MODAL MULTIUSER LOGIN & PENDAFTARAN AKUN -->
   <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-blue-100 space-y-5 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -790,12 +842,17 @@
           </div>
           <div>
             <h3 id="auth-modal-title" class="font-display font-extrabold text-base sm:text-lg text-navy-900">Login Portal JSIT Lampung</h3>
-            <p id="auth-modal-subtitle" class="text-[11px] text-slate-500">Masuk dengan akun Peserta atau Admin Anda</p>
+            <p id="auth-modal-subtitle" class="text-[11px] text-slate-500">Masuk sebagai Peserta, Panitia, atau Admin</p>
           </div>
         </div>
         <button onclick="closeAuthModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
+      </div>
+
+      <div id="auth-pending-event-notice" class="hidden p-3 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 font-semibold flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0"></i>
+        <span>Silakan Login atau Daftar Akun terlebih dahulu untuk masuk ke Ruang Kegiatan.</span>
       </div>
 
       <div id="auth-feedback-box" class="hidden p-3 rounded-2xl text-xs font-semibold"></div>
@@ -804,7 +861,7 @@
       <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email / No. WhatsApp</label>
-          <input type="text" id="auth-login-user" required placeholder="Contoh: ahmad@sitlampung.id" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="text" id="auth-login-user" required placeholder="Contoh: ahmad@sitlampung.id atau 0812..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
@@ -815,18 +872,15 @@
         </button>
 
         <div class="pt-3 border-t border-slate-100 text-center text-xs text-slate-600">
-          Belum punya akun peserta?
+          Belum punya akun?
           <button type="button" onclick="switchAuthMode('register')" class="font-extrabold text-blue-600 hover:text-blue-800 underline ml-1">
             Daftar sekarang!
           </button>
         </div>
       </form>
 
-      <!-- FORM DAFTAR AKUN PESERTA BARU -->
+      <!-- FORM DAFTAR AKUN BARU -->
       <form id="portal-register-form" onsubmit="handlePortalRegister(event)" class="hidden space-y-3.5">
-        <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 text-[11px] text-blue-900">
-          Pendaftaran mandiri ini otomatis membuat <strong>Akun Peserta</strong> untuk memudahkan presensi, LMS, dan pengunduhan E-Sertifikat Anda.
-        </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap &amp; Gelar (Untuk Sertifikat) *</label>
           <input type="text" id="reg-fullname" required placeholder="Contoh: Ahmad Fauzi, S.Pd." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
@@ -868,13 +922,26 @@
             </select>
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
-          <input type="password" id="reg-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+            <input type="password" id="reg-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Sebagai</label>
+            <select id="reg-role" onchange="togglePanitiaCodeInput()" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+              <option value="peserta">Peserta Umum / Guru SIT</option>
+              <option value="panitia">Admin / Panitia Diklat</option>
+            </select>
+          </div>
+        </div>
+        <div id="reg-panitia-code-wrap" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200">
+          <label class="block text-xs font-bold text-amber-900 mb-1">Kode Akses Panitia JSIT *</label>
+          <input type="text" id="reg-panitia-code" placeholder="Masukkan kode undangan panitia" class="w-full px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-xs" />
         </div>
 
         <button type="submit" id="btn-portal-register" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition">
-          Daftar Akun Peserta &amp; Masuk
+          Buat Akun &amp; Masuk
         </button>
 
         <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-600">
@@ -931,7 +998,7 @@
       </div>
       <div class="flex items-center gap-4">
         <a href="#beranda" onclick="showCatalogHome(event)" class="hover:text-white transition">Katalog Kegiatan</a>
-        <button onclick="openAuthModal('login')" class="text-sky-300 hover:text-white font-semibold transition">Login Akun / Admin</button>
+        <button onclick="openAuthModal('login')" class="text-sky-300 hover:text-white font-semibold transition">Login Akun / Panitia</button>
       </div>
     </div>
   </footer>
@@ -942,13 +1009,14 @@
     const STORAGE_KEY_USERS = 'jsit_lampung_users_v3';
     const SESSION_KEY_CURRENT_USER = 'jsit_lampung_current_user_v3';
     const ADMIN_SESSION_KEY = 'jsit_lampung_admin_auth_v3';
+    const PANITIA_INVITE_CODE = 'JSITLAMPUNG2026';
 
     const DEFAULT_SETTINGS = {
       orgName: 'JSIT Wilayah Lampung',
       orgSub: 'JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung',
       signerName: 'Muslimin, M.Pd.I.,Gr.',
       signerTitle: 'Ketua JSIT Indonesia Wilayah Lampung',
-      defaultCertTemplate: 'https://lh3.googleusercontent.com/d/14y7l53q2N16D9l9lR5fX3p8_7e5mK3yP'
+      defaultCertTemplate: ''
     };
 
     const DEFAULT_LAYOUT = {
@@ -1081,11 +1149,34 @@
     let lastGeneratedCertContext = null;
     let activeLmsAttendeeId = null;
     let isRoomSidebarCollapsed = false;
+    let pendingRoomRedirect = null; // Menyimpan { eventId, tab } jika user belum login saat klik Masuk Ruang Kegiatan
 
     let db = null;
     let isFirebaseReady = false;
     let attendeesUnsubscribe = null;
     let eventsUnsubscribe = null;
+
+    function showPortalToast(message, type = 'success') {
+      const container = document.getElementById('portal-toast-container');
+      if (!container) return;
+      const el = document.createElement('div');
+      const isSuccess = type === 'success';
+      el.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-bold transition-all duration-300 ${
+        isSuccess
+          ? 'bg-emerald-600 text-white border-emerald-500'
+          : 'bg-rose-600 text-white border-rose-500'
+      }`;
+      el.innerHTML = `
+        <i data-lucide="${isSuccess ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4 shrink-0"></i>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(el);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 3400);
+    }
 
     function setCloudStatus(connected, labelText) {
       const dot = document.getElementById('cloud-sync-dot');
@@ -1167,6 +1258,44 @@
       if (!dtStr || !dtStr.includes('T')) return dtStr || '-';
       const [dPart, tPart] = dtStr.split('T');
       return `${formatDateIndo(dPart, dPart)} pukul ${tPart.slice(0, 5)} WIB`;
+    }
+
+    /* ===================================================================== */
+    /* HELPER HARI KEGIATAN (1 HARI VS MULTI-HARI)                           */
+    /* ===================================================================== */
+    function getEventDaysList(ev) {
+      if (!ev || !ev.dateStart) return [];
+      const startParts = ev.dateStart.split('-').map(Number);
+      const endParts = (ev.dateEnd || ev.dateStart).split('-').map(Number);
+      if (startParts.length !== 3 || endParts.length !== 3) return [];
+
+      const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+      const endDate = new Date(endParts[0], endParts[1] - 1, endParts[2]);
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate < startDate) {
+        return [{
+          dayIndex: 1,
+          dateStr: ev.dateStart,
+          label: `Hari ke-1 (${formatDateIndo(ev.dateStart, ev.dateStart)})`
+        }];
+      }
+
+      const days = [];
+      let cur = new Date(startDate);
+      let idx = 1;
+      while (cur <= endDate && idx <= 31) {
+        const yyyy = cur.getFullYear();
+        const mm = String(cur.getMonth() + 1).padStart(2, '0');
+        const dd = String(cur.getDate()).padStart(2, '0');
+        const dStr = `${yyyy}-${mm}-${dd}`;
+        days.push({
+          dayIndex: idx,
+          dateStr: dStr,
+          label: `Hari ke-${idx} (${formatDateIndo(dStr, dStr)})`
+        });
+        cur.setDate(cur.getDate() + 1);
+        idx++;
+      }
+      return days;
     }
 
     function isLmsEligibleCategory(category) {
@@ -1253,7 +1382,7 @@
     }
 
     /* ===================================================================== */
-    /* AUTHENTICATION PESERTA & LOGIN ADMIN                                  */
+    /* MULTIUSER AUTHENTICATION (PESERTA & PANITIA / ADMIN)                  */
     /* ===================================================================== */
     function getStoredUsers() {
       try {
@@ -1287,7 +1416,7 @@
           const serialized = JSON.stringify(userObj);
           sessionStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
           localStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
-          if (userObj.role === 'superadmin' || userObj.role === 'admin' || userObj.role === 'panitia') {
+          if (userObj.role === 'admin' || userObj.role === 'panitia' || userObj.role === 'superadmin') {
             sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
           }
         } else {
@@ -1311,9 +1440,8 @@
         userMenu.classList.remove('hidden');
         userMenu.classList.add('flex');
         document.getElementById('nav-user-name').textContent = currentUser.fullName || currentUser.username;
-        const isStaff = currentUser.role === 'superadmin' || currentUser.role === 'admin' || currentUser.role === 'panitia';
-        const roleLabel = currentUser.role === 'superadmin' ? 'Akun Utama' : (isStaff ? 'Admin' : 'Peserta');
-        document.getElementById('nav-user-role-badge').textContent = roleLabel;
+        const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia' || currentUser.role === 'superadmin';
+        document.getElementById('nav-user-role-badge').textContent = isStaff ? 'Admin' : 'Peserta';
         if (adminLink) adminLink.classList.toggle('hidden', !isStaff);
       } else {
         loginBtn.classList.remove('hidden');
@@ -1336,12 +1464,16 @@
       if (attName && !attName.value && currentUser.fullName) attName.value = currentUser.fullName;
       if (attSchool && !attSchool.value && currentUser.school) attSchool.value = currentUser.school;
       if (attRegion && !attRegion.value && currentUser.region) attRegion.value = currentUser.region;
-      if (attPhone && !attPhone.value && currentUser.phone) attPhone.value = currentUser.phone;
+      if (attPhone && !attPhone.value && currentUser.phone && currentUser.phone !== '-') attPhone.value = currentUser.phone;
       if (certSearch && !certSearch.value && currentUser.fullName) certSearch.value = currentUser.fullName;
       if (lmsSearch && !lmsSearch.value && currentUser.fullName) lmsSearch.value = currentUser.fullName;
     }
 
-    function openAuthModal(mode = 'login') {
+    function openAuthModal(mode = 'login', showPendingNotice = false) {
+      const noticeEl = document.getElementById('auth-pending-event-notice');
+      if (noticeEl) {
+        noticeEl.classList.toggle('hidden', !showPendingNotice);
+      }
       document.getElementById('auth-modal').classList.remove('hidden');
       switchAuthMode(mode);
       if (window.lucide) lucide.createIcons();
@@ -1360,13 +1492,26 @@
       if (mode === 'register') {
         loginForm.classList.add('hidden');
         regForm.classList.remove('hidden');
-        document.getElementById('auth-modal-title').textContent = 'Daftar Akun Peserta';
-        document.getElementById('auth-modal-subtitle').textContent = 'Buat akun peserta kegiatan JSIT Wilayah Lampung';
+        document.getElementById('auth-modal-title').textContent = 'Daftar Akun Baru';
+        document.getElementById('auth-modal-subtitle').textContent = 'Buat akun Peserta atau Panitia JSIT Wilayah Lampung';
       } else {
         regForm.classList.add('hidden');
         loginForm.classList.remove('hidden');
         document.getElementById('auth-modal-title').textContent = 'Login Portal JSIT Lampung';
         document.getElementById('auth-modal-subtitle').textContent = 'Masuk dengan Username/Email dan Password Anda';
+      }
+    }
+
+    function togglePanitiaCodeInput() {
+      const role = document.getElementById('reg-role').value;
+      const wrap = document.getElementById('reg-panitia-code-wrap');
+      const inp = document.getElementById('reg-panitia-code');
+      if (role === 'panitia') {
+        wrap.classList.remove('hidden');
+        inp.required = true;
+      } else {
+        wrap.classList.add('hidden');
+        inp.required = false;
       }
     }
 
@@ -1379,6 +1524,14 @@
       box.classList.remove('hidden');
     }
 
+    function executePendingRoomRedirect() {
+      if (pendingRoomRedirect && pendingRoomRedirect.eventId) {
+        const target = pendingRoomRedirect;
+        pendingRoomRedirect = null;
+        enterEventRoomDirectly(target.eventId, target.tab || 'info');
+      }
+    }
+
     async function handlePortalLogin(e) {
       e.preventDefault();
       const loginId = document.getElementById('auth-login-user').value.trim();
@@ -1388,9 +1541,9 @@
       btn.textContent = 'Memverifikasi...';
 
       try {
-        // 1. Cek Akun Utama (Super Admin)
+        // 1. Cek Admin Utama bawaan
         if ((loginId.toLowerCase() === 'admin' || loginId.toLowerCase() === 'admin@jsitlampung.or.id') && pass === 'jsitlampung2026') {
-          const masterUser = {
+          const adminUser = {
             id: 'superadmin-master',
             username: 'admin',
             fullName: 'Akun Utama (Super Admin)',
@@ -1399,9 +1552,14 @@
             role: 'superadmin',
             permissions: { events: true, attendees: true, lms: true, resources: true, certificate: true, settings: true }
           };
-          setSessionUser(masterUser);
+          setSessionUser(adminUser);
           closeAuthModal();
-          window.location.href = 'admin.html';
+          showPortalToast('Berhasil login sebagai Akun Utama!');
+          if (pendingRoomRedirect) {
+            executePendingRoomRedirect();
+          } else {
+            window.location.href = 'admin.html';
+          }
           return;
         }
 
@@ -1419,7 +1577,12 @@
             };
             setSessionUser(staffUser);
             closeAuthModal();
-            window.location.href = 'admin.html';
+            showPortalToast('Login berhasil!');
+            if (pendingRoomRedirect) {
+              executePendingRoomRedirect();
+            } else {
+              window.location.href = 'admin.html';
+            }
             return;
           } catch (fbErr) {}
         }
@@ -1456,8 +1619,11 @@
         const { password, ...safeUser } = matchedUser;
         setSessionUser(safeUser);
         closeAuthModal();
+        showPortalToast(`Selamat datang, ${safeUser.fullName}!`);
 
-        if (safeUser.role === 'superadmin' || safeUser.role === 'admin' || safeUser.role === 'panitia') {
+        if (pendingRoomRedirect) {
+          executePendingRoomRedirect();
+        } else if (safeUser.role === 'admin' || safeUser.role === 'panitia' || safeUser.role === 'superadmin') {
           window.location.href = 'admin.html';
         }
       } catch (err) {
@@ -1476,6 +1642,13 @@
       const school = document.getElementById('reg-school').value.trim();
       const region = document.getElementById('reg-region').value;
       const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      const inviteCode = document.getElementById('reg-panitia-code').value.trim();
+
+      if (role === 'panitia' && inviteCode.toUpperCase() !== PANITIA_INVITE_CODE) {
+        showAuthFeedback('Kode Akses Panitia JSIT tidak sesuai. Pilih peran "Peserta Umum / Guru SIT" jika Anda peserta kegiatan.', true);
+        return;
+      }
 
       const btn = document.getElementById('btn-portal-register');
       btn.disabled = true;
@@ -1488,7 +1661,6 @@
         }
 
         const userId = 'usr-' + Date.now();
-        // Pendaftaran publik di portal selalu berstatus 'peserta'
         const newUser = {
           id: userId,
           fullName,
@@ -1497,8 +1669,10 @@
           school,
           region,
           password,
-          role: 'peserta',
-          permissions: { events: false, attendees: false, lms: false, resources: false, certificate: false, settings: false },
+          role: role === 'panitia' ? 'panitia' : 'peserta',
+          permissions: role === 'panitia'
+            ? { events: true, attendees: true, lms: true, resources: true, certificate: true, settings: false }
+            : { events: false, attendees: false, lms: false, resources: false, certificate: false, settings: false },
           createdAt: Date.now()
         };
 
@@ -1514,29 +1688,32 @@
         const { password: _, ...safeUser } = newUser;
         setSessionUser(safeUser);
         closeAuthModal();
+        showPortalToast(`Akun berhasil dibuat! Selamat datang, ${safeUser.fullName}.`);
+
+        if (pendingRoomRedirect) {
+          executePendingRoomRedirect();
+        } else if (safeUser.role === 'panitia') {
+          window.location.href = 'admin.html';
+        }
       } catch (err) {
         showAuthFeedback(err.message, true);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Daftar Akun Peserta & Masuk';
+        btn.textContent = 'Buat Akun & Masuk';
       }
     }
 
     function openUserProfileModal() {
       if (!currentUser) return;
       const box = document.getElementById('user-profile-details');
-      const isStaff = currentUser.role === 'superadmin' || currentUser.role === 'admin' || currentUser.role === 'panitia';
-      const roleTitle = currentUser.role === 'superadmin'
-        ? 'Akun Utama (Super Admin)'
-        : (isStaff ? 'Admin / Panitia Diklat' : 'Peserta Kegiatan');
-
+      const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia' || currentUser.role === 'superadmin';
       box.innerHTML = `
         <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-1.5">
           <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap</span><strong class="text-navy-900">${escapeHtml(currentUser.fullName)}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Username / Email</span><strong class="text-navy-900">${escapeHtml(currentUser.username)}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Sekolah / Instansi</span><strong class="text-navy-900">${escapeHtml(currentUser.school || '-')}</strong></div>
           <div class="flex justify-between"><span class="text-slate-500">Wilayah</span><strong class="text-navy-900">${escapeHtml(currentUser.region || '-')}</strong></div>
-          <div class="flex justify-between"><span class="text-slate-500">Status Akun</span><strong class="uppercase text-blue-700">${roleTitle}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Hak Akses</span><strong class="uppercase text-blue-700">${isStaff ? 'Admin / Panitia' : 'Peserta Kegiatan'}</strong></div>
         </div>
       `;
       const goAdminBtn = document.getElementById('profile-go-admin-btn');
@@ -1551,6 +1728,7 @@
     function handlePortalLogout() {
       setSessionUser(null);
       closeUserProfileModal();
+      showPortalToast('Anda telah keluar dari akun.');
     }
 
     /* ===================================================================== */
@@ -1701,6 +1879,7 @@
         const recCount = (ev.recordings || []).length;
         const certReleased = isCertificateReleased(ev);
         const hasLms = isLmsEligibleCategory(ev.category);
+        const daysCount = getEventDaysList(ev).length;
         const hasFlyer = Boolean(ev.flyerImg && ev.flyerImg.trim() !== '');
         const speakerPreview = (ev.speakers && ev.speakers.length > 0)
           ? ev.speakers[0].name + (ev.speakers.length > 1 ? ` +${ev.speakers.length - 1} lainnya` : '')
@@ -1743,7 +1922,8 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
-                  <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">${attCount} Hadir</span>
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">${attCount} Presensi</span>
+                  ${daysCount > 1 ? `<span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold">${daysCount} Hari</span>` : ''}
                   ${hasLms ? `<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold">LMS Diklat</span>` : ''}
                   <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">${matCount} Materi</span>
                   <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700">${recCount} Rekaman</span>
@@ -1828,6 +2008,7 @@
             saveLocalCache();
             if (activeEventId === eventId) {
               renderLiveAttendees(targetEv);
+              renderMultiDayRecapTable(targetEv);
               if (activeRoomTab === 'lms') renderLmsPanel(targetEv);
             }
           }
@@ -1836,7 +2017,19 @@
         });
     }
 
+    /* ===================================================================== */
+    /* ALUR MASUK RUANG KEGIATAN: WAJIB AKUN / LOGIN DULU                    */
+    /* ===================================================================== */
     function openEventRoom(eventId, initialTab = 'info') {
+      if (!currentUser) {
+        pendingRoomRedirect = { eventId, tab: initialTab };
+        openAuthModal('login', true);
+        return;
+      }
+      enterEventRoomDirectly(eventId, initialTab);
+    }
+
+    function enterEventRoomDirectly(eventId, initialTab = 'info') {
       const ev = eventsData.find(item => item.id === eventId);
       if (!ev) return;
 
@@ -1942,6 +2135,31 @@
         }
       }
 
+      // Konfigurasi Daftar Hadir Multi-Hari
+      const daysList = getEventDaysList(ev);
+      const isMultiDay = daysList.length > 1;
+      const dayBox = document.getElementById('att-day-selector-box');
+      const daySelect = document.getElementById('att-day-select');
+      const multiBadge = document.getElementById('att-multiday-badge');
+
+      if (isMultiDay && dayBox && daySelect) {
+        dayBox.classList.remove('hidden');
+        if (multiBadge) {
+          multiBadge.classList.remove('hidden');
+          multiBadge.textContent = `Presensi ${daysList.length} Hari`;
+        }
+        const prevVal = daySelect.value;
+        daySelect.innerHTML = daysList.map(d => `
+          <option value="${d.dayIndex}">${escapeHtml(d.label)}</option>
+        `).join('');
+        if (prevVal && daysList.some(d => String(d.dayIndex) === prevVal)) {
+          daySelect.value = prevVal;
+        }
+      } else {
+        if (dayBox) dayBox.classList.add('hidden');
+        if (multiBadge) multiBadge.classList.add('hidden');
+      }
+
       const pinBox = document.getElementById('att-pin-box');
       if (ev.pin && ev.pin.trim() !== '') {
         pinBox.classList.remove('hidden');
@@ -1950,9 +2168,23 @@
         pinBox.classList.add('hidden');
         document.getElementById('att-pin').required = false;
       }
-      renderLiveAttendees(ev);
 
-      if (hasLms) renderLmsPanel(ev);
+      renderLiveAttendees(ev);
+      renderMultiDayRecapTable(ev);
+
+      // Otomatis identifikasi akun peserta aktif di LMS
+      if (hasLms) {
+        if (!activeLmsAttendeeId && currentUser) {
+          const autoMatched = (ev.attendees || []).find(a =>
+            (a.name || '').toLowerCase() === (currentUser.fullName || '').toLowerCase() ||
+            ((a.phone || '').replace(/\D/g, '') === (currentUser.phone || '').replace(/\D/g, '') && (currentUser.phone || '').replace(/\D/g, '').length >= 6)
+          );
+          if (autoMatched) {
+            activeLmsAttendeeId = autoMatched.id;
+          }
+        }
+        renderLmsPanel(ev);
+      }
 
       const matBox = document.getElementById('materials-list');
       const mats = ev.materials || [];
@@ -2027,6 +2259,9 @@
       document.getElementById('flyer-lightbox-modal').classList.add('hidden');
     }
 
+    /* ===================================================================== */
+    /* LMS PANEL & PERSENTASE PROGRES                                        */
+    /* ===================================================================== */
     function identifyLmsLearner(e) {
       e.preventDefault();
       const ev = eventsData.find(item => item.id === activeEventId);
@@ -2073,8 +2308,26 @@
       const completedCount = modules.filter(m => progressMap[m.id] && progressMap[m.id].completed).length;
       const pct = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
 
+      const pillBox = document.getElementById('lms-progress-pill');
+      const activeBar = document.getElementById('lms-active-learner-bar');
+      if (attendee) {
+        if (pillBox) pillBox.classList.remove('hidden');
+        if (activeBar) activeBar.classList.remove('hidden');
+        document.getElementById('lms-learner-name-display').textContent = attendee.name;
+        document.getElementById('lms-learner-school-display').textContent = attendee.school;
+      }
+
       const progText = document.getElementById('lms-user-progress-text');
-      if (progText) progText.textContent = `${completedCount}/${modules.length} Sesi (${pct}%)`;
+      const progPct = document.getElementById('lms-user-progress-pct');
+      const progBar = document.getElementById('lms-user-progress-bar');
+      if (progText) progText.textContent = `${completedCount}/${modules.length} Sesi`;
+      if (progPct) progPct.textContent = `${pct}%`;
+      if (progBar) progBar.style.width = `${pct}%`;
+
+      const detailPctLabel = document.getElementById('lms-detail-pct-label');
+      const detailPctBar = document.getElementById('lms-detail-pct-bar');
+      if (detailPctLabel) detailPctLabel.textContent = `${pct}% Selesai (${completedCount} dari ${modules.length} Modul)`;
+      if (detailPctBar) detailPctBar.style.width = `${pct}%`;
 
       const scoreBadge = document.getElementById('lms-learner-score-display');
       if (scoreBadge && attendee) {
@@ -2137,7 +2390,7 @@
                 ${rec.submittedAt ? `<p class="text-[11px] text-emerald-700 font-medium">Tercatat pada: ${escapeHtml(rec.submittedAt)}</p>` : ''}
               </div>
             ` : `
-              <p class="text-[11px] text-slate-500 italic pt-2 border-t border-slate-200/70">Masukkan Nama/WhatsApp di atas untuk menandai sesi selesai &amp; mengumpulkan tugas.</p>
+              <p class="text-[11px] text-slate-500 italic pt-2 border-t border-slate-200/70">Silakan isi Daftar Hadir atau klik "Cek Progres Belajar Saya" di atas untuk mencatat progres modul Anda.</p>
             `}
           </div>
         `;
@@ -2170,6 +2423,7 @@
       att.lmsProgress = updatedProgress;
       saveLocalCache();
       renderLmsPanel(ev);
+      showPortalToast('Progres belajar LMS berhasil disimpan!');
 
       if (isFirebaseReady && db) {
         try {
@@ -2223,21 +2477,100 @@
 
     function renderLiveAttendees(ev) {
       const list = ev.attendees || [];
-      document.getElementById('att-live-count').textContent = `${list.length} Peserta`;
+      const daysCount = getEventDaysList(ev).length;
+      document.getElementById('att-live-count').textContent = `${list.length} Catatan Hadir`;
       const container = document.getElementById('att-live-list');
       if (list.length === 0) {
         container.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Belum ada peserta yang mengisi daftar hadir.</p>`;
         return;
       }
-      container.innerHTML = list.slice(0, 40).map((a, idx) => `
-        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2">
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-navy-900 truncate">${idx + 1}. ${escapeHtml(a.name)}</div>
-            <div class="text-[11px] text-slate-500 truncate">${escapeHtml(a.school)} &bull; ${escapeHtml(a.region || '')}</div>
+      container.innerHTML = list.slice(0, 40).map((a, idx) => {
+        const dayTag = daysCount > 1 ? `Hari ke-${a.dayIndex || 1}` : 'Hadir';
+        return `
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-navy-900 truncate">${idx + 1}. ${escapeHtml(a.name)}</div>
+              <div class="text-[11px] text-slate-500 truncate">${escapeHtml(a.school)} &bull; ${escapeHtml(a.region || '')}</div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold shrink-0">${escapeHtml(dayTag)}</span>
           </div>
-          <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold shrink-0">Hadir</span>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    /* ===================================================================== */
+    /* TABEL REKAPITULASI KEHADIRAN PER HARI (UNTUK KEGIATAN MULTI-HARI)     */
+    /* ===================================================================== */
+    function renderMultiDayRecapTable(ev) {
+      const card = document.getElementById('att-multiday-recap-card');
+      const thead = document.getElementById('att-recap-thead');
+      const tbody = document.getElementById('att-recap-tbody');
+      const badge = document.getElementById('att-recap-days-badge');
+      if (!card || !thead || !tbody) return;
+
+      const daysList = getEventDaysList(ev);
+      if (daysList.length <= 1) {
+        card.classList.add('hidden');
+        return;
+      }
+
+      card.classList.remove('hidden');
+      if (badge) badge.textContent = `Total ${daysList.length} Hari Pelaksanaan`;
+
+      thead.innerHTML = `
+        <tr class="bg-indigo-50/70 text-navy-900 border-b border-indigo-200">
+          <th class="py-3 px-3 font-bold">No</th>
+          <th class="py-3 px-3 font-bold">Nama Peserta</th>
+          <th class="py-3 px-3 font-bold">Asal Sekolah</th>
+          ${daysList.map(d => `<th class="py-3 px-2.5 font-bold text-center whitespace-nowrap">Hari ${d.dayIndex}<br><span class="text-[10px] font-normal text-slate-500">${escapeHtml(d.dateStr)}</span></th>`).join('')}
+          <th class="py-3 px-3 font-bold text-center">Kehadiran</th>
+        </tr>
+      `;
+
+      // Kelompokkan presensi berdasarkan identitas peserta (Nama + Nomor WA)
+      const groupedMap = new Map();
+      (ev.attendees || []).forEach(a => {
+        const key = `${(a.name || '').toLowerCase().trim()}|${(a.phone || '').replace(/\D/g, '')}`;
+        if (!groupedMap.has(key)) {
+          groupedMap.set(key, {
+            name: a.name,
+            school: a.school,
+            daysPresent: new Set()
+          });
+        }
+        groupedMap.get(key).daysPresent.add(Number(a.dayIndex || 1));
+      });
+
+      const participants = Array.from(groupedMap.values());
+      if (participants.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${daysList.length + 4}" class="py-8 text-center text-slate-400">Belum ada data rekap kehadiran per hari.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = participants.map((p, idx) => {
+        const presentCount = daysList.filter(d => p.daysPresent.has(d.dayIndex)).length;
+        const pct = Math.round((presentCount / daysList.length) * 100);
+        return `
+          <tr class="hover:bg-blue-50/30">
+            <td class="py-2.5 px-3 font-semibold text-slate-500">${idx + 1}</td>
+            <td class="py-2.5 px-3 font-bold text-navy-900">${escapeHtml(p.name)}</td>
+            <td class="py-2.5 px-3 text-slate-600">${escapeHtml(p.school)}</td>
+            ${daysList.map(d => {
+              const isHadir = p.daysPresent.has(d.dayIndex);
+              return `<td class="py-2.5 px-2.5 text-center">${
+                isHadir
+                  ? '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 font-extrabold">✓</span>'
+                  : '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-400">-</span>'
+              }</td>`;
+            }).join('')}
+            <td class="py-2.5 px-3 text-center">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${pct === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${presentCount}/${daysList.length} (${pct}%)
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function submitAttendance(e) {
@@ -2248,7 +2581,7 @@
       if (ev.pin && ev.pin.trim() !== '') {
         const enteredPin = document.getElementById('att-pin').value.trim();
         if (enteredPin.toLowerCase() !== ev.pin.trim().toLowerCase()) {
-          alert('Kode PIN presensi tidak sesuai. Silakan konfirmasi kepada panitia kegiatan.');
+          showPortalToast('Kode PIN presensi tidak sesuai!', 'error');
           return;
         }
       }
@@ -2259,6 +2592,21 @@
       const role = document.getElementById('att-role').value;
       const phone = document.getElementById('att-phone').value.trim();
       const email = document.getElementById('att-email').value.trim();
+
+      const daysList = getEventDaysList(ev);
+      const daySelect = document.getElementById('att-day-select');
+      const selectedDayIndex = (daysList.length > 1 && daySelect) ? Number(daySelect.value || 1) : 1;
+      const selectedDayObj = daysList.find(d => d.dayIndex === selectedDayIndex) || daysList[0];
+
+      // Cegah duplikasi presensi di hari yang sama
+      const alreadyExists = (ev.attendees || []).some(a =>
+        (a.name || '').toLowerCase().trim() === name.toLowerCase() &&
+        Number(a.dayIndex || 1) === selectedDayIndex
+      );
+      if (alreadyExists) {
+        showPortalToast(`Anda sudah mengisi daftar hadir untuk Hari ke-${selectedDayIndex}.`, 'error');
+        return;
+      }
 
       const btn = document.getElementById('btn-submit-att');
       btn.disabled = true;
@@ -2277,6 +2625,8 @@
         role,
         phone,
         email,
+        dayIndex: selectedDayIndex,
+        dayDate: selectedDayObj ? selectedDayObj.dateStr : ev.dateStart,
         userId: currentUser ? currentUser.id : '',
         timestamp,
         createdAt: Date.now()
@@ -2289,8 +2639,10 @@
           ev.attendees = [record, ...(ev.attendees || [])];
           saveLocalCache();
           renderLiveAttendees(ev);
+          renderMultiDayRecapTable(ev);
         }
 
+        activeLmsAttendeeId = newAttId;
         const certSearchEl = document.getElementById('cert-search-query');
         if (certSearchEl) certSearchEl.value = name;
         const lmsSearchEl = document.getElementById('lms-learner-query');
@@ -2300,12 +2652,14 @@
         autofillFormsFromCurrentUser();
         const banner = document.getElementById('att-success-banner');
         const msg = document.getElementById('att-success-msg');
+        const dayText = daysList.length > 1 ? ` (Hari ke-${selectedDayIndex})` : '';
         msg.textContent = isCertificateReleased(ev)
-          ? `Terima kasih ${name}. E-Sertifikat Anda sudah rilis dan siap diunduh pada menu E-Sertifikat.`
-          : `Terima kasih ${name}. Kehadiran Anda tercatat. E-Sertifikat otomatis rilis pada ${formatDatetimeIndo(ev.certReleaseDatetime)}.`;
+          ? `Terima kasih ${name}. Kehadiran${dayText} tercatat dan E-Sertifikat Anda siap diunduh.`
+          : `Terima kasih ${name}. Kehadiran${dayText} tercatat. E-Sertifikat otomatis rilis pada ${formatDatetimeIndo(ev.certReleaseDatetime)}.`;
         banner.classList.remove('hidden');
+        showPortalToast('Daftar hadir berhasil disimpan!');
       } catch (err) {
-        alert('Gagal menyimpan presensi ke server: ' + err.message);
+        showPortalToast('Gagal menyimpan presensi: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Kirim Daftar Hadir &amp; Catat Kehadiran</span>`;
@@ -2345,9 +2699,7 @@
               resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=10&data=${encodeURIComponent(text)}`);
             }, 40);
             return;
-          } catch (err) {
-            console.warn('QRCodeJS fallback ke API:', err);
-          }
+          } catch (err) {}
         }
         resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=10&data=${encodeURIComponent(text)}`);
       });
@@ -2383,12 +2735,21 @@
         return;
       }
 
-      const matches = (ev.attendees || []).filter(a => {
+      // Deduplikasi peserta yang hadir multi-hari agar sertifikat tidak ganda
+      const uniqueMatchesMap = new Map();
+      (ev.attendees || []).forEach(a => {
         const nameMatch = (a.name || '').toLowerCase().includes(q);
         const phoneDigits = (a.phone || '').replace(/\D/g, '');
         const phoneMatch = qDigits.length >= 6 && phoneDigits.includes(qDigits);
-        return nameMatch || phoneMatch;
+        if (nameMatch || phoneMatch) {
+          const uKey = `${(a.name || '').toLowerCase().trim()}|${phoneDigits}`;
+          if (!uniqueMatchesMap.has(uKey)) {
+            uniqueMatchesMap.set(uKey, a);
+          }
+        }
       });
+
+      const matches = Array.from(uniqueMatchesMap.values());
 
       if (matches.length === 0) {
         notFoundEl.classList.remove('hidden');
@@ -2439,9 +2800,10 @@
       const defaultHeader = document.getElementById('cert-view-default-header');
       const headingEl = document.getElementById('cert-view-heading');
 
+      // Ambil template sertifikat dari event terlebih dahulu, lalu fallback ke global settings
       const activeTemplateUrl = (certCfg.templateBg && certCfg.templateBg.trim())
         ? certCfg.templateBg.trim()
-        : (settingsData.defaultCertTemplate || DEFAULT_SETTINGS.defaultCertTemplate);
+        : ((settingsData.defaultCertTemplate && settingsData.defaultCertTemplate.trim()) ? settingsData.defaultCertTemplate.trim() : '');
 
       if (activeTemplateUrl) {
         applyImageWithDriveFallback(bgImg, activeTemplateUrl);
@@ -2832,9 +3194,7 @@
               ? fetchedList[fetchedList.length - numIdx]
               : null);
           }
-        } catch (err) {
-          console.warn('Gagal mengambil detail verifikasi dari Cloud:', err);
-        }
+        } catch (err) {}
       }
 
       if (ev && att) {
@@ -2914,16 +3274,20 @@
         return;
       }
 
-      const found = [];
+      const foundMap = new Map();
       eventsData.forEach(ev => {
         (ev.attendees || []).forEach(att => {
           const nameOk = (att.name || '').toLowerCase().includes(q);
           const phoneDigits = (att.phone || '').replace(/\D/g, '');
           const phoneOk = qDigits.length >= 6 && phoneDigits.includes(qDigits);
-          if (nameOk || phoneOk) found.push({ ev, att });
+          if (nameOk || phoneOk) {
+            const key = `${ev.id}|${(att.name || '').toLowerCase().trim()}`;
+            if (!foundMap.has(key)) foundMap.set(key, { ev, att });
+          }
         });
       });
 
+      const found = Array.from(foundMap.values());
       if (found.length === 0) {
         box.innerHTML = `<p class="text-xs text-slate-500 bg-slate-50 p-4 rounded-2xl border border-slate-200">Belum ditemukan riwayat kehadiran dengan kata kunci tersebut.</p>`;
         return;
@@ -2950,7 +3314,7 @@
 
     function jumpToCertFromGlobal(eventId, attName) {
       closeGlobalCertModal();
-      openEventRoom(eventId, 'sertifikat');
+      enterEventRoomDirectly(eventId, 'sertifikat');
       const ev = eventsData.find(item => item.id === eventId);
       if (ev && isCertificateReleased(ev)) {
         const input = document.getElementById('cert-search-query');

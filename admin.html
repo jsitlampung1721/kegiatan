@@ -1,3 +1,1012 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin &amp; LMS — JSIT Wilayah Lampung</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              850: '#0F2A56',
+              900: '#0B1F3A',
+              950: '#071426',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QRCodeJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Firebase App (Compat SDK), Auth & Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <style>
+    body {
+      background-color: #F4F8FF;
+      color: #0F172A;
+    }
+    .admin-tab-active {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.22) 0%, rgba(37, 99, 235, 0.14) 100%);
+      border-left: 4px solid #38BDF8;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+    }
+    @media (max-width: 1023px) {
+      .admin-tab-active {
+        border-left: none;
+        border-bottom: 3px solid #38BDF8;
+      }
+    }
+    .preview-stage-wrapper {
+      width: 100%;
+      aspect-ratio: 1000 / 707;
+      position: relative;
+      overflow: hidden;
+      border-radius: 1rem;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      box-shadow: 0 12px 24px -8px rgba(11, 31, 58, 0.16);
+    }
+    #admin-cert-preview-canvas {
+      width: 1000px;
+      height: 707px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      background: #FFFFFF;
+      overflow: hidden;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: LOGIN ADMIN / PANITIA (KHUSUS AKUN BERIZIN)                   -->
+  <!-- ===================================================================== -->
+  <section id="admin-login-screen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-900">
+    <div class="bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-blue-100 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-navy-900 to-blue-600 text-white flex items-center justify-center mx-auto shadow-lg">
+          <i data-lucide="shield-check" class="w-7 h-7"></i>
+        </div>
+        <h1 class="font-display font-extrabold text-xl sm:text-2xl text-navy-900">Dashboard Admin Diklat</h1>
+        <p class="text-xs text-slate-500">JSIT Wilayah Lampung &mdash; Tim Diklat Wilayah Lampung</p>
+      </div>
+
+      <div id="login-error-box" class="hidden p-3 rounded-2xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700"></div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email Admin</label>
+          <input type="text" id="login-username" required placeholder="Masukkan username atau email admin..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="Masukkan kata sandi..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="submit" id="btn-login-submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 transition">
+          Masuk ke Dashboard Admin
+        </button>
+      </form>
+
+      <div class="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-100 text-[11px] text-slate-600 space-y-1">
+        <div class="font-bold text-navy-900">Keterangan Akses Panel Admin:</div>
+        <div>Halaman ini hanya dapat diakses oleh <strong>Akun Utama</strong> dan <strong>Admin / Panitia</strong> yang telah diberikan hak akses oleh Akun Utama.</div>
+      </div>
+
+      <div class="text-center">
+        <a href="index.html" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Portal Kegiatan</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: WORKSPACE ADMIN UTAMA (SIDEBAR KIRI COLLAPSIBLE)              -->
+  <!-- ===================================================================== -->
+  <div id="admin-workspace" class="hidden flex-1 flex flex-col">
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-40 bg-navy-900 text-white border-b border-blue-800/70 shadow-md">
+      <div class="max-w-full mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 text-sky-300 flex items-center justify-center">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-display font-extrabold text-sm sm:text-base leading-none block">Dashboard Admin Diklat</span>
+              <span id="admin-role-pill" class="px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/40 text-amber-200 text-[10px] font-bold uppercase">Akun Utama</span>
+            </div>
+            <span id="admin-user-subtitle" class="text-[11px] text-sky-300">JSIT Wilayah Lampung</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div id="admin-cloud-badge" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] text-sky-200 font-medium">
+            <span id="admin-cloud-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span id="admin-cloud-label">Menghubungkan...</span>
+          </div>
+
+          <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold transition">
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-sky-300"></i>
+            <span class="hidden sm:inline">Lihat Portal Publik</span>
+          </a>
+          <button onclick="handleAdminLogout()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-200 text-xs font-semibold transition">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- SHELL: SIDEBAR KIRI + AREA KONTEN KANAN -->
+    <div class="flex-1 flex flex-col lg:flex-row">
+      <!-- SIDEBAR KIRI VERTIKAL (DAPAT DIPERLEBAR & DICIUTKAN) -->
+      <aside id="admin-sidebar" class="w-full lg:w-72 bg-navy-900 text-white border-b lg:border-b-0 lg:border-r border-blue-900/80 shrink-0 flex flex-col justify-between transition-all duration-200">
+        <div>
+          <!-- Header Sidebar + Tombol Ciutkan / Perlebar -->
+          <div class="p-4 sm:p-5 border-b border-blue-800/70 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="admin-sidebar-label text-[11px] font-bold uppercase tracking-wider text-sky-300">Menu Navigasi Admin</span>
+              <button type="button" onclick="toggleAdminSidebar()" id="btn-toggle-admin-sidebar" title="Ciutkan / Perlebar Menu" class="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white transition ml-auto">
+                <i id="admin-sidebar-toggle-icon" data-lucide="panel-left-close" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div id="admin-sidebar-event-box" class="bg-navy-950/60 rounded-2xl p-3 border border-white/10 space-y-1">
+              <div class="text-[10px] font-bold uppercase text-sky-400">Kegiatan Aktif:</div>
+              <div id="admin-sidebar-active-title" class="text-xs font-bold text-white line-clamp-2 leading-snug">-</div>
+            </div>
+          </div>
+
+          <!-- Navigasi Menu Vertikal di Kiri -->
+          <nav class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-1 text-xs sm:text-sm">
+            <button onclick="switchAdminTab('events')" id="admtab-events" title="1. Detail & Jadwal Rilis" class="admin-tab-btn admin-tab-active flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="calendar-cog" class="w-4 h-4 text-sky-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Detail &amp; Jadwal</span>
+            </button>
+            <button onclick="switchAdminTab('attendees')" id="admtab-attendees" title="2. Peserta & Daftar Hadir" class="admin-tab-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Peserta &amp; Hadir</span>
+            </button>
+            <button onclick="switchAdminTab('lms')" id="admtab-lms" title="3. LMS & Penilaian Diklat" class="admin-tab-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="book-open-check" class="w-4 h-4 text-indigo-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">LMS &amp; Penilaian</span>
+            </button>
+            <button onclick="switchAdminTab('resources')" id="admtab-resources" title="4. Materi & Rekaman" class="admin-tab-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="folder-up" class="w-4 h-4 text-amber-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Materi &amp; Rekaman</span>
+            </button>
+            <button onclick="switchAdminTab('certificate')" id="admtab-certificate" title="5. Desain & Tata Letak Sertifikat" class="admin-tab-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="award" class="w-4 h-4 text-sky-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Desain Sertifikat</span>
+            </button>
+            <button onclick="switchAdminTab('settings')" id="admtab-settings" title="6. Pengaturan & Hak Akses" class="admin-tab-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="settings" class="w-4 h-4 text-rose-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Pengaturan &amp; Akses</span>
+            </button>
+          </nav>
+        </div>
+
+        <div id="admin-sidebar-footer" class="hidden lg:block p-5 border-t border-blue-800/70 text-[11px] text-blue-200/80 space-y-1.5">
+          <div class="font-bold text-sky-300">JSIT Wilayah Lampung</div>
+          <p>Tim Diklat Wilayah Lampung &bull; Panel Kontrol Terpadu</p>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto space-y-6">
+        <!-- KPI RINGKAS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Total Kegiatan</div>
+            <div id="kpi-events" class="font-display font-extrabold text-2xl text-navy-900 mt-1">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Total Peserta Hadir</div>
+            <div id="kpi-attendees" class="font-display font-extrabold text-2xl text-blue-600 mt-1">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Sertifikat Sudah Rilis</div>
+            <div id="kpi-released" class="font-display font-extrabold text-2xl text-emerald-600 mt-1">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Menunggu Jadwal Rilis</div>
+            <div id="kpi-scheduled" class="font-display font-extrabold text-2xl text-amber-600 mt-1">0</div>
+          </div>
+        </div>
+
+        <!-- SELECTOR KEGIATAN AKTIF & TOMBOL BUAT BARU -->
+        <div class="bg-white rounded-3xl p-5 border border-blue-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex-1 space-y-1">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Kegiatan yang Sedang Dikelola:</label>
+            <select id="admin-event-selector" onchange="onSelectAdminEvent(this.value)" class="w-full md:max-w-2xl px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/40 font-display font-bold text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button id="btn-create-event-top" onclick="openCreateEventModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Buat Kegiatan Baru</span>
+            </button>
+            <button id="btn-delete-event-top" onclick="deleteSelectedEvent()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 font-bold text-xs transition">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 1: DETAIL KEGIATAN & JADWAL RILIS SERTIFIKAT                -->
+        <!-- ================================================================= -->
+        <div id="admpanel-events" class="admin-panel bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <h2 class="font-display font-bold text-lg text-navy-900">Pengaturan Informasi &amp; Jadwal Rilis E-Sertifikat</h2>
+              <p class="text-xs text-slate-500">Perubahan langsung tersimpan ke Firebase Cloud dan tampil secara real-time di Portal Peserta.</p>
+            </div>
+            <span id="save-event-toast" class="hidden px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+              ✓ Tersimpan ke Cloud!
+            </span>
+          </div>
+
+          <form onsubmit="saveSelectedEventDetails(event)" class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Judul Lengkap Kegiatan *</label>
+                <input type="text" id="edit-ev-title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Kegiatan *</label>
+                <select id="edit-ev-category-select" onchange="toggleCustomCategoryInput('edit')" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                  <option value="Seminar">Seminar</option>
+                  <option value="Webinar">Webinar</option>
+                  <option value="Pelatihan">Pelatihan (Otomatis Aktifkan LMS)</option>
+                  <option value="Workshop">Workshop (Otomatis Aktifkan LMS)</option>
+                  <option value="Bimtek">Bimtek (Otomatis Aktifkan LMS)</option>
+                  <option value="CUSTOM">+ Kategori Khusus / Lainnya...</option>
+                </select>
+                <input type="text" id="edit-ev-category-custom" placeholder="Ketik nama kategori khusus..." class="hidden w-full mt-2 px-3.5 py-2 rounded-xl border border-blue-300 bg-blue-50/40 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Status Kegiatan</label>
+                <select id="edit-ev-status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                  <option value="Buka Pendaftaran">Buka Pendaftaran</option>
+                  <option value="Berlangsung">Berlangsung</option>
+                  <option value="Selesai">Selesai</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Mulai *</label>
+                <input type="date" id="edit-ev-datestart" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Selesai *</label>
+                <input type="date" id="edit-ev-dateend" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Waktu Pelaksanaan *</label>
+                <input type="text" id="edit-ev-time" required placeholder="08.00 - 15.30 WIB" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Mode Pelaksanaan</label>
+                <input type="text" id="edit-ev-mode" placeholder="Hybrid / Online via Zoom" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi / Tempat *</label>
+                <input type="text" id="edit-ev-location" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Link Zoom / Virtual Meeting</label>
+                <input type="url" id="edit-ev-zoom" placeholder="https://zoom.us/j/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi &amp; Tujuan Kegiatan</label>
+                <textarea id="edit-ev-desc" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">PIN Daftar Hadir (Opsional)</label>
+                <input type="text" id="edit-ev-pin" placeholder="Kosongkan jika tanpa PIN" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                <p class="text-[11px] text-slate-400 mt-1">Jika diisi, peserta wajib memasukkan PIN ini saat presensi.</p>
+              </div>
+            </div>
+
+            <!-- UNGGAH FLYER / POSTER KEGIATAN -->
+            <div class="p-5 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-3">
+              <div class="flex items-center gap-2 text-navy-900 font-display font-bold text-sm">
+                <i data-lucide="image" class="w-4 h-4 text-sky-600"></i>
+                <span>Flyer / Poster Resmi Kegiatan (Ditampilkan di Katalog &amp; Informasi Kegiatan)</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div class="md:col-span-8 space-y-2.5">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <label class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer transition">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Pilih File Gambar Flyer (JPG/PNG)</span>
+                      <input type="file" accept="image/*" onchange="handleFlyerUpload(event)" class="hidden" />
+                    </label>
+                    <button type="button" onclick="clearEventFlyer()" class="px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-slate-200 text-xs font-bold transition">
+                      Hapus Flyer
+                    </button>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Atau Tempel URL Gambar Flyer (Opsional)</label>
+                    <input type="text" id="edit-ev-flyer-url" oninput="onFlyerUrlInput(this.value)" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  </div>
+                </div>
+                <div class="md:col-span-4 flex justify-center">
+                  <div id="admin-flyer-preview-box" class="w-32 h-40 rounded-2xl border border-dashed border-sky-300 bg-white flex items-center justify-center overflow-hidden p-1">
+                    <span id="admin-flyer-placeholder" class="text-[11px] text-slate-400 text-center px-2">Belum ada flyer</span>
+                    <img id="admin-flyer-preview-img" src="" alt="Preview Flyer" class="hidden w-full h-full object-contain rounded-xl" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PENGATURAN RILIS OTOMATIS E-SERTIFIKAT -->
+            <div class="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-4">
+              <div class="flex items-center gap-2 text-navy-900 font-display font-bold text-sm">
+                <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+                <span>Pengaturan Waktu Rilis E-Sertifikat ke Peserta</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Mode Rilis E-Sertifikat</label>
+                  <select id="edit-ev-relmode" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 bg-white text-sm font-semibold">
+                    <option value="auto">Otomatis Terbuka Sesuai Jadwal Selesai Kegiatan</option>
+                    <option value="open">Buka Sekarang (Langsung Dapat Diunduh)</option>
+                    <option value="locked">Kunci Sementara (Belum Rilis)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal &amp; Jam Rilis Otomatis</label>
+                  <input type="datetime-local" id="edit-ev-reldatetime" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 bg-white text-sm" />
+                </div>
+              </div>
+            </div>
+
+            <!-- NARASUMBER -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-700">Daftar Narasumber / Pemateri</label>
+                <button type="button" onclick="addSpeakerRow()" class="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold">
+                  + Tambah Narasumber
+                </button>
+              </div>
+              <div id="edit-speakers-list" class="space-y-2"></div>
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" id="btn-save-ev-details" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
+                Simpan Perubahan Kegiatan ke Cloud
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 2: PESERTA & DAFTAR HADIR                                   -->
+        <!-- ================================================================= -->
+        <div id="admpanel-attendees" class="admin-panel hidden bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h2 class="font-display font-bold text-lg text-navy-900">Data Peserta &amp; Daftar Hadir</h2>
+              <p id="adm-att-subtitle" class="text-xs text-slate-500">Daftar peserta yang tercatat pada kegiatan terpilih.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openAddAttendeeModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <span>Tambah Peserta Manual</span>
+              </button>
+              <button onclick="exportAttendeesCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                <span>Ekspor CSV / Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                  <th class="py-3 px-3 font-bold">No</th>
+                  <th class="py-3 px-3 font-bold">Nama Lengkap &amp; Gelar</th>
+                  <th class="py-3 px-3 font-bold">Sekolah / Instansi</th>
+                  <th class="py-3 px-3 font-bold">Kabupaten/Kota</th>
+                  <th class="py-3 px-3 font-bold">Peran</th>
+                  <th class="py-3 px-3 font-bold">No. WhatsApp</th>
+                  <th class="py-3 px-3 font-bold">Waktu Hadir</th>
+                  <th class="py-3 px-3 font-bold text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="adm-attendees-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 3: LMS & PENILAIAN DIKLAT                                   -->
+        <!-- ================================================================= -->
+        <div id="admpanel-lms" class="admin-panel hidden bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold">Learning Management System (LMS)</span>
+              <h2 class="font-display font-bold text-lg text-navy-900 mt-1">Kelola Modul Sesi, Tugas &amp; Rekap Progres Peserta</h2>
+              <p class="text-xs text-slate-500">Fitur LMS otomatis tampil di Portal Peserta apabila kategori kegiatan adalah <strong>Pelatihan</strong>, <strong>Bimtek</strong>, atau <strong>Workshop</strong>.</p>
+            </div>
+            <span id="lms-admin-badge" class="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">Status LMS</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-4">
+            <h3 class="font-display font-bold text-sm text-navy-900">Tambah Modul / Sesi Pembelajaran Baru</h3>
+            <form onsubmit="addLmsModule(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Label Sesi *</label>
+                <input type="text" id="lms-new-session" required placeholder="Contoh: Sesi 1 • Hari Pertama" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Judul Modul / Topik *</label>
+                <input type="text" id="lms-new-title" required placeholder="Contoh: Perancangan Modul Ajar Terpadu" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Ringkasan Materi / Capaian Pembelajaran</label>
+                <input type="text" id="lms-new-summary" placeholder="Deskripsi singkat target pembelajaran sesi ini..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Link Bahan / Modul Sesi (Google Drive / PDF)</label>
+                <input type="url" id="lms-new-maturl" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Link Video Pembelajaran (YouTube / Drive)</label>
+                <input type="url" id="lms-new-vidurl" placeholder="https://www.youtube.com/..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Instruksi Tugas Mandiri Peserta</label>
+                <input type="text" id="lms-new-task" placeholder="Contoh: Unggah link Google Drive RPP hasil praktik mandiri..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div class="md:col-span-2">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
+                  + Tambahkan Modul LMS ke Cloud
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="font-display font-bold text-sm text-navy-900">Daftar Modul Sesi Aktif</h3>
+            <div id="adm-lms-modules-list" class="space-y-2.5"></div>
+          </div>
+
+          <div class="space-y-3 pt-4 border-t border-slate-100">
+            <h3 class="font-display font-bold text-sm text-navy-900">Rekap Progres Belajar, Tugas &amp; Nilai Evaluasi Peserta</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                    <th class="py-2.5 px-3 font-bold">Nama Peserta</th>
+                    <th class="py-2.5 px-3 font-bold">Sekolah</th>
+                    <th class="py-2.5 px-3 font-bold">Progres Sesi</th>
+                    <th class="py-2.5 px-3 font-bold">Tautan Tugas Terkumpul</th>
+                    <th class="py-2.5 px-3 font-bold">Nilai / Predikat</th>
+                  </tr>
+                </thead>
+                <tbody id="adm-lms-progress-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 4: MATERI & REKAMAN VIDEO                                   -->
+        <!-- ================================================================= -->
+        <div id="admpanel-resources" class="admin-panel hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <h2 class="font-display font-bold text-lg text-navy-900">Kelola Materi &amp; Bahan Tayang</h2>
+            <form onsubmit="addEventMaterial(event)" class="space-y-3 p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Judul Materi *</label>
+                <input type="text" id="mat-title" required placeholder="Contoh: Slide Materi Sesi 1" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jenis File</label>
+                  <input type="text" id="mat-type" value="PDF / Slide" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Pemateri</label>
+                  <input type="text" id="mat-speaker" placeholder="Nama pemateri" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Unduhan (Google Drive / PDF URL) *</label>
+                <input type="url" id="mat-url" required placeholder="https://drive.google.com/..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                + Tambahkan Materi
+              </button>
+            </form>
+            <div id="adm-materials-list" class="space-y-2.5"></div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <h2 class="font-display font-bold text-lg text-navy-900">Kelola Rekaman Video</h2>
+            <form onsubmit="addEventRecording(event)" class="space-y-3 p-4 rounded-2xl bg-sky-50/60 border border-sky-100">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Judul Rekaman Video *</label>
+                <input type="text" id="rec-title" required placeholder="Contoh: Rekaman Sesi Pagi" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Platform</label>
+                <input type="text" id="rec-platform" value="YouTube JSIT Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Video (YouTube / Google Drive) *</label>
+                <input type="url" id="rec-url" required placeholder="https://www.youtube.com/watch?v=..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+              <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">
+                + Tambahkan Rekaman
+              </button>
+            </form>
+            <div id="adm-recordings-list" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 5: DESAIN TEMPLATE & PENYESUAIAN TATA LETAK E-SERTIFIKAT    -->
+        <!-- ================================================================= -->
+        <div id="admpanel-certificate" class="admin-panel hidden space-y-6">
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <div class="xl:col-span-5 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h2 class="font-display font-bold text-base sm:text-lg text-navy-900">Desain &amp; Tata Letak Sertifikat</h2>
+                  <p class="text-[11px] text-slate-500">Sesuaikan posisi teks, QR Code, dan tanda tangan agar pas dengan desain gambar template.</p>
+                </div>
+                <span id="save-cert-toast" class="hidden px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                  ✓ Tersimpan!
+                </span>
+              </div>
+
+              <form onsubmit="saveCertificateConfig(event)" class="space-y-5">
+                <div class="space-y-3">
+                  <h3 class="text-xs font-extrabold uppercase tracking-wider text-blue-700">A. Identitas &amp; Penandatangan</h3>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Prefix Nomor Sertifikat *</label>
+                      <input type="text" id="cert-prefix" oninput="updateLiveCertPreview()" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Bobot Pelatihan (JP) *</label>
+                      <input type="text" id="cert-jp" oninput="updateLiveCertPreview()" required placeholder="8 JP" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Tempat Terbit</label>
+                      <input type="text" id="cert-place" oninput="updateLiveCertPreview()" value="Bandar Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal Terbit</label>
+                      <input type="text" id="cert-datetext" oninput="updateLiveCertPreview()" placeholder="14 Februari 2026" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
+                      <input type="text" id="cert-signertitle" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Penandatangan</label>
+                      <input type="text" id="cert-signername" oninput="updateLiveCertPreview()" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <h3 class="text-xs font-extrabold uppercase tracking-wider text-blue-700">B. Gambar Template A4 Landscape</h3>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <label class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                      <i data-lucide="image-plus" class="w-4 h-4"></i>
+                      <span>Unggah Gambar Template</span>
+                      <input type="file" accept="image/*" onchange="handleCertTemplateUpload(event)" class="hidden" />
+                    </label>
+                    <button type="button" onclick="useDefaultBrandTemplate()" class="px-3 py-2 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 text-xs font-bold">
+                      Gunakan Template JSIT Lampung
+                    </button>
+                    <button type="button" onclick="clearCertTemplate()" class="px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-slate-200 text-xs font-bold">
+                      Tanpa Gambar
+                    </button>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Atau Link Gambar Template (Google Drive / URL)</label>
+                    <input type="text" id="cert-template-url" oninput="onTemplateUrlInput(this.value)" placeholder="https://lh3.googleusercontent.com/d/..." class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs" />
+                  </div>
+
+                  <div class="grid grid-cols-1 gap-1.5 pt-1">
+                    <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                      <input type="checkbox" id="layout-show-heading" onchange="updateLiveCertPreview()" class="rounded border-slate-300 text-blue-600" />
+                      <span>Tampilkan Judul Teks Besar di Atas Nomor</span>
+                    </label>
+                    <input type="text" id="layout-heading-text" oninput="updateLiveCertPreview()" value="SERTIFIKAT" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs" />
+                    <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer mt-1">
+                      <input type="checkbox" id="layout-show-header" onchange="updateLiveCertPreview()" class="rounded border-slate-300 text-blue-600" />
+                      <span>Tampilkan Kop Teks JSIT Lampung di Atas</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                      <input type="checkbox" id="layout-show-border" onchange="updateLiveCertPreview()" class="rounded border-slate-300 text-blue-600" />
+                      <span>Tampilkan Bingkai Garis Klasik</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-blue-700">C. Sesuaikan Tata Letak Elemen</h3>
+                    <button type="button" onclick="resetCertLayout()" class="text-[11px] font-bold text-blue-600 hover:underline">
+                      Reset Posisi
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 text-[11px]">
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Posisi Blok Nama (Atas)</span>
+                        <span id="val-centerTop">158px</span>
+                      </div>
+                      <input type="range" id="layout-centerTop" min="80" max="340" value="158" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Ukuran Huruf Nama</span>
+                        <span id="val-nameSize">28px</span>
+                      </div>
+                      <input type="range" id="layout-nameSize" min="18" max="44" value="28" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Ukuran Teks Deskripsi</span>
+                        <span id="val-descSize">13.5px</span>
+                      </div>
+                      <input type="range" id="layout-descSize" min="10" max="18" step="0.5" value="13.5" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Skala QR Barcode</span>
+                        <span id="val-qrScale">100%</span>
+                      </div>
+                      <input type="range" id="layout-qrScale" min="65" max="135" value="100" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Posisi QR dari Kiri</span>
+                        <span id="val-qrLeft">65px</span>
+                      </div>
+                      <input type="range" id="layout-qrLeft" min="25" max="320" value="65" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Posisi QR dari Bawah</span>
+                        <span id="val-qrBottom">52px</span>
+                      </div>
+                      <input type="range" id="layout-qrBottom" min="20" max="240" value="52" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Posisi TTD dari Kanan</span>
+                        <span id="val-signerRight">65px</span>
+                      </div>
+                      <input type="range" id="layout-signerRight" min="25" max="320" value="65" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                    <div>
+                      <div class="flex justify-between font-semibold text-slate-700">
+                        <span>Posisi TTD dari Bawah</span>
+                        <span id="val-signerBottom">52px</span>
+                      </div>
+                      <input type="range" id="layout-signerBottom" min="20" max="240" value="52" oninput="updateLiveCertPreview()" class="w-full accent-blue-600" />
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" id="btn-save-cert-cfg" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition">
+                  Simpan Desain &amp; Tata Letak Sertifikat ke Cloud
+                </button>
+              </form>
+            </div>
+
+            <div class="xl:col-span-7 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 class="font-display font-bold text-base text-navy-900">Pratinjau Langsung (Live Preview A4 Landscape)</h3>
+                  <p class="text-xs text-slate-500">Tampilan persis yang akan diunduh peserta beserta QR Code verifikasi.</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold">1000 &times; 707 px (A4)</span>
+              </div>
+
+              <div class="preview-stage-wrapper" id="admin-preview-stage">
+                <div id="admin-cert-preview-canvas">
+                  <img id="adm-prev-bg-img" src="" alt="Template Sertifikat" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
+                  <div id="adm-prev-outer-border" class="hidden absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
+                  <div id="adm-prev-inner-frame" class="hidden absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
+
+                  <div id="adm-prev-default-header" class="hidden absolute left-0 right-0 text-center px-12" style="top: 42px;">
+                    <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold tracking-widest uppercase">
+                      Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
+                    </div>
+                    <h2 class="font-display font-extrabold text-xl text-navy-900 tracking-wide mt-1">WILAYAH PROVINSI LAMPUNG</h2>
+                  </div>
+
+                  <div id="adm-prev-dynamic-block" class="absolute left-0 right-0 px-14 text-center" style="top: 158px;">
+                    <div id="adm-prev-heading" class="hidden font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
+                      SERTIFIKAT
+                    </div>
+                    <div id="adm-prev-number" class="text-sm font-bold text-slate-600 mt-1">Nomor: 001/SERT-JSIT-LPG/2026</div>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-4">Diberikan dengan hormat kepada:</p>
+                    <div id="adm-prev-name" class="font-display font-extrabold text-navy-900 mt-2 px-6 inline-block border-b-2 border-amber-500 pb-1" style="font-size: 28px;">
+                      Ahmad Fauzi, S.Pd., M.Pd.
+                    </div>
+                    <div class="text-sm font-bold text-blue-800 mt-1.5">
+                      SDIT Permata Bunda Bandar Lampung &mdash; Kota Bandar Lampung
+                    </div>
+                    <p id="adm-prev-description" class="text-slate-700 leading-relaxed max-w-3xl mx-auto mt-3" style="font-size: 13.5px;"></p>
+                  </div>
+
+                  <div id="adm-prev-qr-block" class="absolute flex items-center gap-3 origin-bottom-left" style="left: 65px; bottom: 52px;">
+                    <div class="p-2 bg-white rounded-xl border border-slate-300 shadow-xs">
+                      <img id="adm-prev-qr-img" src="" alt="Preview QR" class="w-24 h-24 object-contain" />
+                    </div>
+                    <div class="text-left text-[10.5px] text-slate-700 leading-snug max-w-[195px]">
+                      <div class="font-bold text-navy-900">Scan Barcode Verifikasi</div>
+                      <div id="adm-prev-qr-org" class="font-medium text-slate-600">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</div>
+                      <div class="font-mono font-bold text-blue-700 mt-0.5">JSIT-DEMO-001</div>
+                    </div>
+                  </div>
+
+                  <div id="adm-prev-signer-block" class="absolute text-center w-80 origin-bottom-right" style="right: 65px; bottom: 52px;">
+                    <div id="adm-prev-issued" class="text-xs text-slate-700">Bandar Lampung, 2026</div>
+                    <div id="adm-prev-signer-title" class="text-xs font-semibold text-slate-800 mt-0.5">Ketua JSIT Indonesia Wilayah Lampung</div>
+                    <div class="h-11 flex items-center justify-center my-1">
+                      <span class="px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[10px] font-semibold text-blue-800 italic">
+                        Ditandatangani secara elektronik
+                      </span>
+                    </div>
+                    <div id="adm-prev-signer-name" class="font-display font-extrabold text-sm text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4">
+                      Muslimin, M.Pd.I.,Gr.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PANEL 6: PENGATURAN GLOBAL & MANAJEMEN AKUN / HAK AKSES           -->
+        <!-- ================================================================= -->
+        <div id="admpanel-settings" class="admin-panel hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Kiri: Identitas Lembaga -->
+            <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5 h-fit">
+              <h2 class="font-display font-bold text-lg text-navy-900">Pengaturan Identitas &amp; Penandatangan</h2>
+              <form onsubmit="saveGlobalSettings(event)" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi Utama</label>
+                  <input type="text" id="set-orgname" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul &amp; Penyelenggara Resmi</label>
+                  <input type="text" id="set-orgsub" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Penandatangan Default</label>
+                  <input type="text" id="set-signername" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan Default</label>
+                  <input type="text" id="set-signertitle" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <button type="submit" id="btn-save-settings" class="w-full px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">
+                  Simpan Pengaturan Global
+                </button>
+              </form>
+            </div>
+
+            <!-- Kanan: KONTROL AKUN UTAMA (MANAJEMEN AKUN & HAK AKSES) -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h2 class="font-display font-bold text-lg text-navy-900">Manajemen Akun &amp; Hak Akses</h2>
+                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase">Kendali Akun Utama</span>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-0.5">Tambahkan akun Admin/Panitia baru atau ubah status &amp; hak akses pengguna terdaftar.</p>
+                </div>
+                <button onclick="loadRegisteredUsers()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
+                  Muat Ulang Data
+                </button>
+              </div>
+
+              <!-- Form Tambah Akun Admin / Panitia Baru oleh Akun Utama -->
+              <div id="superadmin-create-box" class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-3">
+                <h3 class="font-display font-bold text-xs uppercase tracking-wider text-blue-800">+ Daftarkan Akun Admin / Panitia Baru</h3>
+                <form onsubmit="createStaffAccountBySuperAdmin(event)" class="space-y-3">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Lengkap *</label>
+                      <input type="text" id="new-staff-name" required placeholder="Contoh: Ustadz Hendra, S.Pd." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Asal Sekolah / Bidang *</label>
+                      <input type="text" id="new-staff-school" required placeholder="Bidang Diklat JSIT Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Username / Email Login *</label>
+                      <input type="text" id="new-staff-username" required placeholder="hendra.diklat" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-bold text-slate-700 mb-1">Password Login *</label>
+                      <input type="text" id="new-staff-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1.5">Pilih Hak Akses Menu Dashboard:</label>
+                    <div class="flex flex-wrap gap-3 text-xs text-slate-700">
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-events" checked class="rounded text-blue-600" /><span>Detail Kegiatan</span></label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-attendees" checked class="rounded text-blue-600" /><span>Peserta &amp; Hadir</span></label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-lms" checked class="rounded text-blue-600" /><span>LMS &amp; Nilai</span></label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-resources" checked class="rounded text-blue-600" /><span>Materi &amp; Rekaman</span></label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-certificate" checked class="rounded text-blue-600" /><span>E-Sertifikat</span></label>
+                      <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="perm-new-settings" class="rounded text-blue-600" /><span>Pengaturan</span></label>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs">
+                    Simpan &amp; Aktifkan Akun Admin
+                  </button>
+                </form>
+              </div>
+
+              <!-- Daftar Semua Akun (Admin & Peserta) -->
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-display font-bold text-xs uppercase tracking-wider text-slate-600">Daftar Akun Pengguna Terdaftar</h3>
+                  <span id="users-count-badge" class="text-[11px] font-bold text-blue-700">0 Akun</span>
+                </div>
+                <div id="registered-users-list" class="space-y-3 max-h-[460px] overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL BUAT KEGIATAN BARU -->
+  <div id="create-event-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-blue-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-display font-bold text-base text-navy-900">Buat Kegiatan Baru</h3>
+        <button onclick="closeCreateEventModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="submitCreateEvent(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Judul Kegiatan *</label>
+          <input type="text" id="new-ev-title" required placeholder="Contoh: Bimtek Manajemen Mutu Sekolah Islam Terpadu" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
+            <select id="new-ev-cat-select" onchange="toggleCustomCategoryInput('new')" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+              <option value="Seminar">Seminar</option>
+              <option value="Webinar">Webinar</option>
+              <option value="Pelatihan">Pelatihan (Otomatis LMS)</option>
+              <option value="Workshop">Workshop (Otomatis LMS)</option>
+              <option value="Bimtek">Bimtek (Otomatis LMS)</option>
+              <option value="CUSTOM">+ Kategori Khusus...</option>
+            </select>
+            <input type="text" id="new-ev-cat-custom" placeholder="Nama kategori khusus..." class="hidden w-full mt-2 px-3 py-2 rounded-xl border border-blue-300 bg-blue-50/40 text-xs" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Pelaksanaan *</label>
+            <input type="date" id="new-ev-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Waktu *</label>
+            <input type="text" id="new-ev-time" required value="08.00 - 15.00 WIB" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Bobot Sertifikat (JP) *</label>
+            <input type="text" id="new-ev-jp" required value="8 JP" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi / Media *</label>
+          <input type="text" id="new-ev-loc" required value="Aula JSIT Wilayah Lampung & Zoom Meeting" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+        </div>
+        <button type="submit" id="btn-create-ev-submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm">
+          Simpan &amp; Buat Ruang Kegiatan di Cloud
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL TAMBAH PESERTA MANUAL -->
+  <div id="add-att-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-blue-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-display font-bold text-base text-navy-900">Tambah Peserta Manual</h3>
+        <button onclick="closeAddAttendeeModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="submitManualAttendee(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap &amp; Gelar *</label>
+          <input type="text" id="man-att-name" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Asal Sekolah / Instansi *</label>
+          <input type="text" id="man-att-school" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten/Kota</label>
+            <input type="text" id="man-att-region" value="Kota Bandar Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Peran</label>
+            <select id="man-att-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+              <option value="Peserta">Peserta</option>
+              <option value="Narasumber">Narasumber</option>
+              <option value="Moderator">Moderator</option>
+              <option value="Panitia">Panitia</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+          <input type="tel" id="man-att-phone" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">
+          Simpan Peserta ke Cloud
+        </button>
+      </form>
+    </div>
+  </div>
 <script>
     const STORAGE_KEY_EVENTS = 'jsit_lampung_events_v3';
     const STORAGE_KEY_SETTINGS = 'jsit_lampung_settings_v3';

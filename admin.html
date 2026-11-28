@@ -145,6 +145,10 @@
             <i data-lucide="calendar-plus" class="w-4 h-4"></i>
             <span>Kelola Kegiatan</span>
           </button>
+          <button onclick="switchAdminTab('lms')" id="nav-lms" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-blue-200 hover:bg-white/10 text-left transition">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-300"></i>
+            <span>Kurikulum &amp; LMS Daring</span>
+          </button>
           <button onclick="switchAdminTab('attendees')" id="nav-attendees" class="admin-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-blue-200 hover:bg-white/10 text-left transition">
             <i data-lucide="users" class="w-4 h-4"></i>
             <span>Data Daftar Hadir</span>
@@ -245,6 +249,100 @@
             </button>
           </div>
           <div id="admin-events-cards" class="grid md:grid-cols-2 gap-4"></div>
+        </div>
+      </section>
+
+      <!-- TAB LMS: KURIKULUM & PELATIHAN DARING BERJENJANG (KHUSUS PELATIHAN, BIMTEK & WORKSHOP) -->
+      <section id="tab-lms" class="admin-tab hidden space-y-6">
+        <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-2xs space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-extrabold uppercase mb-1">
+                Mode LMS Daring &bull; Ruang Guru / SIMPKB / IGI
+              </div>
+              <h3 class="font-display font-bold text-lg text-navy-900">Pengelola Tahap Belajar, Kuis Sesi &amp; Ujian Akhir</h3>
+              <p class="text-xs text-slate-500">Aktifkan pembelajaran daring bertahap untuk kategori <strong>Pelatihan, Bimtek, dan Workshop</strong> (Webinar &amp; Seminar tetap menggunakan alur standar).</p>
+            </div>
+            <select id="lms-event-selector" onchange="loadLmsConfigToForm()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white max-w-xs"></select>
+          </div>
+
+          <div id="lms-category-warning" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+            <div>
+              <strong>Kategori Non-Diklat (<span id="lms-warn-cat-name">Webinar</span>):</strong> Sesuai aturan sistem, kegiatan kategori Webinar/Seminar tetap berjalan dengan pengaturan standar tanpa gembok LMS. Mode LMS hanya aktif apabila kategori kegiatan adalah <strong>Pelatihan, Bimtek, atau Workshop</strong>.
+            </div>
+          </div>
+
+          <div id="lms-editor-workspace" class="space-y-6">
+            <!-- Toggle Aktivasi Mode LMS -->
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="space-y-0.5">
+                <label class="flex items-center gap-2.5 text-sm font-extrabold text-navy-900 cursor-pointer">
+                  <input type="checkbox" id="lms-enabled-toggle" onchange="toggleLmsEnabledState()" class="w-4 h-4 rounded text-blue-600" />
+                  <span>Aktifkan Mode Pelatihan Daring (LMS Bertahap + Kuis + Ujian Akhir Sertifikat)</span>
+                </label>
+                <p class="text-xs text-slate-600 pl-6">Jika aktif, peserta wajib menyelesaikan Tahap 1 &rarr; Kuis Tahap 1 &rarr; Tahap berikutnya &rarr; Ujian Akhir untuk membuka E-Sertifikat.</p>
+              </div>
+              <button type="button" onclick="saveLmsConfig()" id="btn-save-lms" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs shrink-0 transition">
+                Simpan Kurikulum LMS
+              </button>
+            </div>
+
+            <!-- Daftar Tahap / Sesi Pembelajaran -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-display font-bold text-base text-navy-900">1. Tahap / Sesi Pembelajaran Berjenjang</h4>
+                  <p class="text-xs text-slate-500">Tahap berikutnya terkunci otomatis sampai peserta menyelesaikan materi dan lulus kuis singkat tahap sebelumnya.</p>
+                </div>
+                <button type="button" onclick="addLmsStage()" class="px-3.5 py-2 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                  <span>Tambah Tahap / Sesi</span>
+                </button>
+              </div>
+
+              <div id="lms-stages-container" class="space-y-4"></div>
+            </div>
+
+            <!-- Pengaturan Ujian Akhir Keseluruhan -->
+            <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/70 pb-3">
+                <div>
+                  <h4 class="font-display font-bold text-base text-navy-900 flex items-center gap-2">
+                    <i data-lucide="trophy" class="w-4 h-4 text-amber-600"></i>
+                    <span>2. Ujian Materi Keseluruhan (Syarat Kelulusan &amp; E-Sertifikat)</span>
+                  </h4>
+                  <p class="text-xs text-slate-600">Terbuka setelah seluruh tahap selesai. Peserta yang lulus ujian akhir otomatis berhak mengunduh E-Sertifikat.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="text-xs font-bold text-slate-700">Nilai Minimal Lulus (KKM):</label>
+                  <input type="number" id="lms-final-passing-score" min="10" max="100" value="70" class="w-20 px-2.5 py-1.5 rounded-xl border border-amber-300 bg-white text-xs font-extrabold text-center" />
+                </div>
+              </div>
+
+              <div id="lms-final-questions-list" class="space-y-3"></div>
+
+              <button type="button" onclick="addFinalExamQuestion()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold inline-flex items-center gap-1.5">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Tambah Soal Ujian Akhir</span>
+              </button>
+            </div>
+
+            <!-- Rekap Kelulusan LMS Peserta -->
+            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <h4 class="font-display font-bold text-sm text-navy-900">3. Monitoring Progres &amp; Kelulusan Peserta LMS</h4>
+                <span id="lms-progress-summary-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">0 Lulus</span>
+              </div>
+              <div id="lms-progress-table-wrap" class="overflow-x-auto"></div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+              <button type="button" onclick="saveLmsConfig()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition">
+                Simpan Seluruh Pengaturan Kurikulum &amp; Ujian LMS
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -818,10 +916,11 @@
           <label class="block text-[11px] font-bold text-slate-700 mb-1">Arahkan QR Code &amp; Link Langsung ke Menu:</label>
           <select id="qr-modal-tab-select" onchange="updateEventQrTarget()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50 focus:outline-none focus:border-blue-600">
             <option value="info">1. Ruang Kegiatan (Informasi Utama)</option>
-            <option value="absensi">2. Formulir Daftar Hadir (Presensi Peserta)</option>
-            <option value="materi">3. Unduh Materi &amp; Modul</option>
-            <option value="rekaman">4. Video Rekaman Kegiatan</option>
-            <option value="sertifikat">5. Cek &amp; Unduh E-Sertifikat</option>
+            <option value="lms">2. Pelatihan Daring / LMS (Khusus Pelatihan/Bimtek/Workshop)</option>
+            <option value="absensi">3. Formulir Daftar Hadir (Presensi Peserta)</option>
+            <option value="materi">4. Unduh Materi &amp; Modul</option>
+            <option value="rekaman">5. Video Rekaman Kegiatan</option>
+            <option value="sertifikat">6. Cek &amp; Unduh E-Sertifikat</option>
           </select>
         </div>
 
@@ -873,21 +972,21 @@
         <div class="grid sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Asal Sekolah / Instansi <span class="text-red-500">*</span></label>
-            <input type="text" id="edit-att-school" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
+            <input type="text" id="edit-att-school" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten / Kota</label>
-            <input type="text" id="edit-att-region" value="Kota Bandar Lampung" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
+            <input type="text" id="edit-att-region" value="Kota Bandar Lampung" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs" />
           </div>
         </div>
         <div class="grid sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Peran / Jabatan</label>
-            <input type="text" id="edit-att-role" value="Peserta" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
+            <input type="text" id="edit-att-role" value="Peserta" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp</label>
-            <input type="text" id="edit-att-phone" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
+            <input type="text" id="edit-att-phone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs" />
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
@@ -903,6 +1002,11 @@
 window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || {};
 const STORAGE_KEY = 'jsit_lampung_events_v3';
 const SETTINGS_KEY = 'jsit_lampung_settings_v3';
+const LMS_ELIGIBLE_CATEGORIES = ['pelatihan', 'bimtek', 'workshop'];
+
+function isLmsEligibleCategory(category) {
+  return LMS_ELIGIBLE_CATEGORIES.includes(String(category || '').trim().toLowerCase());
+}
 
 const DEFAULT_SETTINGS = {
   orgName: 'JSIT Wilayah Lampung',
@@ -942,6 +1046,62 @@ const DEFAULT_EVENTS = [
     recordings: [
       { id: 'r-101', title: 'Rekaman Sesi Pleno & Kebijakan Pendidikan JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Pembukaan oleh Ketua Wilayah & pemaparan arah kebijakan 2026.' }
     ],
+    lms: {
+      enabled: true,
+      finalPassingScore: 70,
+      stages: [
+        {
+          id: 'stg-101',
+          title: 'Tahap 1: Kebijakan & Standar Kekhasan Kurikulum JSIT',
+          summary: 'Simak video pengantar kebijakan dan pelajari modul PDF standar kekhasan JSIT sebelum mengerjakan kuis singkat tahap 1.',
+          videoUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+          pdfUrl: 'https://drive.google.com',
+          pdfTitle: 'Modul PDF Tahap 1: Kekhasan Kurikulum JSIT',
+          passingScore: 70,
+          questions: [
+            {
+              q: 'Apa fokus utama pendekatan Deep Learning dalam Kurikulum Khas JSIT?',
+              options: ['Hafalan materi semata', 'Pemahaman bermakna, berkesadaran, dan menggembirakan', 'Pengurangan jam pelajaran', 'Evaluasi pilihan ganda saja'],
+              answerIndex: 1
+            },
+            {
+              q: 'Integrasi nilai keislaman dalam pembelajaran SIT dilakukan secara...',
+              options: ['Terpisah dari mata pelajaran umum', 'Terpadu dalam perencanaan, proses, dan asesmen (TERPADU)', 'Hanya saat kegiatan ekstrakurikuler', 'Opsional bagi guru'],
+              answerIndex: 1
+            }
+          ]
+        },
+        {
+          id: 'stg-102',
+          title: 'Tahap 2: Perancangan Modul Ajar & Asesmen Terpadu',
+          summary: 'Pelajari langkah penyusunan alur tujuan pembelajaran dan rubrik asesmen autentik pada tahap 2.',
+          videoUrl: '',
+          pdfUrl: 'https://drive.google.com',
+          pdfTitle: 'Panduan Penyusunan Modul Ajar Deep Learning',
+          passingScore: 70,
+          questions: [
+            {
+              q: 'Komponen utama dalam alur pembelajaran TERPADU JSIT meliputi...',
+              options: ['Telaah, Eksplorasi, Rumuskan, Presentasikan, Aplikasikan, Duniawi, Ukhrawi', 'Ceramah dan Ujian Akhir', 'Membaca dan Mencatat', 'Observasi tanpa refleksi'],
+              answerIndex: 0
+            }
+          ]
+        }
+      ],
+      finalExamQuestions: [
+        {
+          q: 'Syarat utama peserta memperoleh E-Sertifikat pada Bimtek Kurikulum JSIT berbasis LMS adalah...',
+          options: ['Hanya mendaftar di awal', 'Menyelesaikan seluruh tahap materi, lulus kuis tahap, dan lulus Ujian Akhir', 'Membuka halaman terakhir saja', 'Mengunduh flyer kegiatan'],
+          answerIndex: 1
+        },
+        {
+          q: 'Dimensi Ukhrawi dalam rancangan pembelajaran SIT bertujuan agar peserta didik...',
+          options: ['Mampu mengaitkan ilmu pengetahuan dengan ketaatan kepada Allah SWT', 'Hanya fokus pada nilai akademik', 'Menghindari teknologi digital', 'Bekerja secara individual'],
+          answerIndex: 0
+        }
+      ],
+      progress: {}
+    },
     certificate: {
       enabled: true,
       releaseMode: 'after_end',
@@ -995,6 +1155,13 @@ const DEFAULT_EVENTS = [
     recordings: [
       { id: 'r-201', title: 'Rekaman Hari 1: Kepemimpinan Visioner Kepala Sekolah SIT', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', notes: 'Sesi pemaparan & studi kasus manajemen mutu.' }
     ],
+    lms: {
+      enabled: false,
+      finalPassingScore: 70,
+      stages: [],
+      finalExamQuestions: [],
+      progress: {}
+    },
     certificate: {
       enabled: true,
       releaseMode: 'after_end',
@@ -1048,6 +1215,13 @@ const DEFAULT_EVENTS = [
     recordings: [
       { id: 'r-301', title: 'Full Replay Webinar Parenting Islami JSIT Lampung', platform: 'YouTube', url: 'https://www.youtube.com/watch?v=LXb3EKWsInQ', notes: 'Rekaman lengkap beserta sesi tanya jawab interaktif.' }
     ],
+    lms: {
+      enabled: false,
+      finalPassingScore: 70,
+      stages: [],
+      finalExamQuestions: [],
+      progress: {}
+    },
     certificate: {
       enabled: true,
       releaseMode: 'after_end',
@@ -1099,6 +1273,36 @@ const DEFAULT_EVENTS = [
       { id: 'm-401', title: 'Silabus & Panduan Instalasi Tools Pelatihan', type: 'PDF', url: 'https://drive.google.com', desc: 'Persiapan perangkat laptop sebelum hari pelaksanaan.' }
     ],
     recordings: [],
+    lms: {
+      enabled: true,
+      finalPassingScore: 75,
+      stages: [
+        {
+          id: 'stg-401',
+          title: 'Tahap 1: Metodologi Penelitian Tindakan Kelas (PTK)',
+          summary: 'Pahami siklus perencanaan, tindakan, observasi, dan refleksi dalam penyusunan laporan PTK guru SIT.',
+          videoUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+          pdfUrl: 'https://drive.google.com',
+          pdfTitle: 'Modul PDF: Panduan Praktis PTK Guru',
+          passingScore: 70,
+          questions: [
+            {
+              q: 'Tahapan berurutan dalam satu siklus PTK menurut Kemmis & McTaggart adalah...',
+              options: ['Perencanaan - Tindakan - Observasi - Refleksi', 'Ujian - Nilai - Rapor - Lulus', 'Observasi - Ujian - Wawancara', 'Hipotesis - Eksperimen - Publikasi'],
+              answerIndex: 0
+            }
+          ]
+        }
+      ],
+      finalExamQuestions: [
+        {
+          q: 'Tujuan utama pemanfaatan AI generatif bagi guru kreatif adalah...',
+          options: ['Menggantikan peran pendidik sepenuhnya', 'Membantu efisiensi penyusunan bahan ajar & media pembelajaran interaktif', 'Menyalin karya ilmiah orang lain', 'Mengurangi interaksi kelas'],
+          answerIndex: 1
+        }
+      ],
+      progress: {}
+    },
     certificate: {
       enabled: true,
       releaseMode: 'after_end',
@@ -1226,6 +1430,16 @@ const DEFAULT_EVENTS = [
       if (!Array.isArray(item.materials)) item.materials = [];
       if (!Array.isArray(item.recordings)) item.recordings = [];
       if (!Array.isArray(item.speakers)) item.speakers = [];
+
+      const lms = item.lms || {};
+      if (typeof lms.enabled !== 'boolean') lms.enabled = false;
+      if (!isLmsEligibleCategory(item.category)) lms.enabled = false;
+      if (typeof lms.finalPassingScore !== 'number') lms.finalPassingScore = 70;
+      if (!Array.isArray(lms.stages)) lms.stages = [];
+      if (!Array.isArray(lms.finalExamQuestions)) lms.finalExamQuestions = [];
+      if (!lms.progress || typeof lms.progress !== 'object') lms.progress = {};
+      item.lms = lms;
+
       if (attendeesMap[item.id]) {
         item.attendees = attendeesMap[item.id];
       } else if (!Array.isArray(item.attendees)) {
@@ -1459,6 +1673,7 @@ const DEFAULT_EVENTS = [
       const titles = {
         dashboard: 'Ringkasan & Statistik Portal',
         events: 'Kelola Daftar Kegiatan',
+        lms: 'Kurikulum & Pelatihan Daring (LMS)',
         attendees: 'Rekapitulasi Daftar Hadir Peserta',
         resources: 'Manajemen Materi & Rekaman Video',
         certificates: 'Studio Template & Rilis E-Sertifikat',
@@ -1466,6 +1681,7 @@ const DEFAULT_EVENTS = [
       };
       document.getElementById('admin-page-title').textContent = titles[tabName] || 'Panel Admin';
 
+      if (tabName === 'lms') loadLmsConfigToForm();
       if (tabName === 'attendees') renderAdminAttendeesTable();
       if (tabName === 'resources') renderAdminResources();
       if (tabName === 'certificates') loadCertConfigToForm();
@@ -1478,16 +1694,20 @@ const DEFAULT_EVENTS = [
       renderAdminEventsCards();
       renderAdminAttendeesTable();
       renderAdminResources();
+      const lmsTab = document.getElementById('tab-lms');
+      if (lmsTab && !lmsTab.classList.contains('hidden')) {
+        loadLmsConfigToForm();
+      }
       if (window.lucide) lucide.createIcons();
     }
 
     function populateEventSelectors() {
-      const selectors = ['att-event-selector', 'res-event-selector', 'cert-event-selector'];
+      const selectors = ['att-event-selector', 'res-event-selector', 'cert-event-selector', 'lms-event-selector'];
       selectors.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         const prev = el.value;
-        el.innerHTML = eventsData.map(ev => `<option value="${escapeHtml(ev.id)}">${escapeHtml(ev.title)}</option>`).join('');
+        el.innerHTML = eventsData.map(ev => `<option value="${escapeHtml(ev.id)}">[${escapeHtml(ev.category)}] ${escapeHtml(ev.title)}</option>`).join('');
         if (prev && eventsData.some(e => e.id === prev)) el.value = prev;
       });
     }
@@ -1509,6 +1729,9 @@ const DEFAULT_EVENTS = [
         const relLabel = rel
           ? 'Sertifikat Rilis'
           : `Rilis ${relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} ${relDate.toTimeString().slice(0,5)}`;
+        const lmsBadge = (isLmsEligibleCategory(ev.category) && ev.lms && ev.lms.enabled)
+          ? `<span class="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 font-bold">LMS Aktif (${(ev.lms.stages || []).length} Tahap)</span>`
+          : '';
         return `
           <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
@@ -1516,6 +1739,7 @@ const DEFAULT_EVENTS = [
               <h4 class="font-bold text-sm text-navy-900">${escapeHtml(ev.title)}</h4>
             </div>
             <div class="flex flex-wrap items-center gap-2 text-xs">
+              ${lmsBadge}
               <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold">${(ev.attendees || []).length} Hadir</span>
               <span class="px-2.5 py-1 rounded-lg ${rel ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-800'} font-bold">${escapeHtml(relLabel)}</span>
               <button onclick="openEventQrModal('${escapeHtml(ev.id)}')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-600 text-sky-800 hover:text-white font-bold inline-flex items-center gap-1 transition">
@@ -1537,6 +1761,8 @@ const DEFAULT_EVENTS = [
         const relStr = relDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + relDate.toTimeString().slice(0,5) + ' WIB';
         const hasFlyer = Boolean(ev.flyerImg && ev.flyerImg.trim() !== '');
         const hasCertTpl = Boolean(ev.certificate && ev.certificate.customTemplateImg);
+        const eligibleLms = isLmsEligibleCategory(ev.category);
+        const lmsOn = eligibleLms && ev.lms && ev.lms.enabled;
 
         return `
           <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between space-y-4">
@@ -1551,12 +1777,19 @@ const DEFAULT_EVENTS = [
                 <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-bold ${rel ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                   ${rel ? 'Sertifikat Sudah Rilis' : 'Sertifikat Otomatis Rilis: ' + escapeHtml(relStr)}
                 </span>
+                ${lmsOn ? `<span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-600 text-white">LMS Daring (${(ev.lms.stages || []).length} Tahap)</span>` : ''}
                 ${hasFlyer ? `<span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-800">Flyer Aktif</span>` : ''}
                 ${hasCertTpl ? `<span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800">Template A4 Aktif</span>` : ''}
               </div>
             </div>
             <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-200">
               <button onclick="openEventEditor('${escapeHtml(ev.id)}')" class="px-3 py-1.5 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold">Edit Detail</button>
+              ${eligibleLms ? `
+                <button onclick="openLmsForEvent('${escapeHtml(ev.id)}')" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-600 border border-indigo-200 text-indigo-800 hover:text-white text-xs font-bold inline-flex items-center gap-1 transition">
+                  <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                  <span>Atur LMS</span>
+                </button>
+              ` : ''}
               <button onclick="openEventQrModal('${escapeHtml(ev.id)}')" class="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-600 border border-sky-200 text-sky-800 hover:text-white text-xs font-bold inline-flex items-center gap-1 transition">
                 <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
                 <span>QR &amp; Link</span>
@@ -1567,6 +1800,334 @@ const DEFAULT_EVENTS = [
           </div>
         `;
       }).join('');
+    }
+
+    function openLmsForEvent(eventId) {
+      switchAdminTab('lms');
+      const sel = document.getElementById('lms-event-selector');
+      if (sel) {
+        sel.value = eventId;
+        loadLmsConfigToForm();
+      }
+    }
+
+    function getSelectedLmsEvent() {
+      const sel = document.getElementById('lms-event-selector');
+      if (!sel || !sel.value) return null;
+      return eventsData.find(e => e.id === sel.value) || null;
+    }
+
+    function loadLmsConfigToForm() {
+      const ev = getSelectedLmsEvent();
+      if (!ev) return;
+      const eligible = isLmsEligibleCategory(ev.category);
+      const warnBox = document.getElementById('lms-category-warning');
+      const workspace = document.getElementById('lms-editor-workspace');
+
+      if (!eligible) {
+        document.getElementById('lms-warn-cat-name').textContent = ev.category || 'Non-Diklat';
+        warnBox.classList.remove('hidden');
+        workspace.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        warnBox.classList.add('hidden');
+        workspace.classList.remove('opacity-50', 'pointer-events-none');
+      }
+
+      const lms = ev.lms || { enabled: false, finalPassingScore: 70, stages: [], finalExamQuestions: [], progress: {} };
+      document.getElementById('lms-enabled-toggle').checked = Boolean(eligible && lms.enabled);
+      document.getElementById('lms-final-passing-score').value = lms.finalPassingScore || 70;
+
+      renderLmsStagesEditor(ev);
+      renderFinalExamQuestionsEditor(ev);
+      renderLmsProgressTable(ev);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleLmsEnabledState() {
+      const ev = getSelectedLmsEvent();
+      if (!ev) return;
+      if (!isLmsEligibleCategory(ev.category)) {
+        document.getElementById('lms-enabled-toggle').checked = false;
+        alert('Mode LMS hanya tersedia untuk kegiatan kategori Pelatihan, Bimtek, atau Workshop.');
+        return;
+      }
+      if (!ev.lms) ev.lms = { enabled: false, finalPassingScore: 70, stages: [], finalExamQuestions: [], progress: {} };
+      ev.lms.enabled = document.getElementById('lms-enabled-toggle').checked;
+    }
+
+    function syncDomInputsToLmsObject(ev) {
+      if (!ev || !ev.lms) return;
+      ev.lms.enabled = isLmsEligibleCategory(ev.category) && document.getElementById('lms-enabled-toggle').checked;
+      ev.lms.finalPassingScore = Math.min(100, Math.max(10, Number(document.getElementById('lms-final-passing-score').value || 70)));
+
+      (ev.lms.stages || []).forEach((stg, sIdx) => {
+        const titleEl = document.getElementById(`lms-stg-title-${sIdx}`);
+        const sumEl = document.getElementById(`lms-stg-sum-${sIdx}`);
+        const vidEl = document.getElementById(`lms-stg-vid-${sIdx}`);
+        const pdfTitleEl = document.getElementById(`lms-stg-pdftitle-${sIdx}`);
+        const pdfUrlEl = document.getElementById(`lms-stg-pdfurl-${sIdx}`);
+        const passEl = document.getElementById(`lms-stg-pass-${sIdx}`);
+        if (titleEl) stg.title = titleEl.value.trim() || `Tahap ${sIdx + 1}`;
+        if (sumEl) stg.summary = sumEl.value.trim();
+        if (vidEl) stg.videoUrl = vidEl.value.trim();
+        if (pdfTitleEl) stg.pdfTitle = pdfTitleEl.value.trim();
+        if (pdfUrlEl) stg.pdfUrl = pdfUrlEl.value.trim();
+        if (passEl) stg.passingScore = Math.min(100, Math.max(10, Number(passEl.value || 70)));
+
+        (stg.questions || []).forEach((qObj, qIdx) => {
+          const qTextEl = document.getElementById(`lms-stg-${sIdx}-q-${qIdx}`);
+          const ansEl = document.getElementById(`lms-stg-${sIdx}-ans-${qIdx}`);
+          if (qTextEl) qObj.q = qTextEl.value.trim();
+          if (ansEl) qObj.answerIndex = Number(ansEl.value || 0);
+          qObj.options = [0, 1, 2, 3].map(optIdx => {
+            const optEl = document.getElementById(`lms-stg-${sIdx}-q-${qIdx}-opt-${optIdx}`);
+            return optEl ? optEl.value.trim() : '';
+          });
+        });
+      });
+
+      (ev.lms.finalExamQuestions || []).forEach((qObj, qIdx) => {
+        const qTextEl = document.getElementById(`lms-final-q-${qIdx}`);
+        const ansEl = document.getElementById(`lms-final-ans-${qIdx}`);
+        if (qTextEl) qObj.q = qTextEl.value.trim();
+        if (ansEl) qObj.answerIndex = Number(ansEl.value || 0);
+        qObj.options = [0, 1, 2, 3].map(optIdx => {
+          const optEl = document.getElementById(`lms-final-q-${qIdx}-opt-${optIdx}`);
+          return optEl ? optEl.value.trim() : '';
+        });
+      });
+    }
+
+    function renderLmsStagesEditor(ev) {
+      const container = document.getElementById('lms-stages-container');
+      const stages = (ev.lms && ev.lms.stages) ? ev.lms.stages : [];
+      if (stages.length === 0) {
+        container.innerHTML = `<div class="p-6 rounded-2xl border border-dashed border-slate-300 text-center text-xs text-slate-500">Belum ada tahap pembelajaran. Klik tombol <strong>+ Tambah Tahap / Sesi</strong> di atas untuk membuat sesi bertahap.</div>`;
+        return;
+      }
+
+      container.innerHTML = stages.map((stg, sIdx) => `
+        <div class="p-5 rounded-2xl border border-indigo-200 bg-indigo-50/30 space-y-4">
+          <div class="flex items-center justify-between gap-2 border-b border-indigo-100 pb-2.5">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-xs font-extrabold">Tahap / Sesi ${sIdx + 1}</span>
+            <div class="flex items-center gap-2">
+              <label class="text-[11px] font-bold text-slate-700">KKM Kuis (%):</label>
+              <input type="number" id="lms-stg-pass-${sIdx}" min="10" max="100" value="${stg.passingScore || 70}" class="w-16 px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-bold text-center" />
+              <button type="button" onclick="removeLmsStage(${sIdx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-bold transition">Hapus Tahap</button>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Judul Tahap / Sesi <span class="text-red-500">*</span></label>
+              <input type="text" id="lms-stg-title-${sIdx}" value="${escapeHtml(stg.title || '')}" placeholder="Contoh: Tahap 1: Konsep Dasar Deep Learning" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Link Video Materi (YouTube / Google Drive)</label>
+              <input type="url" id="lms-stg-vid-${sIdx}" value="${escapeHtml(stg.videoUrl || '')}" placeholder="https://www.youtube.com/watch?v=..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs" />
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Judul Modul PDF / Bahan Bacaan</label>
+              <input type="text" id="lms-stg-pdftitle-${sIdx}" value="${escapeHtml(stg.pdfTitle || '')}" placeholder="Contoh: Modul PDF Sesi 1" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Link File PDF / Modul Google Drive</label>
+              <input type="url" id="lms-stg-pdfurl-${sIdx}" value="${escapeHtml(stg.pdfUrl || '')}" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Instruksi / Ringkasan Materi Tahap ${sIdx + 1}</label>
+            <input type="text" id="lms-stg-sum-${sIdx}" value="${escapeHtml(stg.summary || '')}" placeholder="Arahan singkat yang harus dipelajari peserta pada tahap ini..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs" />
+          </div>
+
+          <!-- Soal Kuis Singkat Per Tahap -->
+          <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-navy-900">Kuis Singkat Tahap ${sIdx + 1} (${(stg.questions || []).length} Soal)</span>
+              <button type="button" onclick="addStageQuizQuestion(${sIdx})" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-[11px] font-bold transition">+ Tambah Soal Kuis</button>
+            </div>
+            <div class="space-y-2.5">
+              ${(stg.questions || []).map((qObj, qIdx) => renderQuestionBlockHtml(`lms-stg-${sIdx}`, qIdx, qObj, `removeStageQuizQuestion(${sIdx}, ${qIdx})`)).join('') || '<p class="text-[11px] text-slate-400">Belum ada soal kuis (jika 0 soal, peserta cukup menandai materi selesai untuk lanjut).</p>'}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderFinalExamQuestionsEditor(ev) {
+      const listEl = document.getElementById('lms-final-questions-list');
+      const qs = (ev.lms && ev.lms.finalExamQuestions) ? ev.lms.finalExamQuestions : [];
+      if (qs.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-500">Belum ada soal ujian akhir. Klik tombol <strong>+ Tambah Soal Ujian Akhir</strong> di bawah.</p>`;
+        return;
+      }
+      listEl.innerHTML = qs.map((qObj, qIdx) => renderQuestionBlockHtml('lms-final', qIdx, qObj, `removeFinalExamQuestion(${qIdx})`)).join('');
+    }
+
+    function renderQuestionBlockHtml(prefix, qIdx, qObj, removeFnCall) {
+      const opts = qObj.options || ['', '', '', ''];
+      const ans = Number(qObj.answerIndex || 0);
+      const letters = ['A', 'B', 'C', 'D'];
+      return `
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-extrabold text-blue-800">Soal #${qIdx + 1}</span>
+            <div class="flex items-center gap-2">
+              <label class="text-[10.5px] font-bold text-slate-600">Kunci Jawaban:</label>
+              <select id="${prefix}-ans-${qIdx}" class="px-2 py-0.5 rounded border border-emerald-300 bg-emerald-50 text-emerald-900 text-[11px] font-extrabold">
+                ${letters.map((L, i) => `<option value="${i}" ${ans === i ? 'selected' : ''}>Pilihan ${L}</option>`).join('')}
+              </select>
+              <button type="button" onclick="${removeFnCall}" class="text-[11px] font-bold text-rose-600 hover:underline">Hapus</button>
+            </div>
+          </div>
+          <input type="text" id="${prefix}-q-${qIdx}" value="${escapeHtml(qObj.q || '')}" placeholder="Tulis pertanyaan di sini..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium" />
+          <div class="grid sm:grid-cols-2 gap-1.5">
+            ${letters.map((L, i) => `
+              <div class="flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded bg-slate-200 text-slate-700 text-[10px] font-extrabold flex items-center justify-center shrink-0">${L}</span>
+                <input type="text" id="${prefix}-q-${qIdx}-opt-${i}" value="${escapeHtml(opts[i] || '')}" placeholder="Opsi ${L}..." class="flex-1 px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-[11px]" />
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function addLmsStage() {
+      const ev = getSelectedLmsEvent();
+      if (!ev) return;
+      syncDomInputsToLmsObject(ev);
+      if (!ev.lms) ev.lms = { enabled: true, finalPassingScore: 70, stages: [], finalExamQuestions: [], progress: {} };
+      const nextNum = (ev.lms.stages || []).length + 1;
+      ev.lms.stages.push({
+        id: 'stg-' + Date.now(),
+        title: `Tahap ${nextNum}: Materi & Evaluasi Sesi ${nextNum}`,
+        summary: '',
+        videoUrl: '',
+        pdfUrl: '',
+        pdfTitle: `Modul PDF Tahap ${nextNum}`,
+        passingScore: 70,
+        questions: [
+          { q: '', options: ['', '', '', ''], answerIndex: 0 }
+        ]
+      });
+      renderLmsStagesEditor(ev);
+    }
+
+    function removeLmsStage(sIdx) {
+      const ev = getSelectedLmsEvent();
+      if (!ev || !ev.lms) return;
+      syncDomInputsToLmsObject(ev);
+      ev.lms.stages.splice(sIdx, 1);
+      renderLmsStagesEditor(ev);
+    }
+
+    function addStageQuizQuestion(sIdx) {
+      const ev = getSelectedLmsEvent();
+      if (!ev || !ev.lms || !ev.lms.stages[sIdx]) return;
+      syncDomInputsToLmsObject(ev);
+      ev.lms.stages[sIdx].questions.push({ q: '', options: ['', '', '', ''], answerIndex: 0 });
+      renderLmsStagesEditor(ev);
+    }
+
+    function removeStageQuizQuestion(sIdx, qIdx) {
+      const ev = getSelectedLmsEvent();
+      if (!ev || !ev.lms || !ev.lms.stages[sIdx]) return;
+      syncDomInputsToLmsObject(ev);
+      ev.lms.stages[sIdx].questions.splice(qIdx, 1);
+      renderLmsStagesEditor(ev);
+    }
+
+    function addFinalExamQuestion() {
+      const ev = getSelectedLmsEvent();
+      if (!ev) return;
+      syncDomInputsToLmsObject(ev);
+      if (!ev.lms) ev.lms = { enabled: true, finalPassingScore: 70, stages: [], finalExamQuestions: [], progress: {} };
+      ev.lms.finalExamQuestions.push({ q: '', options: ['', '', '', ''], answerIndex: 0 });
+      renderFinalExamQuestionsEditor(ev);
+    }
+
+    function removeFinalExamQuestion(qIdx) {
+      const ev = getSelectedLmsEvent();
+      if (!ev || !ev.lms) return;
+      syncDomInputsToLmsObject(ev);
+      ev.lms.finalExamQuestions.splice(qIdx, 1);
+      renderFinalExamQuestionsEditor(ev);
+    }
+
+    function renderLmsProgressTable(ev) {
+      const wrap = document.getElementById('lms-progress-table-wrap');
+      const badge = document.getElementById('lms-progress-summary-badge');
+      const progMap = (ev.lms && ev.lms.progress) ? ev.lms.progress : {};
+      const entries = Object.values(progMap);
+      const passedCount = entries.filter(p => p.finalPassed).length;
+      badge.textContent = `${passedCount} dari ${entries.length} Peserta Lulus`;
+
+      if (entries.length === 0) {
+        wrap.innerHTML = `<p class="text-xs text-slate-400 py-3">Belum ada peserta yang memulai pembelajaran daring LMS pada kegiatan ini.</p>`;
+        return;
+      }
+
+      const totalStages = (ev.lms.stages || []).length;
+      wrap.innerHTML = `
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500 bg-white">
+              <th class="py-2.5 px-3">Nama Peserta</th>
+              <th class="py-2.5 px-3">Asal Sekolah</th>
+              <th class="py-2.5 px-3">Tahap Selesai</th>
+              <th class="py-2.5 px-3">Nilai Ujian Akhir</th>
+              <th class="py-2.5 px-3">Status Sertifikat</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            ${entries.map(p => {
+              const doneCount = Array.isArray(p.completedStages) ? p.completedStages.length : 0;
+              return `
+                <tr>
+                  <td class="py-2.5 px-3 font-bold text-navy-900">${escapeHtml(p.name || '-')}</td>
+                  <td class="py-2.5 px-3 text-slate-600">${escapeHtml(p.school || '-')}</td>
+                  <td class="py-2.5 px-3 font-semibold text-blue-700">${doneCount} / ${totalStages} Tahap</td>
+                  <td class="py-2.5 px-3 font-bold">${typeof p.finalScore === 'number' ? p.finalScore + '%' : '-'}</td>
+                  <td class="py-2.5 px-3">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${p.finalPassed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                      ${p.finalPassed ? 'LULUS (Sertifikat Terbuka)' : 'Dalam Proses'}
+                    </span>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function saveLmsConfig() {
+      const ev = getSelectedLmsEvent();
+      if (!ev) return;
+      syncDomInputsToLmsObject(ev);
+
+      const btn = document.getElementById('btn-save-lms');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan Kurikulum...';
+      }
+      try {
+        await persistEventDocument(ev);
+        refreshAllAdminViews();
+        alert('Kurikulum & pengaturan LMS Daring berhasil disimpan!');
+      } catch (err) {
+        alert('Gagal menyimpan LMS ke Cloud: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Simpan Kurikulum LMS';
+        }
+      }
     }
 
     function toggleCustomCategoryField() {
@@ -1721,6 +2282,10 @@ const DEFAULT_EVENTS = [
 
       const existing = id ? eventsData.find(item => item.id === id) : null;
       const existingCert = existing ? (existing.certificate || {}) : {};
+      const existingLms = existing && existing.lms ? existing.lms : { enabled: false, finalPassingScore: 70, stages: [], finalExamQuestions: [], progress: {} };
+      if (!isLmsEligibleCategory(finalCategory)) {
+        existingLms.enabled = false;
+      }
 
       const payload = {
         id: id || ('evt-jsit-' + Date.now()),
@@ -1742,6 +2307,7 @@ const DEFAULT_EVENTS = [
         materials: existing ? existing.materials : [],
         recordings: existing ? existing.recordings : [],
         attendees: existing ? existing.attendees : [],
+        lms: existingLms,
         certificate: {
           enabled: existingCert.releaseMode !== 'disabled',
           releaseMode: existingCert.releaseMode || 'after_end',
@@ -1792,6 +2358,7 @@ const DEFAULT_EVENTS = [
       copy.id = 'evt-jsit-' + Date.now();
       copy.title = ev.title + ' (Salinan)';
       copy.attendees = [];
+      if (copy.lms) copy.lms.progress = {};
       eventsData.unshift(copy);
       await persistEventDocument(copy);
       refreshAllAdminViews();

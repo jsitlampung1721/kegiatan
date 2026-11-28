@@ -3,31 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Admin JSIT Wilayah Lampung — Kelola Kegiatan, Flyer, LMS, Materi & E-Sertifikat</title>
-  <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" />
-  <link rel="shortcut icon" type="image/png" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" />
-  <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" />
-  
-  <!-- Tailwind CSS -->
+  <title>Dashboard Admin Panitia &amp; LMS — JSIT Wilayah Lampung</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- QRCode Generator (qrcodejs + Cadangan Otomatis) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- Firebase SDK (Compat v10.14.1) & Konfigurasi Terpusat -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  <script src="./firebase-config.js"></script>
-
   <script>
     tailwind.config = {
       theme: {
@@ -38,9 +20,9 @@
           },
           colors: {
             navy: {
-              950: '#061224',
+              850: '#0F2A56',
               900: '#0B1F3A',
-              800: '#12315B',
+              950: '#071426',
             }
           }
         }
@@ -48,715 +30,754 @@
     }
   </script>
 
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Firebase App, Auth & Firestore (Compat SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #F4F8FD;
+      background-color: #F4F8FF;
       color: #0F172A;
     }
-    h1, h2, h3, h4, .font-display {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
     .admin-tab-active {
-      background: linear-gradient(90deg, #2563EB 0%, #0284C7 100%);
-      color: #FFFFFF !important;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.25) 0%, rgba(37, 99, 235, 0.12) 100%);
+      border-left: 4px solid #38BDF8;
+      color: #FFFFFF;
     }
-    .cert-paper {
-      background:
-        radial-gradient(circle at top left, rgba(29, 78, 216, 0.07), transparent 42%),
-        radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.09), transparent 42%),
-        #FFFFFF;
+    @media (max-width: 1023px) {
+      .admin-tab-active {
+        border-left: none;
+        border-bottom: 3px solid #38BDF8;
+      }
     }
-    #pv-cert-qr-img {
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
+    .pv-stage-wrapper {
+      width: 100%;
+      aspect-ratio: 1000 / 707;
+      position: relative;
+      overflow: hidden;
+      border-radius: 1rem;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 12px 24px -8px rgba(11, 31, 58, 0.16);
+    }
+    #pv-printable-area {
+      width: 1000px;
+      height: 707px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      background: #FFFFFF;
+      overflow: hidden;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col font-sans antialiased">
 
-  <!-- ADMIN LOGIN SCREEN -->
-  <div id="admin-login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-navy-950 via-navy-900 to-blue-900 p-4">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-blue-200 overflow-hidden">
-      <div class="bg-navy-900 text-white p-6 text-center space-y-2.5">
-        <div class="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center mx-auto shadow-lg overflow-hidden">
-          <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w256" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
+  <!-- ===================================================================== -->
+  <!-- LAYAR LOGIN ADMIN                                                     -->
+  <!-- ===================================================================== -->
+  <div id="admin-login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-navy-950 via-navy-900 to-blue-900">
+    <div class="bg-white rounded-3xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-blue-100 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-600/25">
+          <i data-lucide="shield-check" class="w-7 h-7"></i>
         </div>
-        <h1 class="font-display font-extrabold text-xl">Login Admin JSIT Lampung</h1>
-        <p class="text-xs text-sky-200">Panel Pengelolaan Kegiatan, Flyer, LMS, Materi &amp; E-Sertifikat</p>
+        <h1 class="font-display font-extrabold text-xl sm:text-2xl text-navy-900">Admin Portal Kegiatan &amp; LMS</h1>
+        <p class="text-xs text-slate-500">JSIT Wilayah Lampung &mdash; Tim Diklat Wilayah Lampung</p>
       </div>
-      <form onsubmit="handleAdminLogin(event)" class="p-6 space-y-4">
+
+      <div id="login-error" class="hidden p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Email / Username Admin</label>
-          <input type="text" id="login-username" required placeholder="admin@jsitlampung.or.id" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-blue-600" />
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email Admin Firebase atau Username</label>
+          <input type="text" id="login-username" required placeholder="admin atau admin@jsitlampung.or.id" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi</label>
-          <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-blue-600" />
+          <input type="password" id="login-password" required placeholder="••••••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-        <div id="login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700"></div>
-        <button type="submit" id="btn-admin-login" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
+        <button type="submit" id="btn-admin-login" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/25 transition">
           Masuk ke Dashboard Admin
         </button>
-        <div class="pt-2 text-center">
-          <a href="index.html" class="text-xs font-semibold text-slate-500 hover:text-blue-700">&larr; Kembali ke Portal Utama</a>
-        </div>
       </form>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <a href="index.html" class="font-bold text-blue-600 hover:underline">&larr; Kembali ke Portal Peserta</a>
+        <span>JSIT Lampung 2026</span>
+      </div>
     </div>
   </div>
 
-  <!-- ADMIN WORKSPACE -->
-  <div id="admin-dashboard-shell" class="hidden min-h-screen flex flex-col lg:flex-row">
-    
-    <!-- SIDEBAR -->
-    <aside id="admin-sidebar" class="w-full lg:w-72 bg-navy-950 text-white flex flex-col justify-between shrink-0 border-r border-blue-900/60 transition-all duration-200">
-      <div>
-        <div class="p-4 border-b border-blue-900/60 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden">
-              <img src="https://drive.google.com/thumbnail?id=1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv&sz=w128" onerror="if(!this.dataset.f1){this.dataset.f1='1';this.src='https://lh3.googleusercontent.com/d/1F7e5q5JbS2RkKS5Wdn2jJLq0qTeUITPv';}" alt="Logo JSIT Lampung" class="w-full h-full object-contain" />
-            </div>
-            <div class="admin-sidebar-label leading-tight min-w-0">
-              <div class="font-display font-extrabold text-sm text-white truncate">Admin JSIT Lampung</div>
-              <div class="text-[11px] text-sky-300 truncate">Tim Diklat Wilayah Lampung</div>
-            </div>
+  <!-- ===================================================================== -->
+  <!-- DASHBOARD ADMIN TERPADU                                               -->
+  <!-- ===================================================================== -->
+  <div id="admin-dashboard-shell" class="hidden min-h-screen flex flex-col">
+    <!-- Top Navbar -->
+    <header class="sticky top-0 z-40 bg-navy-900 text-white border-b border-blue-800/70 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-sky-500 flex items-center justify-center text-navy-950 font-extrabold">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
           </div>
-          <button type="button" onclick="toggleAdminSidebar()" title="Sembunyikan / Tampilkan Sidebar" aria-label="Toggle Menu Admin" class="hidden md:inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 hover:bg-blue-600 text-white shrink-0 transition">
-            <i data-lucide="menu" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <nav class="p-3 grid grid-cols-3 md:flex md:flex-col gap-1 sm:gap-1.5">
-          <button onclick="switchAdminTab('events')" id="admin-nav-events" title="Kelola Kegiatan" class="admin-nav-btn admin-tab-active flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-bold text-center md:text-left transition">
-            <i data-lucide="calendar-plus" class="w-4 h-4 shrink-0"></i>
-            <span class="admin-sidebar-label">Kegiatan</span>
-          </button>
-          <button onclick="switchAdminTab('attendees')" id="admin-nav-attendees" title="Daftar Hadir Peserta" class="admin-nav-btn flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold text-blue-200 hover:bg-white/10 text-center md:text-left transition">
-            <i data-lucide="users" class="w-4 h-4 shrink-0"></i>
-            <span class="admin-sidebar-label">Daftar Hadir</span>
-          </button>
-          <button onclick="switchAdminTab('lms')" id="admin-nav-lms" title="Kelola LMS Pelatihan" class="admin-nav-btn flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold text-blue-200 hover:bg-white/10 text-center md:text-left transition">
-            <i data-lucide="graduation-cap" class="w-4 h-4 shrink-0 text-sky-300"></i>
-            <span class="admin-sidebar-label">LMS Diklat</span>
-          </button>
-          <button onclick="switchAdminTab('resources')" id="admin-nav-resources" title="Materi & Rekaman" class="admin-nav-btn flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold text-blue-200 hover:bg-white/10 text-center md:text-left transition">
-            <i data-lucide="folder-open" class="w-4 h-4 shrink-0"></i>
-            <span class="admin-sidebar-label">Materi &amp; Video</span>
-          </button>
-          <button onclick="switchAdminTab('certificate')" id="admin-nav-certificate" title="E-Sertifikat & Layout" class="admin-nav-btn flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold text-blue-200 hover:bg-white/10 text-center md:text-left transition">
-            <i data-lucide="award" class="w-4 h-4 shrink-0 text-amber-300"></i>
-            <span class="admin-sidebar-label">E-Sertifikat</span>
-          </button>
-          <button onclick="switchAdminTab('settings')" id="admin-nav-settings" title="Pengaturan Portal" class="admin-nav-btn flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2.5 px-2 md:px-3.5 py-2 md:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold text-blue-200 hover:bg-white/10 text-center md:text-left transition">
-            <i data-lucide="settings" class="w-4 h-4 shrink-0"></i>
-            <span class="admin-sidebar-label">Pengaturan</span>
-          </button>
-        </nav>
-      </div>
-
-      <div id="admin-sidebar-footer" class="p-4 border-t border-blue-900/60 space-y-2.5">
-        <div class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2 text-[11px] font-semibold">
-          <span class="w-2 h-2 rounded-full bg-amber-400" id="admin-cloud-dot"></span>
-          <span id="admin-cloud-label" class="text-sky-200 truncate">Menghubungkan Cloud...</span>
-        </div>
-        <a href="index.html" class="w-full py-2.5 px-3 rounded-xl bg-blue-600/25 hover:bg-blue-600 text-sky-200 hover:text-white text-xs font-bold flex items-center justify-center gap-2 transition">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          <span>Lihat Portal Publik</span>
-        </a>
-        <button onclick="handleAdminLogout()" class="w-full py-2 px-3 rounded-xl bg-rose-500/20 hover:bg-rose-600 text-rose-200 hover:text-white text-xs font-bold flex items-center justify-center gap-2 transition">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-          <span>Keluar Admin</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto space-y-6">
-
-      <!-- TOP METRICS -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
-          <span class="text-xs font-semibold text-slate-500">Total Kegiatan</span>
-          <div class="font-display font-extrabold text-2xl text-navy-900 mt-1" id="stat-total-events">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
-          <span class="text-xs font-semibold text-slate-500">Total Peserta Hadir</span>
-          <div class="font-display font-extrabold text-2xl text-blue-700 mt-1" id="stat-total-attendees">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
-          <span class="text-xs font-semibold text-slate-500">Materi &amp; Rekaman</span>
-          <div class="font-display font-extrabold text-2xl text-sky-600 mt-1" id="stat-total-resources">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
-          <span class="text-xs font-semibold text-slate-500">Sertifikat Dirilis</span>
-          <div class="font-display font-extrabold text-2xl text-emerald-600 mt-1" id="stat-released-certs">0</div>
-        </div>
-      </div>
-
-      <!-- TAB 1: KELOLA KEGIATAN -->
-      <section id="admin-panel-events" class="admin-panel space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 class="font-display font-extrabold text-xl text-navy-900">Kelola Daftar Kegiatan &amp; Jadwal Rilis Sertifikat</h1>
-            <p class="text-xs text-slate-500">Tambah atau edit informasi kegiatan, flyer resmi, narasumber, link Zoom, serta jadwal rilis E-Sertifikat.</p>
+            <span class="font-display font-extrabold text-sm sm:text-base block leading-none">Dashboard Admin JSIT Lampung</span>
+            <span class="text-[11px] text-sky-300">Manajemen Kegiatan, LMS, Peserta &amp; E-Sertifikat</span>
           </div>
-          <button onclick="resetEventForm()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Buat Kegiatan Baru</span>
-          </button>
         </div>
 
-        <form id="event-editor-form" onsubmit="saveEventFromForm(event)" class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
-          <input type="hidden" id="ev-id" />
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 id="ev-form-heading" class="font-display font-bold text-base text-navy-900">Tambah Kegiatan Baru</h2>
-            <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">Sinkron Otomatis ke Cloud</span>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] text-sky-200">
+            <span id="admin-cloud-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span id="admin-cloud-label">Menghubungkan...</span>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-xs font-bold text-slate-700 mb-1">Judul Kegiatan <span class="text-red-500">*</span></label>
-              <input type="text" id="ev-title" required placeholder="Contoh: Workshop Peningkatan Mutu Pembelajaran SIT Lampung" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-blue-600" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Jenis / Kategori <span class="text-red-500">*</span></label>
-              <select id="ev-category" onchange="handleCategoryChangeInForm()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:border-blue-600">
-                <option value="Seminar">Seminar</option>
-                <option value="Webinar">Webinar</option>
-                <option value="Pelatihan">Pelatihan (Termasuk LMS)</option>
-                <option value="Workshop">Workshop (Termasuk LMS)</option>
-                <option value="Bimtek">Bimtek (Termasuk LMS)</option>
-                <option value="Rakerwil / Mukerwil">Rakerwil / Mukerwil</option>
-                <option value="Muswil">Muswil</option>
-                <option value="Lainnya">Lainnya (Ketik Sendiri...)</option>
-              </select>
-              <input type="text" id="ev-category-custom" placeholder="Tulis nama jenis kegiatan baru..." class="hidden mt-2 w-full px-3.5 py-2 rounded-xl border border-blue-300 bg-blue-50/40 text-xs font-semibold focus:outline-none focus:border-blue-600" />
-            </div>
-          </div>
+          <a href="index.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold transition inline-flex items-center gap-1.5">
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-sky-300"></i>
+            <span>Lihat Portal</span>
+          </a>
 
-          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Status Kegiatan</label>
-              <select id="ev-status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
-                <option value="Buka Pendaftaran">Buka Pendaftaran</option>
-                <option value="Berlangsung">Berlangsung</option>
-                <option value="Selesai">Selesai</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Mulai <span class="text-red-500">*</span></label>
-              <input type="date" id="ev-date-start" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Selesai</label>
-              <input type="date" id="ev-date-end" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Waktu Pelaksanaan <span class="text-red-500">*</span></label>
-              <input type="text" id="ev-time" required placeholder="08.00 - 15.30 WIB" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-          </div>
+          <button onclick="handleAdminLogout()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/30 text-rose-200 text-xs font-bold transition">
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
 
-          <div class="grid md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Moda Pelaksanaan</label>
-              <input type="text" id="ev-mode" placeholder="Online via Zoom / Tatap Muka / Hybrid" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Tempat / Lokasi <span class="text-red-500">*</span></label>
-              <input type="text" id="ev-location" required placeholder="Zoom Cloud Meetings / Aula JSIT Lampung" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Link Ruang Virtual / Zoom (Opsional)</label>
-              <input type="url" id="ev-zoom" placeholder="https://zoom.us/j/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
+    <div class="flex-1 flex flex-col lg:flex-row">
+      <!-- Sidebar Admin -->
+      <aside id="admin-sidebar" class="w-full lg:w-72 bg-navy-900 text-white border-b lg:border-b-0 lg:border-r border-blue-900/80 shrink-0 flex flex-col justify-between transition-all duration-200">
+        <div>
+          <div class="hidden lg:flex items-center justify-between px-5 py-3.5 border-b border-blue-800/70">
+            <span class="admin-sidebar-label text-[11px] font-bold uppercase tracking-wider text-sky-300">Menu Manajemen</span>
+            <button onclick="toggleAdminSidebar()" title="Sembunyikan / Tampilkan Sidebar" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white flex items-center justify-center transition">
+              <i data-lucide="panel-left-close" class="w-4 h-4"></i>
+            </button>
           </div>
+          <nav class="grid grid-cols-6 lg:grid-cols-1 text-xs sm:text-sm">
+            <button onclick="switchAdminTab('events')" id="admin-nav-events" title="Kelola Kegiatan" class="admin-nav-btn admin-tab-active flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-bold text-blue-100 hover:bg-white/5 transition">
+              <i data-lucide="calendar-plus" class="w-4 h-4 text-sky-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Kegiatan</span>
+            </button>
+            <button onclick="switchAdminTab('attendees')" id="admin-nav-attendees" title="Daftar Hadir Peserta" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Peserta</span>
+            </button>
+            <button onclick="switchAdminTab('lms')" id="admin-nav-lms" title="Kelola LMS Diklat" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="book-open-check" class="w-4 h-4 text-indigo-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">LMS</span>
+            </button>
+            <button onclick="switchAdminTab('resources')" id="admin-nav-resources" title="Materi & Rekaman" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="folder-open" class="w-4 h-4 text-amber-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Materi</span>
+            </button>
+            <button onclick="switchAdminTab('certificate')" id="admin-nav-certificate" title="Desain E-Sertifikat" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="award" class="w-4 h-4 text-sky-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Sertifikat</span>
+            </button>
+            <button onclick="switchAdminTab('settings')" id="admin-nav-settings" title="Pengaturan Portal" class="admin-nav-btn flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-semibold text-blue-200 hover:bg-white/5 transition">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-300 shrink-0"></i>
+              <span class="admin-sidebar-label truncate">Pengaturan</span>
+            </button>
+          </nav>
+        </div>
 
-          <div class="grid md:grid-cols-3 gap-4 bg-blue-50/70 p-4 rounded-2xl border border-blue-100">
-            <div>
-              <label class="block text-xs font-bold text-navy-900 mb-1">Mode Rilis E-Sertifikat</label>
-              <select id="ev-cert-mode" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 text-sm bg-white">
-                <option value="auto">Otomatis Setelah Jam Berakhir</option>
-                <option value="open">Buka Sekarang (Rilis Langsung)</option>
-                <option value="locked">Kunci Sementara</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-navy-900 mb-1">Waktu Rilis Otomatis Sertifikat</label>
-              <input type="datetime-local" id="ev-cert-datetime" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 text-sm bg-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-navy-900 mb-1">PIN Daftar Hadir (Opsional)</label>
-              <input type="text" id="ev-pin" placeholder="Kosongkan jika bebas tanpa PIN" class="w-full px-3.5 py-2.5 rounded-xl border border-blue-200 text-sm bg-white" />
-            </div>
+        <div id="admin-sidebar-footer" class="hidden lg:block p-5 border-t border-blue-800/70 text-[11px] text-blue-200/80 space-y-1.5">
+          <div class="font-bold text-sky-300">Tips Sinkronisasi Cloud</div>
+          <p>Setiap perubahan pada kegiatan, modul LMS, materi, maupun desain sertifikat otomatis diperbarui di portal peserta secara real-time.</p>
+        </div>
+      </aside>
+
+      <!-- Main Admin Content -->
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <!-- Ringkasan Statistik Cepat -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Total Kegiatan</div>
+            <div id="stat-total-events" class="font-display font-extrabold text-2xl text-navy-900 mt-1">0</div>
           </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Total Peserta Hadir</div>
+            <div id="stat-total-attendees" class="font-display font-extrabold text-2xl text-blue-600 mt-1">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Materi &amp; Rekaman</div>
+            <div id="stat-total-resources" class="font-display font-extrabold text-2xl text-amber-600 mt-1">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-blue-100 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500">Sertifikat Rilis</div>
+            <div id="stat-released-certs" class="font-display font-extrabold text-2xl text-emerald-600 mt-1">0</div>
+          </div>
+        </div>
 
-          <!-- FLYER RESMI KEGIATAN (UPLOAD FILE / LINK GOOGLE DRIVE) -->
-          <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- =============================================================== -->
+        <!-- TAB 1: KELOLA KEGIATAN                                          -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-events" class="admin-panel space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <h3 class="font-display font-bold text-xs text-indigo-950 uppercase tracking-wider">Flyer / Poster Resmi Kegiatan (Opsional)</h3>
-                <p class="text-[11px] text-slate-600">Upload file flyer (JPG/PNG/WebP) atau tempel tautan publik Google Drive / URL gambar. Flyer tampil di kartu portal &amp; halaman Info kegiatan.</p>
+                <h2 id="ev-form-heading" class="font-display font-bold text-lg text-navy-900">Tambah Kegiatan Baru</h2>
+                <p class="text-xs text-slate-500">LMS otomatis aktif untuk kategori Pelatihan, Bimtek &amp; Workshop.</p>
+              </div>
+              <button type="button" onclick="resetEventForm()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700">
+                Reset Form
+              </button>
+            </div>
+
+            <form id="event-editor-form" onsubmit="saveEventFromForm(event)" class="space-y-4">
+              <input type="hidden" id="ev-id" />
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Judul Lengkap Kegiatan *</label>
+                  <input type="text" id="ev-title" required placeholder="Contoh: Bimtek Kurikulum Khas JSIT Lampung 2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Kegiatan *</label>
+                  <select id="ev-category" onchange="handleCategoryChangeInForm()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="Seminar">Seminar</option>
+                    <option value="Webinar">Webinar</option>
+                    <option value="Pelatihan">Pelatihan (LMS Aktif)</option>
+                    <option value="Workshop">Workshop (LMS Aktif)</option>
+                    <option value="Bimtek">Bimtek (LMS Aktif)</option>
+                    <option value="Lainnya">Lainnya (Ketik Sendiri...)</option>
+                  </select>
+                  <input type="text" id="ev-category-custom" placeholder="Tulis nama kategori baru..." class="hidden mt-2 w-full px-3.5 py-2 rounded-xl border border-blue-300 bg-blue-50/40 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Status Kegiatan</label>
+                  <select id="ev-status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                    <option value="Buka Pendaftaran">Buka Pendaftaran</option>
+                    <option value="Berlangsung">Berlangsung</option>
+                    <option value="Selesai">Selesai</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Mulai *</label>
+                  <input type="date" id="ev-date-start" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Selesai</label>
+                  <input type="date" id="ev-date-end" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Waktu / Jam *</label>
+                  <input type="text" id="ev-time" required placeholder="08.00 - 15.30 WIB" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Moda Pelaksanaan</label>
+                  <input type="text" id="ev-mode" placeholder="Online via Zoom / Hybrid / Tatap Muka" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi / Tempat *</label>
+                  <input type="text" id="ev-location" required placeholder="Aula JSIT Lampung / Zoom Meeting" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Zoom / Streaming (Opsional)</label>
+                  <input type="url" id="ev-zoom" placeholder="https://zoom.us/j/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Mode Rilis E-Sertifikat</label>
+                  <select id="ev-cert-mode" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                    <option value="auto">Otomatis Setelah Jadwal Selesai</option>
+                    <option value="open">Buka Sekarang (Rilis Langsung)</option>
+                    <option value="locked">Kunci Sementara</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jadwal Otomatis Rilis Sertifikat</label>
+                  <input type="datetime-local" id="ev-cert-datetime" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Kode PIN Presensi (Kosongkan jika bebas)</label>
+                  <input type="text" id="ev-pin" placeholder="Contoh: JSIT2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                </div>
+              </div>
+
+              <!-- Upload / Link Flyer Kegiatan -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900">Flyer / Poster Kegiatan (Opsional)</label>
+                    <p class="text-[11px] text-slate-500">Unggah gambar flyer atau tempel tautan gambar. Akan ditampilkan di kartu katalog dan halaman detail kegiatan.</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Upload Gambar Flyer</span>
+                      <input type="file" id="ev-flyer-file" accept="image/*" onchange="handleFlyerUpload(event)" class="hidden" />
+                    </label>
+                    <button type="button" onclick="clearEventFlyer()" class="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-700 text-xs font-semibold text-slate-600 transition">Hapus</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                  <div class="md:col-span-2">
+                    <input type="text" id="ev-flyer-url" oninput="updateFlyerPreviewBox()" placeholder="Atau tempel URL gambar flyer (https://...)" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  </div>
+                  <div id="ev-flyer-preview-wrap" class="hidden flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200">
+                    <img id="ev-flyer-preview-img" src="" alt="Preview Flyer" class="w-12 h-16 object-cover rounded-lg border border-slate-200 shrink-0" />
+                    <span class="text-[11px] text-emerald-700 font-semibold">Flyer terpasang &amp; siap ditampilkan</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Kegiatan *</label>
+                  <textarea id="ev-description" rows="3" required placeholder="Jelaskan tujuan, sasaran peserta, dan gambaran materi kegiatan..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm"></textarea>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Narasumber (1 baris per orang: Nama | Jabatan)</label>
+                  <textarea id="ev-speakers" rows="3" placeholder="Muslimin, M.Pd.I.,Gr. | Ketua JSIT Wilayah Lampung&#10;Dr. Ahmad | Pakar Kurikulum SIT" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm"></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
+                Simpan &amp; Publikasikan Kegiatan
+              </button>
+            </form>
+          </div>
+
+          <!-- Tabel Daftar Kegiatan -->
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
+            <h3 class="font-display font-bold text-base text-navy-900">Daftar Kegiatan Terpublikasi</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 uppercase">
+                    <th class="py-3 px-3">Judul &amp; Kategori</th>
+                    <th class="py-3 px-3">Jadwal</th>
+                    <th class="py-3 px-3">Status</th>
+                    <th class="py-3 px-3">Hadir</th>
+                    <th class="py-3 px-3">Sertifikat</th>
+                    <th class="py-3 px-3 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-events-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: DAFTAR HADIR PESERTA                                     -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-attendees" class="admin-panel hidden space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="font-display font-bold text-lg text-navy-900">Rekap Daftar Hadir Peserta</h2>
+                <p class="text-xs text-slate-500">Pilih kegiatan untuk melihat peserta yang hadir, menambah manual, atau unduh CSV.</p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition">
-                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                  <span>Upload Gambar Flyer</span>
-                  <input type="file" id="ev-flyer-file" accept="image/*" onchange="handleFlyerUpload(event)" class="hidden" />
-                </label>
-                <button type="button" onclick="clearEventFlyer()" class="px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold">Hapus Flyer</button>
+                <select id="att-admin-event-select" onchange="renderAdminAttendeesTable()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-navy-900 bg-white max-w-xs"></select>
+                <button onclick="exportAttendeesCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                  Unduh CSV
+                </button>
               </div>
             </div>
-            <div class="grid md:grid-cols-3 gap-4 items-center">
-              <div class="md:col-span-2">
-                <input type="text" id="ev-flyer-url" oninput="updateFlyerPreviewBox()" placeholder="Atau tempel link gambar flyer / Google Drive (https://...)" class="w-full px-3.5 py-2 rounded-xl border border-indigo-200 bg-white text-xs focus:outline-none focus:border-indigo-600" />
-              </div>
-              <div id="ev-flyer-preview-wrap" class="hidden flex items-center gap-3 bg-white p-2 rounded-xl border border-indigo-100">
-                <img id="ev-flyer-preview-img" src="" alt="Preview Flyer" class="w-14 h-16 object-cover rounded-lg border border-slate-200 shrink-0" />
-                <div class="text-[11px] text-slate-600 leading-tight">
-                  <strong class="text-emerald-700 block">Flyer Terpasang</strong>
-                  <span>Siap tampil di Portal</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Kegiatan</label>
-              <textarea id="ev-description" rows="3" placeholder="Tuliskan tujuan dan ringkasan kegiatan..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Narasumber (Satu per baris: Nama | Jabatan)</label>
-              <textarea id="ev-speakers" rows="3" placeholder="Muslimin, M.Pd.I.,Gr. | Ketua JSIT Wilayah Lampung&#10;Tim Diklat JSIT | Fasilitator" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-2.5 pt-2">
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition">
-              Simpan Kegiatan ke Cloud
-            </button>
-            <button type="button" onclick="resetEventForm()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
-              Batal / Reset Form
-            </button>
-          </div>
-        </form>
-
-        <!-- EXISTING EVENTS TABLE -->
-        <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
-          <h3 class="font-display font-bold text-base text-navy-900">Daftar Kegiatan Terpublikasi</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-500 uppercase text-[11px]">
-                  <th class="py-3 px-3">Judul Kegiatan</th>
-                  <th class="py-3 px-3">Tanggal</th>
-                  <th class="py-3 px-3">Status</th>
-                  <th class="py-3 px-3">Peserta</th>
-                  <th class="py-3 px-3">Sertifikat</th>
-                  <th class="py-3 px-3 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="admin-events-tbody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 2: DAFTAR HADIR PESERTA -->
-      <section id="admin-panel-attendees" class="admin-panel hidden space-y-5">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 class="font-display font-extrabold text-xl text-navy-900">Data Daftar Hadir Peserta</h1>
-            <p class="text-xs text-slate-500">Pantau kehadiran peserta secara real-time, tambah peserta manual, atau unduh rekap CSV.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="att-admin-event-select" onchange="renderAdminAttendeesTable()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white max-w-xs"></select>
-            <button onclick="exportAttendeesCSV()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Export CSV</span>
-            </button>
-          </div>
-        </div>
-
-        <form onsubmit="addManualAttendee(event)" class="bg-white rounded-3xl border border-blue-100 p-5 shadow-xs grid sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Nama Lengkap &amp; Gelar *</label>
-            <input type="text" id="man-att-name" required placeholder="Nama peserta..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Asal Sekolah / Instansi *</label>
-            <input type="text" id="man-att-school" required placeholder="SDIT / SMPIT / SMAIT..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Kabupaten / Kota</label>
-            <input type="text" id="man-att-region" value="Kota Bandar Lampung" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Peran &amp; WhatsApp</label>
-            <div class="flex gap-1.5">
-              <input type="text" id="man-att-role" value="Peserta" class="w-24 px-2.5 py-2 rounded-xl border border-slate-300 text-xs" />
-              <input type="text" id="man-att-phone" placeholder="0812..." class="flex-1 px-2.5 py-2 rounded-xl border border-slate-300 text-xs" />
-            </div>
-          </div>
-          <button type="submit" class="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
-            + Tambah Peserta
-          </button>
-        </form>
-
-        <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-500 uppercase text-[11px]">
-                  <th class="py-3 px-2">No</th>
-                  <th class="py-3 px-2">Nama Lengkap</th>
-                  <th class="py-3 px-2">Sekolah / Instansi</th>
-                  <th class="py-3 px-2">Kab/Kota</th>
-                  <th class="py-3 px-2">Peran</th>
-                  <th class="py-3 px-2">Waktu Presensi</th>
-                  <th class="py-3 px-2 text-right">Hapus</th>
-                </tr>
-              </thead>
-              <tbody id="admin-attendees-tbody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB LMS: KELOLA MODUL SESI & REKAP PROGRES PESERTA (PELATIHAN, BIMTEK, WORKSHOP) -->
-      <section id="admin-panel-lms" class="admin-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 class="font-display font-extrabold text-xl text-navy-900">Kelola LMS Diklat (Pelatihan, Bimtek &amp; Workshop)</h1>
-            <p class="text-xs text-slate-500">Tambahkan modul sesi pembelajaran, tautan bahan &amp; video sesi, tugas mandiri, serta pantau progres &amp; nilai peserta.</p>
-          </div>
-          <select id="lms-admin-event-select" onchange="renderAdminLmsPanel()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white max-w-sm"></select>
-        </div>
-
-        <div id="lms-admin-eligibility-note" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
-          Catatan: Kegiatan ini berkategori <strong>Seminar/Webinar</strong>. Fitur LMS otomatis tampil di portal publik jika kategori kegiatan diubah menjadi <strong>Pelatihan</strong>, <strong>Bimtek</strong>, atau <strong>Workshop</strong>.
-        </div>
-
-        <div class="grid lg:grid-cols-2 gap-6">
-          <!-- Tambah Modul Sesi LMS -->
-          <form onsubmit="addLmsModuleAdmin(event)" class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-3.5">
-            <h3 class="font-display font-bold text-base text-navy-900 border-b border-slate-100 pb-2">Tambah Modul Sesi Pembelajaran</h3>
-            <div class="grid sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Label Sesi</label>
-                <input type="text" id="lms-mod-label" required placeholder="Sesi 1 • Pleno" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
-              </div>
-              <div class="sm:col-span-2">
-                <label class="block text-xs font-bold text-slate-700 mb-1">Judul Modul Sesi *</label>
-                <input type="text" id="lms-mod-title" required placeholder="Judul topik pembelajaran sesi..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Ringkasan / Tujuan Sesi</label>
-              <textarea id="lms-mod-summary" rows="2" placeholder="Capaian kompetensi pada sesi ini..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs"></textarea>
-            </div>
-            <div class="grid sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Link Bahan / Slide Sesi</label>
-                <input type="url" id="lms-mod-mat-url" placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Link Video Sesi</label>
-                <input type="url" id="lms-mod-vid-url" placeholder="https://youtube.com/..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Instruksi Tugas / Tagihan Kerja (Opsional)</label>
-              <input type="text" id="lms-mod-task" placeholder="Contoh: Unggah link Google Drive RPP hasil praktik..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs" />
-            </div>
-            <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">+ Tambah Modul Sesi</button>
-          </form>
-
-          <!-- Daftar Modul Sesi Aktif -->
-          <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-3">
-            <h3 class="font-display font-bold text-base text-navy-900 border-b border-slate-100 pb-2">Daftar Modul Sesi Terpasang</h3>
-            <div id="admin-lms-modules-list" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1"></div>
-          </div>
-        </div>
-
-        <!-- Rekap Progres & Penilaian Peserta LMS -->
-        <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="font-display font-bold text-base text-navy-900">Rekap Progres Belajar, Link Tugas &amp; Nilai Evaluasi Peserta</h3>
-            <span class="text-xs text-slate-500">Klik kolom nilai untuk memberi skor evaluasi (0–100)</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-500 uppercase text-[11px]">
-                  <th class="py-3 px-2">Nama Peserta</th>
-                  <th class="py-3 px-2">Sekolah</th>
-                  <th class="py-3 px-2">Progres Sesi</th>
-                  <th class="py-3 px-2">Link Tugas Terkumpul</th>
-                  <th class="py-3 px-2">Nilai Evaluasi</th>
-                </tr>
-              </thead>
-              <tbody id="admin-lms-progress-tbody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 3: MATERI & REKAMAN -->
-      <section id="admin-panel-resources" class="admin-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 class="font-display font-extrabold text-xl text-navy-900">Kelola Materi &amp; Rekaman Kegiatan</h1>
-            <p class="text-xs text-slate-500">Tambahkan tautan materi presentasi (Google Drive / PDF) dan video rekaman (YouTube / Drive).</p>
-          </div>
-          <select id="res-admin-event-select" onchange="renderAdminResourcesLists()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white max-w-sm"></select>
-        </div>
-
-        <div class="grid lg:grid-cols-2 gap-6">
-          <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
-            <h3 class="font-display font-bold text-base text-navy-900 border-b border-slate-100 pb-2.5">Tambah Materi / Bahan Tayang</h3>
-            <form onsubmit="addMaterialAdmin(event)" class="space-y-3">
-              <input type="text" id="mat-title" required placeholder="Judul Materi / Modul..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="mat-type" value="PDF / Slide" placeholder="Jenis File" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-                <input type="text" id="mat-speaker" placeholder="Nama Narasumber" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              </div>
-              <input type="url" id="mat-url" required placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              <button type="submit" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">+ Tambah Materi</button>
+            <!-- Tambah Peserta Manual -->
+            <form onsubmit="addManualAttendee(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <input type="text" id="man-att-name" required placeholder="Nama Lengkap & Gelar" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              <input type="text" id="man-att-school" required placeholder="Asal Sekolah" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              <input type="text" id="man-att-region" placeholder="Kabupaten/Kota" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              <input type="text" id="man-att-role" value="Peserta" placeholder="Peran" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              <input type="text" id="man-att-phone" placeholder="No. WhatsApp" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">+ Tambah Manual</button>
             </form>
-            <div id="admin-materials-list" class="space-y-2 pt-2"></div>
-          </div>
 
-          <div class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4">
-            <h3 class="font-display font-bold text-base text-navy-900 border-b border-slate-100 pb-2.5">Tambah Video Rekaman</h3>
-            <form onsubmit="addRecordingAdmin(event)" class="space-y-3">
-              <input type="text" id="rec-title" required placeholder="Judul Video Rekaman..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              <input type="text" id="rec-platform" value="YouTube JSIT Lampung" placeholder="Platform Video" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              <input type="url" id="rec-url" required placeholder="https://www.youtube.com/watch?v=..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-              <button type="submit" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold">+ Tambah Rekaman</button>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 uppercase">
+                    <th class="py-2.5 px-2">No</th>
+                    <th class="py-2.5 px-2">Nama Lengkap</th>
+                    <th class="py-2.5 px-2">Asal Sekolah</th>
+                    <th class="py-2.5 px-2">Wilayah</th>
+                    <th class="py-2.5 px-2">Peran</th>
+                    <th class="py-2.5 px-2">Waktu</th>
+                    <th class="py-2.5 px-2 text-right">Hapus</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-attendees-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: KELOLA LMS DIKLAT                                        -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-lms" class="admin-panel hidden space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold">LMS Pelatihan, Bimtek &amp; Workshop</span>
+                <h2 class="font-display font-bold text-lg text-navy-900 mt-1">Kelola Modul Sesi, Tugas &amp; Penilaian Peserta</h2>
+              </div>
+              <select id="lms-admin-event-select" onchange="renderAdminLmsPanel()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-navy-900 bg-white max-w-xs"></select>
+            </div>
+
+            <div id="lms-admin-eligibility-note" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+              Catatan: Kegiatan yang dipilih saat ini berkategori Seminar/Webinar sehingga tab LMS disembunyikan pada portal peserta. Ubah kategori kegiatan menjadi <strong>Pelatihan</strong>, <strong>Bimtek</strong>, atau <strong>Workshop</strong> agar menu LMS muncul di portal peserta.
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Tambah Modul Sesi LMS -->
+              <form onsubmit="addLmsModuleAdmin(event)" class="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-100 space-y-3">
+                <h3 class="font-display font-bold text-sm text-navy-900">Tambah Modul Sesi Pembelajaran</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input type="text" id="lms-mod-label" required placeholder="Label Sesi (cth: Sesi 1 • Pleno)" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <input type="text" id="lms-mod-title" required placeholder="Judul Topik Sesi *" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                </div>
+                <textarea id="lms-mod-summary" rows="2" placeholder="Ringkasan capaian belajar sesi ini..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs"></textarea>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input type="url" id="lms-mod-mat-url" placeholder="Link Bahan/Modul Sesi (Google Drive)" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <input type="url" id="lms-mod-vid-url" placeholder="Link Video Sesi (YouTube/Drive)" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                </div>
+                <input type="text" id="lms-mod-task" placeholder="Instruksi Tugas Mandiri Peserta (opsional)..." class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">+ Tambahkan Modul Sesi</button>
+              </form>
+
+              <!-- Daftar Modul Sesi -->
+              <div class="space-y-3">
+                <h3 class="font-display font-bold text-sm text-navy-900">Daftar Modul Sesi Aktif</h3>
+                <div id="admin-lms-modules-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Rekap Progres & Penilaian Peserta LMS -->
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="font-display font-bold text-base text-navy-900">Monitoring Progres Belajar, Tautan Tugas &amp; Input Nilai</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-slate-200 text-slate-500 uppercase">
+                      <th class="py-2.5 px-2">Nama Peserta</th>
+                      <th class="py-2.5 px-2">Asal Sekolah</th>
+                      <th class="py-2.5 px-2">Progres Sesi</th>
+                      <th class="py-2.5 px-2">Tautan Tugas Terkumpul</th>
+                      <th class="py-2.5 px-2">Nilai / Predikat</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-lms-progress-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: MATERI & REKAMAN                                         -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-resources" class="admin-panel hidden space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-display font-bold text-lg text-navy-900">Kelola Materi &amp; Rekaman Video</h2>
+                <p class="text-xs text-slate-500">Tambahkan tautan Google Drive materi presentasi dan link rekaman YouTube.</p>
+              </div>
+              <select id="res-admin-event-select" onchange="renderAdminResourcesLists()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-navy-900 bg-white max-w-xs"></select>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Form & List Materi -->
+              <div class="space-y-4">
+                <form onsubmit="addMaterialAdmin(event)" class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-3">
+                  <h3 class="font-display font-bold text-sm text-navy-900">Tambah Materi Baru</h3>
+                  <input type="text" id="mat-title" required placeholder="Judul Materi Presentasi *" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="mat-type" value="PDF / Presentasi" placeholder="Jenis File" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                    <input type="text" id="mat-speaker" placeholder="Nama Pemateri" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  </div>
+                  <input type="url" id="mat-url" required placeholder="Link Google Drive / PDF (https://...) *" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">+ Tambah Materi</button>
+                </form>
+                <div id="admin-materials-list" class="space-y-2"></div>
+              </div>
+
+              <!-- Form & List Rekaman -->
+              <div class="space-y-4">
+                <form onsubmit="addRecordingAdmin(event)" class="p-4 rounded-2xl bg-sky-50/50 border border-sky-100 space-y-3">
+                  <h3 class="font-display font-bold text-sm text-navy-900">Tambah Rekaman Video Baru</h3>
+                  <input type="text" id="rec-title" required placeholder="Judul Rekaman Sesi *" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <input type="text" id="rec-platform" value="YouTube JSIT Lampung" placeholder="Platform Video" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <input type="url" id="rec-url" required placeholder="Link YouTube / Google Drive Video *" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs" />
+                  <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 text-white text-xs font-bold">+ Tambah Rekaman</button>
+                </form>
+                <div id="admin-recordings-list" class="space-y-2"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- =============================================================== -->
+        <!-- TAB 5: DESAIN E-SERTIFIKAT & TATA LETAK                         -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-certificate" class="admin-panel hidden space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-display font-bold text-lg text-navy-900">Desain &amp; Tata Letak E-Sertifikat (A4 Landscape)</h2>
+                <p class="text-xs text-slate-500">Atur nomor surat, bobot JP, penandatangan, serta posisi elemen pada template sertifikat.</p>
+              </div>
+              <select id="cert-admin-event-select" onchange="loadCertConfigIntoForm()" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-navy-900 bg-white max-w-xs"></select>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+              <!-- Form Pengaturan Sertifikat -->
+              <form onsubmit="saveCertConfig(event)" class="xl:col-span-5 space-y-4 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Prefix Nomor Sertifikat</label>
+                    <input type="text" id="cert-cfg-prefix" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Bobot Pelatihan (JP)</label>
+                    <input type="text" id="cert-cfg-jp" placeholder="8 JP" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tempat Terbit</label>
+                    <input type="text" id="cert-cfg-place" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tanggal Terbit (Teks)</label>
+                    <input type="text" id="cert-cfg-date" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Penandatangan</label>
+                    <input type="text" id="cert-cfg-signer-name" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
+                    <input type="text" id="cert-cfg-signer-title" class="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <label class="font-bold text-navy-900">Template Background Khusus Kegiatan</label>
+                    <label class="cursor-pointer px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px]">
+                      Upload Gambar
+                      <input type="file" accept="image/*" onchange="handleEventCertBgUpload(event)" class="hidden" />
+                    </label>
+                  </div>
+                  <input type="text" id="cert-cfg-bg-url" oninput="updateLiveCertPreview()" placeholder="Kosongkan untuk pakai Template Default Global" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white" />
+                </div>
+
+                <!-- Opsi Elemen Visual -->
+                <div class="p-3.5 rounded-2xl bg-blue-50/40 border border-blue-100 space-y-3">
+                  <div class="font-bold text-navy-900">Opsi Tampilan &amp; Posisi Elemen</div>
+                  <div class="flex flex-wrap gap-4">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" id="lay-show-border" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                      <span>Bingkai Bawaan</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" id="lay-show-header" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                      <span>Kop Bawaan</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" id="lay-show-heading" onchange="updateLiveCertPreview()" class="rounded text-blue-600" />
+                      <span>Judul Besar</span>
+                    </label>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600">Teks Judul Besar</label>
+                      <input type="text" id="lay-heading-text" oninput="updateLiveCertPreview()" value="SERTIFIKAT" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600">Posisi Atas Konten (px)</label>
+                      <input type="number" id="lay-center-top" oninput="updateLiveCertPreview()" value="158" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600">Ukuran Nama Peserta (px)</label>
+                      <input type="number" id="lay-name-size" oninput="updateLiveCertPreview()" value="28" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600">Ukuran Teks Deskripsi (px)</label>
+                      <input type="number" step="0.5" id="lay-desc-size" oninput="updateLiveCertPreview()" value="13.5" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 pt-1 border-t border-blue-100">
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">QR Kiri (px)</label>
+                      <input type="number" id="lay-qr-left" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">QR Bawah (px)</label>
+                      <input type="number" id="lay-qr-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">Skala QR (%)</label>
+                      <input type="number" id="lay-qr-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">TTD Kanan (px)</label>
+                      <input type="number" id="lay-signer-right" oninput="updateLiveCertPreview()" value="65" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">TTD Bawah (px)</label>
+                      <input type="number" id="lay-signer-bottom" oninput="updateLiveCertPreview()" value="52" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-600">Skala TTD (%)</label>
+                      <input type="number" id="lay-signer-scale" oninput="updateLiveCertPreview()" value="100" class="w-full px-2 py-1 rounded-lg border border-slate-200 bg-white" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <button type="submit" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition">
+                    Simpan Desain Sertifikat
+                  </button>
+                  <button type="button" onclick="resetCertLayoutToDefault()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">
+                    Reset Posisi
+                  </button>
+                </div>
+              </form>
+
+              <!-- Live Preview Kanvas Sertifikat -->
+              <div class="xl:col-span-7 space-y-2.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-navy-900">Pratinjau Langsung (Skala A4 Landscape 1000x707)</span>
+                  <span class="text-slate-500">Contoh Nama: Ahmad Fauzi, S.Pd., M.Pd.</span>
+                </div>
+                <div class="pv-stage-wrapper" id="pv-stage-wrapper">
+                  <div id="pv-printable-area">
+                    <img id="pv-bg-img" src="" alt="Preview Background" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
+                    <div id="pv-outer-border" class="absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
+                    <div id="pv-inner-frame" class="absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
+
+                    <div id="pv-default-header" class="absolute left-0 right-0 text-center px-12" style="top: 42px;">
+                      <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold tracking-widest uppercase">
+                        Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
+                      </div>
+                      <h2 class="font-display font-extrabold text-xl text-navy-900 tracking-wide mt-1">WILAYAH PROVINSI LAMPUNG</h2>
+                    </div>
+
+                    <div id="pv-dynamic-block" class="absolute left-0 right-0 px-14 text-center" style="top: 158px;">
+                      <div id="pv-heading" class="font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
+                        SERTIFIKAT
+                      </div>
+                      <div id="pv-number" class="text-sm font-bold text-slate-600 mt-1">Nomor: 001/SERT-JSIT-LPG/2026</div>
+                      <p class="text-xs sm:text-sm text-slate-500 mt-4">Diberikan dengan hormat kepada:</p>
+                      <div id="pv-name" class="font-display font-extrabold text-navy-900 mt-2 px-6 inline-block border-b-2 border-amber-500 pb-1" style="font-size: 28px;">
+                        Ahmad Fauzi, S.Pd., M.Pd.
+                      </div>
+                      <div class="text-sm font-bold text-blue-800 mt-1.5">SDIT Permata Bunda — Kota Bandar Lampung</div>
+                      <p id="pv-description" class="text-slate-700 leading-relaxed max-w-3xl mx-auto mt-3" style="font-size: 13.5px;">
+                        Atas partisipasi aktifnya sebagai Peserta dalam kegiatan...
+                      </p>
+                    </div>
+
+                    <div id="pv-qr-block" class="absolute flex items-center gap-3 origin-bottom-left" style="left: 65px; bottom: 52px;">
+                      <div class="p-2 bg-white rounded-xl border border-slate-300 shadow-xs w-24 h-24 flex items-center justify-center text-[10px] font-mono text-slate-500 text-center">
+                        [QR CODE VERIFIKASI]
+                      </div>
+                      <div class="text-left text-[10.5px] text-slate-700 leading-snug max-w-[195px]">
+                        <div class="font-bold text-navy-900">Scan Barcode Verifikasi</div>
+                        <div id="pv-qr-org" class="font-medium text-slate-600">JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</div>
+                        <div class="font-mono font-bold text-blue-700 mt-0.5">JSIT-VER-001</div>
+                      </div>
+                    </div>
+
+                    <div id="pv-signer-block" class="absolute text-center w-80 origin-bottom-right" style="right: 65px; bottom: 52px;">
+                      <div id="pv-issued" class="text-xs text-slate-700">Bandar Lampung, 2026</div>
+                      <div id="pv-signer-title" class="text-xs font-semibold text-slate-800 mt-0.5">Ketua JSIT Indonesia Wilayah Lampung</div>
+                      <div class="h-11 flex items-center justify-center my-1">
+                        <span class="px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[10px] font-semibold text-blue-800 italic">
+                          Ditandatangani secara elektronik
+                        </span>
+                      </div>
+                      <div id="pv-signer-name" class="font-display font-extrabold text-sm text-navy-900 underline decoration-amber-500 decoration-2 underline-offset-4">
+                        Muslimin, M.Pd.I.,Gr.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 6: PENGATURAN PORTAL & IDENTITAS GLOBAL                     -->
+        <!-- =============================================================== -->
+        <section id="admin-panel-settings" class="admin-panel hidden space-y-6">
+          <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs max-w-3xl space-y-5">
+            <div class="border-b border-slate-100 pb-3">
+              <h2 class="font-display font-bold text-lg text-navy-900">Pengaturan Identitas Organisasi &amp; Template Default</h2>
+              <p class="text-xs text-slate-500">Perubahan di sini berlaku sebagai identitas utama portal dan penandatangan default kegiatan baru.</p>
+            </div>
+
+            <form onsubmit="saveGlobalSettings(event)" class="space-y-4 text-xs sm:text-sm">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi Utama</label>
+                  <input type="text" id="set-org-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul / Tim Pelaksana</label>
+                  <input type="text" id="set-org-sub" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Penandatangan Default Sertifikat</label>
+                  <input type="text" id="set-signer-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan Default</label>
+                  <input type="text" id="set-signer-title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200" />
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <label class="block text-xs font-bold text-navy-900">URL Template Background Sertifikat Default (Google Drive / Direct Link)</label>
+                <input type="text" id="set-default-template" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs" />
+              </div>
+
+              <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition">
+                Simpan Pengaturan Global
+              </button>
             </form>
-            <div id="admin-recordings-list" class="space-y-2 pt-2"></div>
           </div>
-        </div>
-      </section>
-
-      <!-- TAB 4: DESAIN E-SERTIFIKAT & TATA LETAK PRESISI -->
-      <section id="admin-panel-certificate" class="admin-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 class="font-display font-extrabold text-xl text-navy-900">Desain E-Sertifikat A4 Landscape &amp; Atur Tata Letak</h1>
-            <p class="text-xs text-slate-500">Sesuaikan nomor surat, JP, latar belakang template, serta geser posisi &amp; ukuran teks, QR Barcode, dan tanda tangan agar presisi.</p>
-          </div>
-          <select id="cert-admin-event-select" onchange="loadCertConfigToEditor()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white max-w-sm"></select>
-        </div>
-
-        <form onsubmit="saveCertConfigFromEditor(event)" class="grid lg:grid-cols-12 gap-6 items-start">
-          
-          <!-- LEFT COLUMN: CONTROLS -->
-          <div class="lg:col-span-5 bg-white rounded-3xl border border-blue-100 p-5 shadow-xs space-y-4">
-            <h3 class="font-display font-bold text-sm text-navy-900 border-b border-slate-100 pb-2">1. Metadata &amp; Latar Template</h3>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Prefix Nomor</label>
-                <input type="text" id="cfg-cert-prefix" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Bobot JP</label>
-                <input type="text" id="cfg-cert-jp" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Tempat Terbit</label>
-                <input type="text" id="cfg-cert-place" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal Tertulis</label>
-                <input type="text" id="cfg-cert-date-text" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Penandatangan</label>
-                <input type="text" id="cfg-cert-signer-name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Jabatan Penandatangan</label>
-                <input type="text" id="cfg-cert-signer-title" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
-              </div>
-            </div>
-
-            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <label class="block text-[11px] font-bold text-slate-700">Latar Belakang Template A4 (URL / Upload JPG-PNG)</label>
-              <input type="text" id="cfg-cert-bg-url" oninput="updateCertPreviewLive()" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white" />
-              <div class="flex flex-wrap gap-2">
-                <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] font-bold">
-                  Upload File Template
-                  <input type="file" accept="image/*" onchange="handleCertBgUpload(event)" class="hidden" />
-                </label>
-                <button type="button" onclick="applyDefaultCertBg()" class="px-3 py-1.5 rounded-lg bg-sky-100 text-sky-900 text-[11px] font-bold">Pakai Desain Default JSIT</button>
-                <button type="button" onclick="clearCertBg()" class="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 text-[11px] font-bold">Kosongkan</button>
-              </div>
-            </div>
-
-            <h3 class="font-display font-bold text-sm text-navy-900 border-b border-slate-100 pb-2 pt-2">2. Pengaturan Tata Letak &amp; Ukuran Presisi</h3>
-            <div class="flex flex-wrap gap-3 text-xs font-semibold text-slate-700">
-              <label class="inline-flex items-center gap-1.5"><input type="checkbox" id="cfg-show-heading" onchange="updateCertPreviewLive()" /> Judul SERTIFIKAT</label>
-              <label class="inline-flex items-center gap-1.5"><input type="checkbox" id="cfg-show-border" onchange="updateCertPreviewLive()" /> Bingkai Emas</label>
-              <label class="inline-flex items-center gap-1.5"><input type="checkbox" id="cfg-show-header" onchange="updateCertPreviewLive()" /> Kop JSIT</label>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 text-[11px]">
-              <div>
-                <label class="font-bold text-slate-600 block">Posisi Blok Nama (Atas): <span id="val-center-top">158</span>px</label>
-                <input type="range" id="cfg-center-top" min="70" max="270" value="158" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">Ukuran Font Nama: <span id="val-name-size">28</span>px</label>
-                <input type="range" id="cfg-name-size" min="18" max="42" value="28" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">Ukuran Font Uraian: <span id="val-desc-size">13.5</span>px</label>
-                <input type="range" id="cfg-desc-size" min="10" max="18" step="0.5" value="13.5" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">Skala QR Barcode: <span id="val-qr-scale">100</span>%</label>
-                <input type="range" id="cfg-qr-scale" min="70" max="140" value="100" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">QR Jarak Kiri: <span id="val-qr-left">65</span>px</label>
-                <input type="range" id="cfg-qr-left" min="25" max="250" value="65" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">QR Jarak Bawah: <span id="val-qr-bottom">52</span>px</label>
-                <input type="range" id="cfg-qr-bottom" min="20" max="180" value="52" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">TTD Jarak Kanan: <span id="val-signer-right">65</span>px</label>
-                <input type="range" id="cfg-signer-right" min="25" max="250" value="65" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-              <div>
-                <label class="font-bold text-slate-600 block">TTD Jarak Bawah: <span id="val-signer-bottom">52</span>px</label>
-                <input type="range" id="cfg-signer-bottom" min="20" max="180" value="52" oninput="updateCertPreviewLive()" class="w-full" />
-              </div>
-            </div>
-
-            <div class="flex flex-wrap gap-2 pt-2">
-              <button type="submit" class="flex-1 py-2.5 px-4 rounded-xl bg-navy-900 hover:bg-blue-700 text-white text-xs font-bold shadow-xs">
-                Simpan Desain &amp; Tata Letak
-              </button>
-              <button type="button" onclick="resetCertLayoutToDefault()" class="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
-                Reset Posisi
-              </button>
-            </div>
-          </div>
-
-          <!-- RIGHT COLUMN: LIVE PREVIEW -->
-          <div class="lg:col-span-7 bg-white rounded-3xl border border-blue-100 p-5 shadow-xs space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="font-display font-bold text-sm text-navy-900">Pratinjau Langsung E-Sertifikat (A4 Landscape 1000&times;707)</span>
-              <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Real-Time Preview</span>
-            </div>
-
-            <div id="pv-stage-wrapper" class="w-full aspect-[297/210] relative overflow-hidden rounded-2xl border border-slate-300 shadow-md bg-white">
-              <div id="pv-printable-area" style="width: 1000px; height: 707px; transform-origin: top left;" class="cert-paper relative overflow-hidden select-none">
-                <img id="pv-cert-bg-img" src="" alt="" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none z-0" />
-                <div id="pv-cert-outer-border" class="hidden absolute inset-0 pointer-events-none z-[1] border-[10px] border-double border-blue-900"></div>
-                <div id="pv-cert-inner-frame" class="hidden absolute inset-[20px] pointer-events-none z-[1] border-2 border-amber-500/75"></div>
-
-                <div id="pv-cert-default-header" class="hidden absolute top-[42px] left-[60px] right-[60px] text-center z-10 space-y-1">
-                  <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold uppercase tracking-widest">
-                    Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
-                  </div>
-                  <h2 class="font-display font-extrabold text-[20px] text-navy-900 tracking-wide">WILAYAH PROVINSI LAMPUNG</h2>
-                </div>
-
-                <div id="pv-cert-dynamic-block" style="top: 158px; left: 75px; right: 75px;" class="absolute text-center z-10">
-                  <h1 id="pv-cert-heading" class="hidden font-display font-extrabold text-[38px] text-blue-900 tracking-wider uppercase leading-none mb-1.5">SERTIFIKAT</h1>
-                  <p id="pv-cert-number" class="text-[14px] font-bold text-slate-600 tracking-wide mb-4">Nomor: 001/SERT-JSIT-LPG/2026</p>
-                  <p class="text-[13px] text-slate-500 font-medium mb-1">Diberikan dengan hormat kepada:</p>
-                  <div class="mb-1.5">
-                    <span id="pv-cert-name" class="inline-block font-display font-extrabold text-[28px] text-navy-900 border-b-2 border-amber-500 pb-1 px-4 leading-tight">
-                      Ahmad Fauzi, S.Pd., M.Pd.
-                    </span>
-                  </div>
-                  <p id="pv-cert-school" class="text-[14.5px] font-bold text-blue-800 mb-4">SDIT Permata Bunda — Kota Bandar Lampung</p>
-                  <p id="pv-cert-description" class="text-[13.5px] text-slate-700 max-w-[790px] mx-auto leading-[1.55]"></p>
-                </div>
-
-                <div id="pv-cert-qr-block" style="left: 65px; bottom: 52px; transform-origin: bottom left;" class="absolute z-20 flex items-center gap-3">
-                  <div class="p-2.5 bg-white border-2 border-slate-300 rounded-xl shadow-xs shrink-0">
-                    <img id="pv-cert-qr-img" src="" alt="QR Verifikasi" class="w-[86px] h-[86px] block" />
-                  </div>
-                  <div class="text-[10.5px] text-slate-700 leading-tight bg-white/90 px-2.5 py-1.5 rounded-lg">
-                    <span class="font-bold text-navy-900 block">Scan Barcode Verifikasi</span>
-                    <span>JSIT Wilayah Lampung - Tim Diklat Wilayah Lampung</span><br/>
-                    <span class="font-mono text-blue-700 font-bold">JSIT-DEMO-001</span>
-                  </div>
-                </div>
-
-                <div id="pv-cert-signer-block" style="right: 65px; bottom: 52px; width: 320px; transform-origin: bottom center;" class="absolute z-20 text-center space-y-0.5">
-                  <p id="pv-cert-issued" class="text-[11.5px] text-slate-600">Bandar Lampung, 2026</p>
-                  <p id="pv-cert-signer-title" class="text-[12.5px] font-semibold text-slate-800">Ketua JSIT Indonesia Wilayah Lampung</p>
-                  <div class="py-1">
-                    <span class="inline-block px-2.5 py-0.5 rounded bg-blue-50/90 border border-blue-200 text-[10px] font-semibold text-blue-800 italic">
-                      Ditandatangani secara elektronik
-                    </span>
-                  </div>
-                  <p id="pv-cert-signer-name" class="font-display font-extrabold text-[14px] text-navy-900 underline">
-                    Muslimin, M.Pd.I.,Gr.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </section>
-
-      <!-- TAB 5: PENGATURAN PORTAL -->
-      <section id="admin-panel-settings" class="admin-panel hidden space-y-6">
-        <div>
-          <h1 class="font-display font-extrabold text-xl text-navy-900">Pengaturan Identitas Portal &amp; Template Default</h1>
-          <p class="text-xs text-slate-500">Pengaturan ini berlaku secara global dan tersimpan ke Firebase Cloud.</p>
-        </div>
-
-        <form onsubmit="saveGlobalSettings(event)" class="bg-white rounded-3xl border border-blue-100 p-6 shadow-xs space-y-4 max-w-2xl">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Organisasi Utama</label>
-            <input type="text" id="set-org-name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul / Unit Penyelenggara</label>
-            <input type="text" id="set-org-sub" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-          </div>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Penandatangan Default Sertifikat</label>
-              <input type="text" id="set-signer-name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan Penandatangan Default</label>
-              <input type="text" id="set-signer-title" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">URL Template Latar Sertifikat Default</label>
-            <input type="text" id="set-default-template" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
-          </div>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
-            Simpan Pengaturan Global
-          </button>
-        </form>
-      </section>
-
-    </main>
+        </section>
+      </main>
+    </div>
   </div>
+
   <script>
     const STORAGE_KEY_EVENTS = 'jsit_lampung_events_v3';
     const STORAGE_KEY_SETTINGS = 'jsit_lampung_settings_v3';
-    const SESSION_KEY_ADMIN = 'jsit_lampung_admin_session_v1';
+    const ADMIN_SESSION_KEY = 'jsit_lampung_admin_auth_v3';
 
     const DEFAULT_SETTINGS = {
       orgName: 'JSIT Wilayah Lampung',
@@ -792,13 +813,7 @@
     let auth = null;
     let isFirebaseReady = false;
     let isAdminSidebarCollapsed = false;
-
-    function setAdminCloudStatus(connected, text) {
-      const dot = document.getElementById('admin-cloud-dot');
-      const lbl = document.getElementById('admin-cloud-label');
-      if (dot) dot.className = `w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`;
-      if (lbl) lbl.textContent = text;
-    }
+    let adminAttendeesUnsub = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -810,14 +825,19 @@
         .replace(/'/g, '&#39;');
     }
 
+    function extractGoogleDriveFileId(url) {
+      if (!url) return '';
+      const trimmed = String(url).trim();
+      const driveMatch = trimmed.match(/(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=view&)?id=|thumbnail\?id=)|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+      return driveMatch && driveMatch[1] ? driveMatch[1] : '';
+    }
+
     function normalizeGoogleDriveImageUrl(url) {
       if (!url) return '';
       const trimmed = String(url).trim();
       if (trimmed.startsWith('data:image/')) return trimmed;
-      const driveMatch = trimmed.match(/(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=view&)?id=|thumbnail\?id=)|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
-      if (driveMatch && driveMatch[1]) {
-        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
-      }
+      const fileId = extractGoogleDriveFileId(trimmed);
+      if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`;
       return trimmed;
     }
 
@@ -826,6 +846,18 @@
       const trimmed = normalizeGoogleDriveImageUrl(url);
       if (/^(https?:\/\/|data:image\/|mailto:|tel:|#)/i.test(trimmed)) return trimmed;
       return 'https://' + trimmed;
+    }
+
+    function formatDateIndo(startStr, endStr) {
+      if (!startStr) return '-';
+      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const parsePart = (s) => {
+        const p = s.split('-');
+        if (p.length !== 3) return s;
+        return `${parseInt(p[2], 10)} ${months[parseInt(p[1], 10) - 1] || p[1]} ${p[0]}`;
+      };
+      if (!endStr || startStr === endStr) return parsePart(startStr);
+      return `${parsePart(startStr)} s.d. ${parsePart(endStr)}`;
     }
 
     function isLmsEligibleCategory(category) {
@@ -859,7 +891,7 @@
           prefix: cert.prefix || 'SERT-JSIT-LPG/2026',
           jp: cert.jp || '8 JP',
           issuedPlace: cert.issuedPlace || 'Bandar Lampung',
-          issuedDateText: cert.issuedDateText || '2026',
+          issuedDateText: cert.issuedDateText || formatDateIndo(ev.dateEnd || ev.dateStart),
           signerName: cert.signerName || settingsData.signerName || DEFAULT_SETTINGS.signerName,
           signerTitle: cert.signerTitle || settingsData.signerTitle || DEFAULT_SETTINGS.signerTitle,
           templateBg: normalizeGoogleDriveImageUrl(cert.templateBg || ''),
@@ -870,12 +902,18 @@
 
     function loadLocalCache() {
       try {
-        const s = localStorage.getItem(STORAGE_KEY_SETTINGS);
-        if (s) settingsData = { ...DEFAULT_SETTINGS, ...JSON.parse(s) };
-      } catch (e) {}
+        const rawSet = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        settingsData = rawSet ? { ...DEFAULT_SETTINGS, ...JSON.parse(rawSet) } : { ...DEFAULT_SETTINGS };
+      } catch (e) {
+        settingsData = { ...DEFAULT_SETTINGS };
+      }
+
       try {
-        const e = localStorage.getItem(STORAGE_KEY_EVENTS);
-        if (e) eventsData = JSON.parse(e).map(normalizeEventItem);
+        const rawEv = localStorage.getItem(STORAGE_KEY_EVENTS);
+        if (rawEv) {
+          const parsed = JSON.parse(rawEv);
+          if (Array.isArray(parsed)) eventsData = parsed.map(normalizeEventItem);
+        }
       } catch (e) {}
     }
 
@@ -886,34 +924,43 @@
       } catch (e) {}
     }
 
-    function initFirebaseAdmin() {
+    function setAdminCloudStatus(connected, text) {
+      const dot = document.getElementById('admin-cloud-dot');
+      const label = document.getElementById('admin-cloud-label');
+      if (dot) dot.className = `w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`;
+      if (label) label.textContent = text;
+    }
+
+    async function initAdminApp() {
       loadLocalCache();
+
       if (typeof firebase !== 'undefined' && typeof window.FIREBASE_CONFIG !== 'undefined') {
         try {
           if (!firebase.apps.length) {
             firebase.initializeApp(window.FIREBASE_CONFIG);
           }
           db = firebase.firestore();
-          auth = firebase.auth();
+          if (firebase.auth) auth = firebase.auth();
           isFirebaseReady = true;
-          setAdminCloudStatus(true, 'Firebase Cloud Aktif');
+          setAdminCloudStatus(true, 'Cloud Firestore Terhubung');
         } catch (err) {
-          console.warn('Firebase admin init warning:', err.message);
-          setAdminCloudStatus(false, 'Mode Penyimpanan Lokal');
+          console.warn('Firebase init error:', err);
+          setAdminCloudStatus(false, 'Mode Lokal');
         }
       } else {
-        setAdminCloudStatus(false, 'Mode Penyimpanan Lokal');
+        setAdminCloudStatus(false, 'Mode Lokal');
       }
 
-      if (sessionStorage.getItem(SESSION_KEY_ADMIN) === 'true') {
-        unlockAdminWorkspace();
+      if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+        enterDashboard();
       }
+      if (window.lucide) lucide.createIcons();
     }
 
     async function handleAdminLogin(e) {
       e.preventDefault();
-      const user = document.getElementById('login-username').value.trim();
-      const pass = document.getElementById('login-password').value.trim();
+      const userVal = document.getElementById('login-username').value.trim();
+      const passVal = document.getElementById('login-password').value;
       const errBox = document.getElementById('login-error');
       const btn = document.getElementById('btn-admin-login');
 
@@ -921,35 +968,73 @@
       btn.disabled = true;
       btn.textContent = 'Memverifikasi...';
 
-      if (isFirebaseReady && auth && user.includes('@')) {
-        try {
-          await auth.signInWithEmailAndPassword(user, pass);
-          sessionStorage.setItem(SESSION_KEY_ADMIN, 'true');
-          unlockAdminWorkspace();
+      try {
+        if (auth && userVal.includes('@')) {
+          await auth.signInWithEmailAndPassword(userVal, passVal);
+          sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+          enterDashboard();
           return;
-        } catch (fbErr) {
-          // Lanjut pengecekan kredensial lokal
         }
-      }
 
-      const validUsers = ['admin', 'admin@jsitlampung.or.id', 'diklat@jsitlampung.or.id'];
-      if (validUsers.includes(user.toLowerCase()) && pass === 'jsitlampung2026') {
-        sessionStorage.setItem(SESSION_KEY_ADMIN, 'true');
-        unlockAdminWorkspace();
-      } else {
-        errBox.textContent = 'Username/Email atau Kata Sandi admin tidak sesuai.';
+        if ((userVal.toLowerCase() === 'admin' || userVal.toLowerCase() === 'admin@jsitlampung.or.id') && passVal === 'jsitlampung2026') {
+          sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+          enterDashboard();
+          return;
+        }
+
+        throw new Error('Username/Email atau Kata Sandi Admin tidak sesuai.');
+      } catch (err) {
+        errBox.textContent = err.message;
         errBox.classList.remove('hidden');
+      } finally {
         btn.disabled = false;
         btn.textContent = 'Masuk ke Dashboard Admin';
       }
     }
 
     function handleAdminLogout() {
-      sessionStorage.removeItem(SESSION_KEY_ADMIN);
-      if (isFirebaseReady && auth) {
-        auth.signOut().catch(() => {});
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      if (auth) auth.signOut().catch(() => {});
+      document.getElementById('admin-dashboard-shell').classList.add('hidden');
+      document.getElementById('admin-login-screen').classList.remove('hidden');
+    }
+
+    function enterDashboard() {
+      document.getElementById('admin-login-screen').classList.add('hidden');
+      document.getElementById('admin-dashboard-shell').classList.remove('hidden');
+
+      populateSettingsForm();
+      refreshAllAdminViews();
+
+      if (isFirebaseReady && db) {
+        db.collection('settings').doc('global').onSnapshot((doc) => {
+          if (doc.exists) {
+            settingsData = { ...DEFAULT_SETTINGS, ...doc.data() };
+            saveLocalCache();
+            populateSettingsForm();
+          }
+        }, () => {});
+
+        db.collection('events').onSnapshot((snap) => {
+          const prevMap = new Map(eventsData.map(e => [e.id, e.attendees || []]));
+          const list = [];
+          snap.forEach((doc) => {
+            const norm = normalizeEventItem({ id: doc.id, ...doc.data() });
+            if ((!norm.attendees || norm.attendees.length === 0) && prevMap.has(doc.id)) {
+              norm.attendees = prevMap.get(doc.id);
+            }
+            list.push(norm);
+          });
+          if (list.length > 0) {
+            list.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
+            eventsData = list;
+            saveLocalCache();
+            refreshAllAdminViews();
+          }
+        }, () => {});
       }
-      location.reload();
+
+      if (window.lucide) lucide.createIcons();
     }
 
     function toggleAdminSidebar() {
@@ -963,136 +1048,76 @@
         aside.classList.add('lg:w-20');
         if (footer) footer.classList.add('lg:hidden');
         document.querySelectorAll('.admin-sidebar-label').forEach(el => el.classList.add('lg:hidden'));
-        document.querySelectorAll('.admin-nav-btn').forEach(btn => {
-          btn.classList.remove('md:justify-start');
-          btn.classList.add('md:justify-center');
-        });
       } else {
         aside.classList.remove('lg:w-20');
         aside.classList.add('lg:w-72');
         if (footer) footer.classList.remove('lg:hidden');
         document.querySelectorAll('.admin-sidebar-label').forEach(el => el.classList.remove('lg:hidden'));
-        document.querySelectorAll('.admin-nav-btn').forEach(btn => {
-          btn.classList.remove('md:justify-center');
-          btn.classList.add('md:justify-start');
-        });
       }
     }
 
-    async function unlockAdminWorkspace() {
-      document.getElementById('admin-login-screen').classList.add('hidden');
-      document.getElementById('admin-dashboard-shell').classList.remove('hidden');
-
-      if (isFirebaseReady && db) {
-        db.collection('settings').doc('global').onSnapshot(doc => {
-          if (doc.exists) {
-            settingsData = { ...DEFAULT_SETTINGS, ...doc.data() };
-            saveLocalCache();
-            fillSettingsForm();
-          }
-        }, () => {});
-
-        db.collection('events').onSnapshot(async snap => {
-          const prevMap = new Map(eventsData.map(e => [e.id, e.attendees || []]));
-          const list = [];
-          snap.forEach(doc => {
-            const norm = normalizeEventItem({ id: doc.id, ...doc.data() });
-            if ((!norm.attendees || norm.attendees.length === 0) && prevMap.has(doc.id)) {
-              norm.attendees = prevMap.get(doc.id);
-            }
-            list.push(norm);
-          });
-
-          for (const evItem of list) {
-            try {
-              const attSnap = await db.collection('events').doc(evItem.id).collection('attendees').get();
-              const attArr = [];
-              attSnap.forEach(aDoc => attArr.push({ id: aDoc.id, ...aDoc.data() }));
-              attArr.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-              if (attArr.length > 0 || !evItem.attendees || evItem.attendees.length === 0) {
-                evItem.attendees = attArr;
-              }
-            } catch (e) {}
-          }
-
-          list.sort((a, b) => (b.dateStart || '').localeCompare(a.dateStart || ''));
-          eventsData = list;
-          saveLocalCache();
-          refreshAllAdminViews();
-        }, err => {
-          console.warn('Admin Firestore snapshot warning:', err.message);
-        });
+    function switchAdminTab(tabName) {
+      document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+        btn.classList.remove('admin-tab-active', 'font-bold');
+        btn.classList.add('text-blue-200', 'font-semibold');
+      });
+      const activeBtn = document.getElementById(`admin-nav-${tabName}`);
+      if (activeBtn) {
+        activeBtn.classList.add('admin-tab-active', 'font-bold');
+        activeBtn.classList.remove('text-blue-200', 'font-semibold');
       }
 
-      fillSettingsForm();
-      refreshAllAdminViews();
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
+      const activePanel = document.getElementById(`admin-panel-${tabName}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      if (tabName === 'attendees') renderAdminAttendeesTable();
+      if (tabName === 'lms') renderAdminLmsPanel();
+      if (tabName === 'resources') renderAdminResourcesLists();
+      if (tabName === 'certificate') {
+        loadCertConfigIntoForm();
+        setTimeout(fitPreviewToStage, 30);
+      }
       if (window.lucide) lucide.createIcons();
     }
 
     function refreshAllAdminViews() {
-      updateTopMetrics();
+      const totalEv = eventsData.length;
+      const totalAtt = eventsData.reduce((s, e) => s + (e.attendees || []).length, 0);
+      const totalRes = eventsData.reduce((s, e) => s + (e.materials || []).length + (e.recordings || []).length, 0);
+      const totalCerts = eventsData.filter(e => isCertificateReleased(e)).length;
+
+      document.getElementById('stat-total-events').textContent = totalEv;
+      document.getElementById('stat-total-attendees').textContent = totalAtt;
+      document.getElementById('stat-total-resources').textContent = totalRes;
+      document.getElementById('stat-released-certs').textContent = totalCerts;
+
       renderAdminEventsTable();
-      populateEventSelectors();
+      syncEventSelectDropdowns();
       renderAdminAttendeesTable();
       renderAdminLmsPanel();
       renderAdminResourcesLists();
-      loadCertConfigToEditor();
     }
 
-    function updateTopMetrics() {
-      document.getElementById('stat-total-events').textContent = eventsData.length;
-      const totalAtt = eventsData.reduce((acc, ev) => acc + ((ev.attendees || []).length), 0);
-      const totalRes = eventsData.reduce((acc, ev) => acc + ((ev.materials || []).length) + ((ev.recordings || []).length), 0);
-      const releasedCerts = eventsData.filter(ev => isCertificateReleased(ev)).length;
-
-      document.getElementById('stat-total-attendees').textContent = totalAtt;
-      document.getElementById('stat-total-resources').textContent = totalRes;
-      document.getElementById('stat-released-certs').textContent = releasedCerts;
-    }
-
-    function switchAdminTab(tab) {
-      document.querySelectorAll('.admin-nav-btn').forEach(b => {
-        b.classList.remove('admin-tab-active', 'font-bold');
-        b.classList.add('text-blue-200', 'font-semibold');
-      });
-      const activeNav = document.getElementById(`admin-nav-${tab}`);
-      if (activeNav) {
-        activeNav.classList.add('admin-tab-active', 'font-bold');
-        activeNav.classList.remove('text-blue-200', 'font-semibold');
-      }
-
-      document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
-      const panel = document.getElementById(`admin-panel-${tab}`);
-      if (panel) panel.classList.remove('hidden');
-
-      if (tab === 'certificate') {
-        setTimeout(() => {
-          fitPreviewToStage();
-          updateCertPreviewLive();
-        }, 40);
-      }
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function populateEventSelectors() {
+    function syncEventSelectDropdowns() {
       const ids = ['att-admin-event-select', 'lms-admin-event-select', 'res-admin-event-select', 'cert-admin-event-select'];
-      ids.forEach(selId => {
-        const sel = document.getElementById(selId);
-        if (!sel) return;
-        const prev = sel.value;
-        sel.innerHTML = eventsData.map(ev => `<option value="${escapeHtml(ev.id)}">${escapeHtml(ev.title)}</option>`).join('');
-        if (prev && eventsData.some(e => e.id === prev)) sel.value = prev;
+      ids.forEach(selectId => {
+        const el = document.getElementById(selectId);
+        if (!el) return;
+        const prev = el.value;
+        el.innerHTML = eventsData.map(ev => `<option value="${escapeHtml(ev.id)}">${escapeHtml(ev.title)} (${escapeHtml(ev.category)})</option>`).join('');
+        if (prev && eventsData.some(e => e.id === prev)) {
+          el.value = prev;
+        }
       });
     }
 
     function handleCategoryChangeInForm() {
-      const catSel = document.getElementById('ev-category');
+      const sel = document.getElementById('ev-category').value;
       const customInput = document.getElementById('ev-category-custom');
-      if (!catSel || !customInput) return;
-      if (catSel.value === 'Lainnya') {
+      if (sel === 'Lainnya') {
         customInput.classList.remove('hidden');
         customInput.required = true;
-        customInput.focus();
       } else {
         customInput.classList.add('hidden');
         customInput.required = false;
@@ -1100,35 +1125,34 @@
     }
 
     function handleFlyerUpload(e) {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = () => {
         const img = new Image();
-        img.onload = function() {
-          const maxW = 1000;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 900;
           const scale = img.width > maxW ? (maxW / img.width) : 1;
-          const c = document.createElement('canvas');
-          c.width = Math.round(img.width * scale);
-          c.height = Math.round(img.height * scale);
-          const ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0, c.width, c.height);
-          const compressedDataUrl = c.toDataURL('image/jpeg', 0.85);
-          document.getElementById('ev-flyer-url').value = compressedDataUrl;
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressed = canvas.toDataURL('image/jpeg', 0.82);
+          document.getElementById('ev-flyer-url').value = compressed;
           updateFlyerPreviewBox();
         };
-        img.src = evt.target.result;
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
     }
 
     function updateFlyerPreviewBox() {
-      const urlVal = normalizeGoogleDriveImageUrl((document.getElementById('ev-flyer-url').value || '').trim());
+      const val = document.getElementById('ev-flyer-url').value.trim();
       const wrap = document.getElementById('ev-flyer-preview-wrap');
       const img = document.getElementById('ev-flyer-preview-img');
-      if (!wrap || !img) return;
-      if (urlVal) {
-        img.src = sanitizeUrl(urlVal);
+      if (val) {
+        img.src = sanitizeUrl(val);
         wrap.classList.remove('hidden');
       } else {
         img.src = '';
@@ -1138,22 +1162,59 @@
 
     function clearEventFlyer() {
       document.getElementById('ev-flyer-url').value = '';
-      const fileEl = document.getElementById('ev-flyer-file');
-      if (fileEl) fileEl.value = '';
+      document.getElementById('ev-flyer-file').value = '';
       updateFlyerPreviewBox();
     }
 
-    async function persistEventDoc(evObj) {
-      const normalized = normalizeEventItem(evObj);
-      const idx = eventsData.findIndex(e => e.id === normalized.id);
-      if (idx >= 0) eventsData[idx] = normalized;
-      else eventsData.unshift(normalized);
-      saveLocalCache();
-      refreshAllAdminViews();
+    function resetEventForm() {
+      document.getElementById('ev-id').value = '';
+      document.getElementById('event-editor-form').reset();
+      document.getElementById('ev-form-heading').textContent = 'Tambah Kegiatan Baru';
+      document.getElementById('ev-category-custom').classList.add('hidden');
+      clearEventFlyer();
+    }
 
+    function editEventById(evId) {
+      const ev = eventsData.find(item => item.id === evId);
+      if (!ev) return;
+
+      document.getElementById('ev-id').value = ev.id;
+      document.getElementById('ev-form-heading').textContent = 'Edit Kegiatan: ' + ev.title;
+      document.getElementById('ev-title').value = ev.title || '';
+
+      const standardCats = ['Seminar', 'Webinar', 'Pelatihan', 'Workshop', 'Bimtek'];
+      if (standardCats.includes(ev.category)) {
+        document.getElementById('ev-category').value = ev.category;
+        document.getElementById('ev-category-custom').classList.add('hidden');
+      } else {
+        document.getElementById('ev-category').value = 'Lainnya';
+        document.getElementById('ev-category-custom').classList.remove('hidden');
+        document.getElementById('ev-category-custom').value = ev.category || '';
+      }
+
+      document.getElementById('ev-status').value = ev.status || 'Buka Pendaftaran';
+      document.getElementById('ev-date-start').value = ev.dateStart || '';
+      document.getElementById('ev-date-end').value = ev.dateEnd || '';
+      document.getElementById('ev-time').value = ev.time || '';
+      document.getElementById('ev-mode').value = ev.mode || '';
+      document.getElementById('ev-location').value = ev.location || '';
+      document.getElementById('ev-zoom').value = ev.zoomUrl || '';
+      document.getElementById('ev-cert-mode').value = ev.certReleaseMode || 'auto';
+      document.getElementById('ev-cert-datetime').value = ev.certReleaseDatetime || '';
+      document.getElementById('ev-pin').value = ev.pin || '';
+      document.getElementById('ev-flyer-url').value = ev.flyerImg || '';
+      updateFlyerPreviewBox();
+      document.getElementById('ev-description').value = ev.description || '';
+      document.getElementById('ev-speakers').value = (ev.speakers || []).map(s => `${s.name} | ${s.role || ''}`).join('\n');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function persistEventDocument(evObj) {
+      saveLocalCache();
       if (isFirebaseReady && db) {
-        const { attendees, ...docPayload } = normalized;
-        await db.collection('events').doc(normalized.id).set(docPayload);
+        const { attendees, ...docPayload } = evObj;
+        await db.collection('events').doc(evObj.id).set(docPayload, { merge: true });
       }
     }
 
@@ -1162,9 +1223,14 @@
       const existingId = document.getElementById('ev-id').value.trim();
       const existingEv = existingId ? eventsData.find(item => item.id === existingId) : null;
 
-      const speakersRaw = document.getElementById('ev-speakers').value.trim();
-      const speakers = speakersRaw
-        ? speakersRaw.split('\n').map(line => {
+      const catSelect = document.getElementById('ev-category').value;
+      const finalCategory = catSelect === 'Lainnya'
+        ? (document.getElementById('ev-category-custom').value.trim() || 'Kegiatan Khusus')
+        : catSelect;
+
+      const rawSpeakers = document.getElementById('ev-speakers').value.trim();
+      const speakers = rawSpeakers
+        ? rawSpeakers.split('\n').map(line => {
             const parts = line.split('|');
             return { name: (parts[0] || '').trim(), role: (parts[1] || 'Narasumber').trim() };
           }).filter(s => s.name)
@@ -1172,117 +1238,55 @@
 
       const dateStart = document.getElementById('ev-date-start').value;
       const dateEnd = document.getElementById('ev-date-end').value || dateStart;
+      const newId = existingId || ('evt-' + Date.now());
 
-      let chosenCategory = document.getElementById('ev-category').value;
-      if (chosenCategory === 'Lainnya') {
-        const customText = document.getElementById('ev-category-custom').value.trim();
-        chosenCategory = customText || 'Kegiatan Khusus';
-      }
-
-      const evPayload = normalizeEventItem({
-        id: existingId || ('evt-' + Date.now()),
+      const eventPayload = normalizeEventItem({
+        ...(existingEv || {}),
+        id: newId,
         title: document.getElementById('ev-title').value.trim(),
-        category: chosenCategory,
+        category: finalCategory,
         status: document.getElementById('ev-status').value,
         dateStart,
         dateEnd,
         time: document.getElementById('ev-time').value.trim(),
-        mode: document.getElementById('ev-mode').value.trim() || 'Online via Zoom',
+        mode: document.getElementById('ev-mode').value.trim() || 'Online / Hybrid',
         location: document.getElementById('ev-location').value.trim(),
         zoomUrl: document.getElementById('ev-zoom').value.trim(),
         certReleaseMode: document.getElementById('ev-cert-mode').value,
-        certReleaseDatetime: document.getElementById('ev-cert-datetime').value || `${dateEnd}T16:00`,
+        certReleaseDatetime: document.getElementById('ev-cert-datetime').value,
         pin: document.getElementById('ev-pin').value.trim(),
-        flyerImg: normalizeGoogleDriveImageUrl(document.getElementById('ev-flyer-url').value.trim()),
+        flyerImg: document.getElementById('ev-flyer-url').value.trim(),
         description: document.getElementById('ev-description').value.trim(),
-        speakers,
-        materials: existingEv ? existingEv.materials : [],
-        recordings: existingEv ? existingEv.recordings : [],
-        lmsModules: existingEv ? existingEv.lmsModules : [],
-        attendees: existingEv ? existingEv.attendees : [],
-        certificate: existingEv ? existingEv.certificate : {
-          prefix: 'SERT-JSIT-LPG/2026',
-          jp: '8 JP',
-          issuedPlace: 'Bandar Lampung',
-          issuedDateText: dateEnd,
-          signerName: settingsData.signerName,
-          signerTitle: settingsData.signerTitle,
-          templateBg: '',
-          layout: { ...DEFAULT_LAYOUT }
-        }
+        speakers
       });
 
+      if (existingEv) {
+        const idx = eventsData.findIndex(item => item.id === existingId);
+        eventsData[idx] = eventPayload;
+      } else {
+        eventsData.unshift(eventPayload);
+      }
+
       try {
-        await persistEventDoc(evPayload);
+        await persistEventDocument(eventPayload);
         resetEventForm();
-        alert('Data kegiatan berhasil disimpan dan disinkronkan!');
+        refreshAllAdminViews();
+        alert('Data kegiatan berhasil disimpan dan dipublikasikan!');
       } catch (err) {
         alert('Tersimpan lokal, namun gagal sinkron ke Cloud: ' + err.message);
       }
     }
 
-    function editEventInForm(eventId) {
-      const ev = eventsData.find(item => item.id === eventId);
-      if (!ev) return;
-
-      document.getElementById('ev-id').value = ev.id;
-      document.getElementById('ev-form-heading').textContent = 'Edit Kegiatan: ' + ev.title;
-      document.getElementById('ev-title').value = ev.title;
-
-      const catSel = document.getElementById('ev-category');
-      const customInput = document.getElementById('ev-category-custom');
-      const builtInOptions = Array.from(catSel.options).map(o => o.value).filter(v => v !== 'Lainnya');
-      if (builtInOptions.includes(ev.category)) {
-        catSel.value = ev.category;
-        customInput.classList.add('hidden');
-        customInput.value = '';
-      } else {
-        catSel.value = 'Lainnya';
-        customInput.classList.remove('hidden');
-        customInput.value = ev.category || '';
-      }
-
-      document.getElementById('ev-status').value = ev.status;
-      document.getElementById('ev-date-start').value = ev.dateStart;
-      document.getElementById('ev-date-end').value = ev.dateEnd;
-      document.getElementById('ev-time').value = ev.time;
-      document.getElementById('ev-mode').value = ev.mode || '';
-      document.getElementById('ev-location').value = ev.location;
-      document.getElementById('ev-zoom').value = ev.zoomUrl || '';
-      document.getElementById('ev-cert-mode').value = ev.certReleaseMode || 'auto';
-      document.getElementById('ev-cert-datetime').value = ev.certReleaseDatetime || '';
-      document.getElementById('ev-pin').value = ev.pin || '';
-      document.getElementById('ev-flyer-url').value = ev.flyerImg || '';
-      updateFlyerPreviewBox();
-      document.getElementById('ev-description').value = ev.description || '';
-      document.getElementById('ev-speakers').value = (ev.speakers || []).map(s => `${s.name} | ${s.role}`).join('\n');
-
-      document.getElementById('event-editor-form').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetEventForm() {
-      document.getElementById('event-editor-form').reset();
-      document.getElementById('ev-id').value = '';
-      document.getElementById('ev-form-heading').textContent = 'Tambah Kegiatan Baru';
-      const customInput = document.getElementById('ev-category-custom');
-      if (customInput) {
-        customInput.classList.add('hidden');
-        customInput.value = '';
-      }
-      clearEventFlyer();
-    }
-
-    async function deleteEventAdmin(eventId) {
-      if (!confirm('Hapus kegiatan ini secara permanen?')) return;
-      eventsData = eventsData.filter(e => e.id !== eventId);
+    async function deleteEventById(evId) {
+      if (!confirm('Hapus kegiatan ini beserta seluruh datanya?')) return;
+      eventsData = eventsData.filter(item => item.id !== evId);
       saveLocalCache();
       refreshAllAdminViews();
-
       if (isFirebaseReady && db) {
         try {
-          await db.collection('events').doc(eventId).delete();
+          await db.collection('events').doc(evId).delete();
         } catch (err) {
-          console.warn('Gagal hapus dari Firestore:', err.message);
+          console.warn('Delete Firestore warning:', err.message);
         }
       }
     }
@@ -1292,33 +1296,27 @@
       if (!tbody) return;
       tbody.innerHTML = eventsData.map(ev => {
         const released = isCertificateReleased(ev);
-        const hasFlyer = Boolean(ev.flyerImg && ev.flyerImg.trim());
+        const hasLms = isLmsEligibleCategory(ev.category);
         return `
           <tr class="hover:bg-slate-50">
-            <td class="py-3 px-3 font-bold text-navy-900 max-w-xs">
-              <div class="flex items-center gap-2.5">
-                ${hasFlyer ? `<img src="${escapeHtml(sanitizeUrl(ev.flyerImg))}" alt="Flyer" class="w-9 h-11 object-cover rounded-lg border border-slate-200 shrink-0" />` : ''}
-                <div>
-                  <div>${escapeHtml(ev.title)}</div>
-                  <div class="mt-0.5 flex flex-wrap gap-1">
-                    <span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px]">${escapeHtml(ev.category)}</span>
-                    ${isLmsEligibleCategory(ev.category) ? `<span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px]">LMS Aktif</span>` : ''}
-                    ${hasFlyer ? `<span class="inline-block px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px]">Flyer ✓</span>` : ''}
-                  </div>
-                </div>
+            <td class="py-3 px-3">
+              <div class="font-bold text-navy-900">${escapeHtml(ev.title)}</div>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold">${escapeHtml(ev.category)}</span>
+                ${hasLms ? `<span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold">LMS Aktif</span>` : ''}
               </div>
             </td>
-            <td class="py-3 px-3 text-slate-600 whitespace-nowrap">${escapeHtml(ev.dateStart)}</td>
-            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full bg-slate-100 font-bold text-[11px]">${escapeHtml(ev.status)}</span></td>
+            <td class="py-3 px-3 text-slate-600">${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</td>
+            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold">${escapeHtml(ev.status)}</span></td>
             <td class="py-3 px-3 font-bold text-blue-700">${(ev.attendees || []).length}</td>
             <td class="py-3 px-3">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${released ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                 ${released ? 'Rilis' : 'Terjadwal'}
               </span>
             </td>
-            <td class="py-3 px-3 text-right whitespace-nowrap space-x-1">
-              <button onclick="editEventInForm('${escapeHtml(ev.id)}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white font-bold">Edit</button>
-              <button onclick="deleteEventAdmin('${escapeHtml(ev.id)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold">Hapus</button>
+            <td class="py-3 px-3 text-right space-x-1 whitespace-nowrap">
+              <button onclick="editEventById('${escapeHtml(ev.id)}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white font-bold transition">Edit</button>
+              <button onclick="deleteEventById('${escapeHtml(ev.id)}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold transition">Hapus</button>
             </td>
           </tr>
         `;
@@ -1328,26 +1326,47 @@
     function renderAdminAttendeesTable() {
       const sel = document.getElementById('att-admin-event-select');
       const tbody = document.getElementById('admin-attendees-tbody');
-      if (!sel || !tbody) return;
-      const ev = eventsData.find(item => item.id === sel.value);
-      if (!ev) { tbody.innerHTML = ''; return; }
+      if (!sel || !tbody || !sel.value) return;
 
-      const list = ev.attendees || [];
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Belum ada peserta pada kegiatan ini.</td></tr>`;
-        return;
+      const evId = sel.value;
+      const ev = eventsData.find(item => item.id === evId);
+      if (!ev) return;
+
+      if (adminAttendeesUnsub) {
+        adminAttendeesUnsub();
+        adminAttendeesUnsub = null;
+      }
+      if (isFirebaseReady && db) {
+        adminAttendeesUnsub = db.collection('events').doc(evId).collection('attendees').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+          list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          ev.attendees = list;
+          saveLocalCache();
+          paintAttendeesRows(ev);
+        }, () => {});
       }
 
+      paintAttendeesRows(ev);
+    }
+
+    function paintAttendeesRows(ev) {
+      const tbody = document.getElementById('admin-attendees-tbody');
+      const list = ev.attendees || [];
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Belum ada peserta hadir pada kegiatan ini.</td></tr>`;
+        return;
+      }
       tbody.innerHTML = list.map((a, idx) => `
         <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-2 font-semibold text-slate-500">${idx + 1}</td>
+          <td class="py-2.5 px-2 text-slate-500">${idx + 1}</td>
           <td class="py-2.5 px-2 font-bold text-navy-900">${escapeHtml(a.name)}</td>
-          <td class="py-2.5 px-2 text-slate-700">${escapeHtml(a.school)}</td>
-          <td class="py-2.5 px-2 text-slate-600">${escapeHtml(a.region || '-')}</td>
-          <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold text-[10px]">${escapeHtml(a.role || 'Peserta')}</span></td>
-          <td class="py-2.5 px-2 text-slate-500 whitespace-nowrap">${escapeHtml(a.timestamp || '-')}</td>
+          <td class="py-2.5 px-2">${escapeHtml(a.school)}</td>
+          <td class="py-2.5 px-2">${escapeHtml(a.region || '-')}</td>
+          <td class="py-2.5 px-2">${escapeHtml(a.role || 'Peserta')}</td>
+          <td class="py-2.5 px-2 text-slate-500">${escapeHtml(a.timestamp || '-')}</td>
           <td class="py-2.5 px-2 text-right">
-            <button onclick="deleteAttendeeAdmin('${escapeHtml(ev.id)}', '${escapeHtml(a.id)}')" class="px-2 py-1 rounded bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold">Hapus</button>
+            <button onclick="deleteAttendeeAdmin('${escapeHtml(ev.id)}', '${escapeHtml(a.id)}')" class="text-rose-600 hover:underline font-bold">Hapus</button>
           </td>
         </tr>
       `).join('');
@@ -1355,143 +1374,131 @@
 
     async function addManualAttendee(e) {
       e.preventDefault();
-      const sel = document.getElementById('att-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('att-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
 
       const attId = 'att-' + Date.now();
-      const rec = {
+      const record = {
         id: attId,
         name: document.getElementById('man-att-name').value.trim(),
         school: document.getElementById('man-att-school').value.trim(),
-        region: document.getElementById('man-att-region').value.trim() || 'Kota Bandar Lampung',
+        region: document.getElementById('man-att-region').value.trim(),
         role: document.getElementById('man-att-role').value.trim() || 'Peserta',
         phone: document.getElementById('man-att-phone').value.trim(),
-        timestamp: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' (Admin)',
+        timestamp: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' (Manual)',
         createdAt: Date.now()
       };
 
-      ev.attendees = [rec, ...(ev.attendees || [])];
+      ev.attendees = [record, ...(ev.attendees || [])];
       saveLocalCache();
-      renderAdminAttendeesTable();
-      updateTopMetrics();
+      paintAttendeesRows(ev);
       e.target.reset();
+      document.getElementById('man-att-role').value = 'Peserta';
 
       if (isFirebaseReady && db) {
-        try {
-          await db.collection('events').doc(ev.id).collection('attendees').doc(attId).set(rec);
-        } catch (err) {
-          console.warn('Gagal simpan peserta manual ke Cloud:', err.message);
-        }
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).set(record);
       }
     }
 
-    async function deleteAttendeeAdmin(eventId, attId) {
+    async function deleteAttendeeAdmin(evId, attId) {
       if (!confirm('Hapus data peserta ini?')) return;
-      const ev = eventsData.find(item => item.id === eventId);
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
       ev.attendees = (ev.attendees || []).filter(a => a.id !== attId);
       saveLocalCache();
-      renderAdminAttendeesTable();
-      updateTopMetrics();
-
+      paintAttendeesRows(ev);
       if (isFirebaseReady && db) {
-        try {
-          await db.collection('events').doc(eventId).collection('attendees').doc(attId).delete();
-        } catch (err) {}
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).delete();
       }
     }
 
     function exportAttendeesCSV() {
-      const sel = document.getElementById('att-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('att-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
+
       const rows = [['No', 'Nama Lengkap', 'Asal Sekolah', 'Kabupaten/Kota', 'Peran', 'No WhatsApp', 'Waktu Presensi']];
       (ev.attendees || []).forEach((a, i) => {
         rows.push([i + 1, a.name, a.school, a.region || '', a.role || 'Peserta', a.phone || '', a.timestamp || '']);
       });
-      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-      const link = document.createElement('a');
-      link.setAttribute('href', encodeURI(csvContent));
-      link.setAttribute('download', `Daftar_Hadir_${ev.id}.csv`);
-      link.click();
+
+      const csvContent = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Daftar_Hadir_${ev.title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+      a.click();
     }
 
     function renderAdminLmsPanel() {
       const sel = document.getElementById('lms-admin-event-select');
-      if (!sel) return;
+      if (!sel || !sel.value) return;
       const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
 
-      const noteBox = document.getElementById('lms-admin-eligibility-note');
-      if (noteBox) {
-        noteBox.classList.toggle('hidden', isLmsEligibleCategory(ev.category));
+      const noteEl = document.getElementById('lms-admin-eligibility-note');
+      if (noteEl) {
+        noteEl.classList.toggle('hidden', isLmsEligibleCategory(ev.category));
       }
 
-      const modListEl = document.getElementById('admin-lms-modules-list');
+      const modList = document.getElementById('admin-lms-modules-list');
       const modules = ev.lmsModules || [];
-      if (modListEl) {
-        modListEl.innerHTML = modules.length === 0
-          ? `<p class="text-xs text-slate-400 text-center py-6">Belum ada modul sesi LMS pada kegiatan ini.</p>`
-          : modules.map((m, idx) => `
-            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-bold">${escapeHtml(m.sessionLabel || `Sesi ${idx + 1}`)}</span>
-                <div class="text-xs font-bold text-navy-900 mt-1">${escapeHtml(m.title)}</div>
-                ${m.taskPrompt ? `<div class="text-[11px] text-slate-500 mt-0.5">Tugas: ${escapeHtml(m.taskPrompt)}</div>` : ''}
-              </div>
-              <button type="button" onclick="deleteLmsModuleAdmin(${idx})" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-bold shrink-0">Hapus</button>
+      modList.innerHTML = modules.length > 0
+        ? modules.map((m, idx) => `
+          <div class="p-3.5 rounded-2xl border border-indigo-100 bg-slate-50 flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-bold">${escapeHtml(m.sessionLabel || `Sesi ${idx + 1}`)}</span>
+              <div class="text-xs font-bold text-navy-900 mt-1">${escapeHtml(m.title)}</div>
+              <div class="text-[11px] text-slate-500 truncate">${escapeHtml(m.summary || '')}</div>
             </div>
-          `).join('');
+            <button type="button" onclick="deleteLmsModuleAdmin('${escapeHtml(ev.id)}', '${escapeHtml(m.id)}')" class="text-rose-600 hover:underline text-xs font-bold shrink-0">Hapus</button>
+          </div>
+        `).join('')
+        : `<p class="text-xs text-slate-400 p-4 rounded-2xl border border-dashed border-slate-200 text-center">Belum ada modul sesi LMS pada kegiatan ini.</p>`;
+
+      const tbody = document.getElementById('admin-lms-progress-tbody');
+      const attendees = ev.attendees || [];
+      if (attendees.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada peserta terdaftar.</td></tr>`;
+        return;
       }
 
-      const progTbody = document.getElementById('admin-lms-progress-tbody');
-      if (progTbody) {
-        const attendees = ev.attendees || [];
-        if (attendees.length === 0) {
-          progTbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada peserta hadir yang terdaftar.</td></tr>`;
-          return;
-        }
+      tbody.innerHTML = attendees.map(att => {
+        const prog = att.lmsProgress || {};
+        const doneCount = modules.filter(m => prog[m.id] && prog[m.id].completed).length;
+        const pct = modules.length > 0 ? Math.round((doneCount / modules.length) * 100) : 0;
+        const submittedLinks = modules
+          .filter(m => prog[m.id] && prog[m.id].taskUrl)
+          .map(m => `<a href="${escapeHtml(sanitizeUrl(prog[m.id].taskUrl))}" target="_blank" class="inline-block px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold hover:underline mr-1 mb-1">${escapeHtml(m.sessionLabel || m.title)} ↗</a>`)
+          .join('');
 
-        progTbody.innerHTML = attendees.map(att => {
-          const pMap = att.lmsProgress || {};
-          const doneCount = modules.filter(m => pMap[m.id] && pMap[m.id].completed).length;
-          const pct = modules.length > 0 ? Math.round((doneCount / modules.length) * 100) : 0;
-
-          const submittedLinks = modules.map((m, idx) => {
-            const rec = pMap[m.id];
-            if (rec && rec.taskUrl) {
-              return `<a href="${escapeHtml(sanitizeUrl(rec.taskUrl))}" target="_blank" rel="noopener noreferrer" class="inline-block px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold hover:underline mr-1 mb-1">Tugas Sesi ${idx + 1} &nearr;</a>`;
-            }
-            return '';
-          }).filter(Boolean).join('');
-
-          return `
-            <tr class="hover:bg-slate-50">
-              <td class="py-2.5 px-2 font-bold text-navy-900">${escapeHtml(att.name)}</td>
-              <td class="py-2.5 px-2 text-slate-600">${escapeHtml(att.school)}</td>
-              <td class="py-2.5 px-2">
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${pct === 100 && modules.length > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-50 text-indigo-800'}">
-                  ${doneCount}/${modules.length} Sesi (${pct}%)
-                </span>
-              </td>
-              <td class="py-2.5 px-2">${submittedLinks || '<span class="text-slate-400">-</span>'}</td>
-              <td class="py-2.5 px-2">
-                <div class="flex items-center gap-1.5">
-                  <input type="text" id="score-input-${escapeHtml(att.id)}" value="${escapeHtml(att.lmsScore || '')}" placeholder="Nilai..." class="w-16 px-2 py-1 rounded-lg border border-slate-300 text-xs font-bold" />
-                  <button type="button" onclick="saveAttendeeLmsScore('${escapeHtml(ev.id)}', '${escapeHtml(att.id)}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold">Simpan</button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-2 font-bold text-navy-900">${escapeHtml(att.name)}</td>
+            <td class="py-2.5 px-2 text-slate-600">${escapeHtml(att.school)}</td>
+            <td class="py-2.5 px-2">
+              <span class="px-2 py-0.5 rounded-full font-bold ${pct === 100 && modules.length > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-50 text-indigo-700'}">
+                ${doneCount}/${modules.length} (${pct}%)
+              </span>
+            </td>
+            <td class="py-2.5 px-2">${submittedLinks || '<span class="text-slate-400">-</span>'}</td>
+            <td class="py-2.5 px-2">
+              <div class="flex items-center gap-1.5">
+                <input type="text" id="score-input-${escapeHtml(att.id)}" value="${escapeHtml(att.lmsScore || '')}" placeholder="90 / Baik" class="w-24 px-2 py-1 rounded-lg border border-slate-200 text-xs" />
+                <button type="button" onclick="saveAttendeeLmsScore('${escapeHtml(ev.id)}', '${escapeHtml(att.id)}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px]">Simpan</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function addLmsModuleAdmin(e) {
       e.preventDefault();
-      const sel = document.getElementById('lms-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('lms-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
 
       const newMod = {
@@ -1505,93 +1512,93 @@
       };
 
       ev.lmsModules = [...(ev.lmsModules || []), newMod];
+      await persistEventDocument(ev);
       e.target.reset();
-      await persistEventDoc(ev);
+      renderAdminLmsPanel();
     }
 
-    async function deleteLmsModuleAdmin(idx) {
-      const sel = document.getElementById('lms-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+    async function deleteLmsModuleAdmin(evId, modId) {
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
-      ev.lmsModules.splice(idx, 1);
-      await persistEventDoc(ev);
+      ev.lmsModules = (ev.lmsModules || []).filter(m => m.id !== modId);
+      await persistEventDocument(ev);
+      renderAdminLmsPanel();
     }
 
-    async function saveAttendeeLmsScore(eventId, attId) {
-      const ev = eventsData.find(item => item.id === eventId);
+    async function saveAttendeeLmsScore(evId, attId) {
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
       const att = (ev.attendees || []).find(a => a.id === attId);
       if (!att) return;
 
-      const inp = document.getElementById(`score-input-${attId}`);
-      const scoreVal = inp ? inp.value.trim() : '';
-      att.lmsScore = scoreVal;
+      const val = document.getElementById(`score-input-${attId}`).value.trim();
+      att.lmsScore = val;
       saveLocalCache();
-
       if (isFirebaseReady && db) {
-        try {
-          await db.collection('events').doc(eventId).collection('attendees').doc(attId).set({
-            lmsScore: scoreVal
-          }, { merge: true });
-        } catch (err) {}
+        await db.collection('events').doc(evId).collection('attendees').doc(attId).set({ lmsScore: val }, { merge: true });
       }
-      alert(`Nilai evaluasi untuk ${att.name} tersimpan!`);
+      alert(`Nilai peserta ${att.name} berhasil disimpan.`);
     }
 
     function renderAdminResourcesLists() {
       const sel = document.getElementById('res-admin-event-select');
+      if (!sel || !sel.value) return;
       const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
 
-      document.getElementById('admin-materials-list').innerHTML = (ev.materials || []).map((m, idx) => `
+      const matContainer = document.getElementById('admin-materials-list');
+      matContainer.innerHTML = (ev.materials || []).map((m, idx) => `
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
             <div class="font-bold text-navy-900 truncate">${escapeHtml(m.title)}</div>
-            <div class="text-[11px] text-slate-500 truncate">${escapeHtml(m.speaker || '')}</div>
+            <div class="text-[11px] text-slate-500 truncate">${escapeHtml(m.speaker || '')} &bull; ${escapeHtml(m.url)}</div>
           </div>
-          <button onclick="deleteMaterialAdmin(${idx})" class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 font-bold shrink-0">Hapus</button>
+          <button onclick="deleteMaterialAdmin('${escapeHtml(ev.id)}', ${idx})" class="text-rose-600 font-bold shrink-0">Hapus</button>
         </div>
-      `).join('');
+      `).join('') || '<p class="text-xs text-slate-400">Belum ada materi.</p>';
 
-      document.getElementById('admin-recordings-list').innerHTML = (ev.recordings || []).map((r, idx) => `
+      const recContainer = document.getElementById('admin-recordings-list');
+      recContainer.innerHTML = (ev.recordings || []).map((r, idx) => `
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
           <div class="min-w-0">
             <div class="font-bold text-navy-900 truncate">${escapeHtml(r.title)}</div>
-            <div class="text-[11px] text-slate-500 truncate">${escapeHtml(r.platform || '')}</div>
+            <div class="text-[11px] text-slate-500 truncate">${escapeHtml(r.platform || '')} &bull; ${escapeHtml(r.url)}</div>
           </div>
-          <button onclick="deleteRecordingAdmin(${idx})" class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 font-bold shrink-0">Hapus</button>
+          <button onclick="deleteRecordingAdmin('${escapeHtml(ev.id)}', ${idx})" class="text-rose-600 font-bold shrink-0">Hapus</button>
         </div>
-      `).join('');
+      `).join('') || '<p class="text-xs text-slate-400">Belum ada rekaman.</p>';
     }
 
     async function addMaterialAdmin(e) {
       e.preventDefault();
-      const sel = document.getElementById('res-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('res-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
 
       ev.materials = [...(ev.materials || []), {
         title: document.getElementById('mat-title').value.trim(),
         type: document.getElementById('mat-type').value.trim() || 'PDF',
-        speaker: document.getElementById('mat-speaker').value.trim() || 'Narasumber',
+        speaker: document.getElementById('mat-speaker').value.trim(),
         url: document.getElementById('mat-url').value.trim()
       }];
+      await persistEventDocument(ev);
       e.target.reset();
-      await persistEventDoc(ev);
+      document.getElementById('mat-type').value = 'PDF / Presentasi';
+      refreshAllAdminViews();
     }
 
-    async function deleteMaterialAdmin(idx) {
-      const sel = document.getElementById('res-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+    async function deleteMaterialAdmin(evId, idx) {
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
       ev.materials.splice(idx, 1);
-      await persistEventDoc(ev);
+      await persistEventDocument(ev);
+      refreshAllAdminViews();
     }
 
     async function addRecordingAdmin(e) {
       e.preventDefault();
-      const sel = document.getElementById('res-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('res-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
 
       ev.recordings = [...(ev.recordings || []), {
@@ -1599,126 +1606,95 @@
         platform: document.getElementById('rec-platform').value.trim() || 'YouTube',
         url: document.getElementById('rec-url').value.trim()
       }];
+      await persistEventDocument(ev);
       e.target.reset();
-      await persistEventDoc(ev);
+      document.getElementById('rec-platform').value = 'YouTube JSIT Lampung';
+      refreshAllAdminViews();
     }
 
-    async function deleteRecordingAdmin(idx) {
-      const sel = document.getElementById('res-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+    async function deleteRecordingAdmin(evId, idx) {
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
       ev.recordings.splice(idx, 1);
-      await persistEventDoc(ev);
+      await persistEventDocument(ev);
+      refreshAllAdminViews();
     }
 
-    function generateAdminPreviewQr(text, size = 240) {
-      return new Promise((resolve) => {
-        if (!text) return resolve('');
-        if (window.QRCode) {
-          try {
-            const tempDiv = document.createElement('div');
-            tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;visibility:hidden;';
-            document.body.appendChild(tempDiv);
-
-            new window.QRCode(tempDiv, {
-              text: String(text),
-              width: size,
-              height: size,
-              colorDark: '#000000',
-              colorLight: '#FFFFFF',
-              correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.L : 1
-            });
-
-            setTimeout(() => {
-              const canvas = tempDiv.querySelector('canvas');
-              const img = tempDiv.querySelector('img');
-              let dataUrl = '';
-              if (canvas) dataUrl = canvas.toDataURL('image/png');
-              else if (img && img.src) dataUrl = img.src;
-              tempDiv.remove();
-              if (dataUrl) return resolve(dataUrl);
-              resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=10&data=${encodeURIComponent(text)}`);
-            }, 35);
-            return;
-          } catch (e) {}
-        }
-        resolve(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&ecc=L&margin=10&data=${encodeURIComponent(text)}`);
-      });
-    }
-
-    function loadCertConfigToEditor() {
+    function loadCertConfigIntoForm() {
       const sel = document.getElementById('cert-admin-event-select');
-      if (!sel) return;
+      if (!sel || !sel.value) return;
       const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
 
       const c = ev.certificate || {};
       const l = { ...DEFAULT_LAYOUT, ...(c.layout || {}) };
 
-      document.getElementById('cfg-cert-prefix').value = c.prefix || 'SERT-JSIT-LPG/2026';
-      document.getElementById('cfg-cert-jp').value = c.jp || '8 JP';
-      document.getElementById('cfg-cert-place').value = c.issuedPlace || 'Bandar Lampung';
-      document.getElementById('cfg-cert-date-text').value = c.issuedDateText || ev.dateEnd || '2026';
-      document.getElementById('cfg-cert-signer-name').value = c.signerName || settingsData.signerName;
-      document.getElementById('cfg-cert-signer-title').value = c.signerTitle || settingsData.signerTitle;
-      document.getElementById('cfg-cert-bg-url').value = c.templateBg || '';
+      document.getElementById('cert-cfg-prefix').value = c.prefix || 'SERT-JSIT-LPG/2026';
+      document.getElementById('cert-cfg-jp').value = c.jp || '8 JP';
+      document.getElementById('cert-cfg-place').value = c.issuedPlace || 'Bandar Lampung';
+      document.getElementById('cert-cfg-date').value = c.issuedDateText || formatDateIndo(ev.dateEnd || ev.dateStart);
+      document.getElementById('cert-cfg-signer-name').value = c.signerName || settingsData.signerName;
+      document.getElementById('cert-cfg-signer-title').value = c.signerTitle || settingsData.signerTitle;
+      document.getElementById('cert-cfg-bg-url').value = c.templateBg || '';
 
-      document.getElementById('cfg-show-heading').checked = Boolean(l.showHeading);
-      document.getElementById('cfg-show-border').checked = Boolean(l.showBorder);
-      document.getElementById('cfg-show-header').checked = Boolean(l.showHeader);
+      document.getElementById('lay-show-border').checked = Boolean(l.showBorder);
+      document.getElementById('lay-show-header').checked = Boolean(l.showHeader);
+      document.getElementById('lay-show-heading').checked = Boolean(l.showHeading);
+      document.getElementById('lay-heading-text').value = l.headingText || 'SERTIFIKAT';
+      document.getElementById('lay-center-top').value = l.centerTop || 158;
+      document.getElementById('lay-name-size').value = l.nameSize || 28;
+      document.getElementById('lay-desc-size').value = l.descSize || 13.5;
+      document.getElementById('lay-qr-left').value = l.qrLeft ?? 65;
+      document.getElementById('lay-qr-bottom').value = l.qrBottom ?? 52;
+      document.getElementById('lay-qr-scale').value = l.qrScale || 100;
+      document.getElementById('lay-signer-right').value = l.signerRight ?? 65;
+      document.getElementById('lay-signer-bottom').value = l.signerBottom ?? 52;
+      document.getElementById('lay-signer-scale').value = l.signerScale || 100;
 
-      document.getElementById('cfg-center-top').value = l.centerTop;
-      document.getElementById('cfg-name-size').value = l.nameSize;
-      document.getElementById('cfg-desc-size').value = l.descSize;
-      document.getElementById('cfg-qr-scale').value = l.qrScale || 100;
-      document.getElementById('cfg-qr-left').value = l.qrLeft;
-      document.getElementById('cfg-qr-bottom').value = l.qrBottom;
-      document.getElementById('cfg-signer-right').value = l.signerRight;
-      document.getElementById('cfg-signer-bottom').value = l.signerBottom;
-
-      updateCertPreviewLive();
+      updateLiveCertPreview();
     }
 
-    function readLayoutInputs() {
+    function handleEventCertBgUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('cert-cfg-bg-url').value = reader.result;
+        updateLiveCertPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function readCurrentLayoutFromInputs() {
       return {
-        headingText: 'SERTIFIKAT',
-        showHeading: document.getElementById('cfg-show-heading').checked,
-        showBorder: document.getElementById('cfg-show-border').checked,
-        showHeader: document.getElementById('cfg-show-header').checked,
-        headerTop: 42,
-        centerTop: Number(document.getElementById('cfg-center-top').value),
-        headingSize: 38,
-        nameSize: Number(document.getElementById('cfg-name-size').value),
-        descSize: Number(document.getElementById('cfg-desc-size').value),
-        qrLeft: Number(document.getElementById('cfg-qr-left').value),
-        qrBottom: Number(document.getElementById('cfg-qr-bottom').value),
-        qrScale: Number(document.getElementById('cfg-qr-scale').value),
-        qrTextColor: '#1E293B',
-        signerRight: Number(document.getElementById('cfg-signer-right').value),
-        signerBottom: Number(document.getElementById('cfg-signer-bottom').value),
-        signerScale: 100,
-        signerTextColor: '#0F172A'
+        ...DEFAULT_LAYOUT,
+        showBorder: document.getElementById('lay-show-border').checked,
+        showHeader: document.getElementById('lay-show-header').checked,
+        showHeading: document.getElementById('lay-show-heading').checked,
+        headingText: document.getElementById('lay-heading-text').value.trim() || 'SERTIFIKAT',
+        centerTop: Number(document.getElementById('lay-center-top').value) || 158,
+        nameSize: Number(document.getElementById('lay-name-size').value) || 28,
+        descSize: Number(document.getElementById('lay-desc-size').value) || 13.5,
+        qrLeft: Number(document.getElementById('lay-qr-left').value) || 0,
+        qrBottom: Number(document.getElementById('lay-qr-bottom').value) || 0,
+        qrScale: Number(document.getElementById('lay-qr-scale').value) || 100,
+        signerRight: Number(document.getElementById('lay-signer-right').value) || 0,
+        signerBottom: Number(document.getElementById('lay-signer-bottom').value) || 0,
+        signerScale: Number(document.getElementById('lay-signer-scale').value) || 100
       };
     }
 
-    async function updateCertPreviewLive() {
+    function updateLiveCertPreview() {
       const sel = document.getElementById('cert-admin-event-select');
-      const ev = eventsData.find(item => item.id === (sel ? sel.value : ''));
+      if (!sel || !sel.value) return;
+      const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
 
-      const l = readLayoutInputs();
-      document.getElementById('val-center-top').textContent = l.centerTop;
-      document.getElementById('val-name-size').textContent = l.nameSize;
-      document.getElementById('val-desc-size').textContent = l.descSize;
-      document.getElementById('val-qr-scale').textContent = l.qrScale;
-      document.getElementById('val-qr-left').textContent = l.qrLeft;
-      document.getElementById('val-qr-bottom').textContent = l.qrBottom;
-      document.getElementById('val-signer-right').textContent = l.signerRight;
-      document.getElementById('val-signer-bottom').textContent = l.signerBottom;
+      const layout = readCurrentLayoutFromInputs();
+      const customBg = document.getElementById('cert-cfg-bg-url').value.trim();
+      const bgUrl = customBg || settingsData.defaultCertTemplate || '';
+      const bgImg = document.getElementById('pv-bg-img');
 
-      const rawBgInput = normalizeGoogleDriveImageUrl(document.getElementById('cfg-cert-bg-url').value.trim());
-      const bgUrl = rawBgInput || normalizeGoogleDriveImageUrl(settingsData.defaultCertTemplate || '');
-      const bgImg = document.getElementById('pv-cert-bg-img');
       if (bgUrl) {
         bgImg.src = sanitizeUrl(bgUrl);
         bgImg.classList.remove('hidden');
@@ -1726,157 +1702,116 @@
         bgImg.classList.add('hidden');
       }
 
-      document.getElementById('pv-cert-outer-border').classList.toggle('hidden', !l.showBorder);
-      document.getElementById('pv-cert-inner-frame').classList.toggle('hidden', !l.showBorder);
-      document.getElementById('pv-cert-default-header').classList.toggle('hidden', !l.showHeader);
-      document.getElementById('pv-cert-heading').classList.toggle('hidden', !l.showHeading);
+      document.getElementById('pv-outer-border').classList.toggle('hidden', !layout.showBorder);
+      document.getElementById('pv-inner-frame').classList.toggle('hidden', !layout.showBorder);
+      document.getElementById('pv-default-header').classList.toggle('hidden', !layout.showHeader);
 
-      const dyn = document.getElementById('pv-cert-dynamic-block');
-      dyn.style.top = `${l.centerTop}px`;
-      document.getElementById('pv-cert-name').style.fontSize = `${l.nameSize}px`;
+      const hEl = document.getElementById('pv-heading');
+      hEl.classList.toggle('hidden', !layout.showHeading);
+      hEl.textContent = layout.headingText;
 
-      const prefix = document.getElementById('cfg-cert-prefix').value.trim();
-      const jp = document.getElementById('cfg-cert-jp').value.trim();
-      document.getElementById('pv-cert-number').textContent = `Nomor: 001/${prefix}`;
+      document.getElementById('pv-dynamic-block').style.top = `${layout.centerTop}px`;
+      document.getElementById('pv-name').style.fontSize = `${layout.nameSize}px`;
+      document.getElementById('pv-number').textContent = `Nomor: 001/${document.getElementById('cert-cfg-prefix').value || 'SERT-JSIT-LPG/2026'}`;
 
-      const desc = document.getElementById('pv-cert-description');
-      desc.style.fontSize = `${l.descSize}px`;
-      desc.innerHTML = `Atas partisipasi aktifnya sebagai <strong>Peserta</strong> dalam kegiatan <strong>“${escapeHtml(ev.title)}”</strong> yang diselenggarakan oleh <strong>${escapeHtml(settingsData.orgSub)}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(jp)}</strong>.`;
+      const jp = document.getElementById('cert-cfg-jp').value || '8 JP';
+      const orgSub = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
+      const descEl = document.getElementById('pv-description');
+      descEl.style.fontSize = `${layout.descSize}px`;
+      descEl.innerHTML = `Atas partisipasi aktifnya sebagai <strong>Peserta</strong> dalam kegiatan <strong>“${escapeHtml(ev.title)}”</strong> yang diselenggarakan oleh <strong>${escapeHtml(orgSub)}</strong> pada tanggal <strong>${escapeHtml(formatDateIndo(ev.dateStart, ev.dateEnd))}</strong> dengan bobot pelatihan setara <strong>${escapeHtml(jp)}</strong>.`;
 
-      const qrBlock = document.getElementById('pv-cert-qr-block');
-      qrBlock.style.left = `${l.qrLeft}px`;
-      qrBlock.style.bottom = `${l.qrBottom}px`;
-      qrBlock.style.transform = `scale(${l.qrScale / 100})`;
+      const qrBlock = document.getElementById('pv-qr-block');
+      qrBlock.style.left = `${layout.qrLeft}px`;
+      qrBlock.style.bottom = `${layout.qrBottom}px`;
+      qrBlock.style.transform = `scale(${layout.qrScale / 100})`;
+      document.getElementById('pv-qr-org').textContent = orgSub;
 
-      const signerBlock = document.getElementById('pv-cert-signer-block');
-      signerBlock.style.right = `${l.signerRight}px`;
-      signerBlock.style.bottom = `${l.signerBottom}px`;
+      const sBlock = document.getElementById('pv-signer-block');
+      sBlock.style.right = `${layout.signerRight}px`;
+      sBlock.style.bottom = `${layout.signerBottom}px`;
+      sBlock.style.transform = `scale(${layout.signerScale / 100})`;
 
-      document.getElementById('pv-cert-issued').textContent = `${document.getElementById('cfg-cert-place').value}, ${document.getElementById('cfg-cert-date-text').value}`;
-      document.getElementById('pv-cert-signer-title').textContent = document.getElementById('cfg-cert-signer-title').value;
-      document.getElementById('pv-cert-signer-name').textContent = document.getElementById('cfg-cert-signer-name').value;
+      document.getElementById('pv-issued').textContent = `${document.getElementById('cert-cfg-place').value || 'Bandar Lampung'}, ${document.getElementById('cert-cfg-date').value || ''}`;
+      document.getElementById('pv-signer-title').textContent = document.getElementById('cert-cfg-signer-title').value || settingsData.signerTitle;
+      document.getElementById('pv-signer-name').textContent = document.getElementById('cert-cfg-signer-name').value || settingsData.signerName;
 
-      const qrUrl = await generateAdminPreviewQr(`https://jsitlampung.or.id/verifikasi?cert=JSIT-DEMO-001`, 240);
-      document.getElementById('pv-cert-qr-img').src = qrUrl;
       fitPreviewToStage();
     }
 
     function fitPreviewToStage() {
       const wrap = document.getElementById('pv-stage-wrapper');
-      const area = document.getElementById('pv-printable-area');
-      if (!wrap || !area) return;
-      if (wrap.clientWidth > 0) {
-        area.style.transform = `scale(${wrap.clientWidth / 1000})`;
+      const paper = document.getElementById('pv-printable-area');
+      if (!wrap || !paper) return;
+      const w = wrap.clientWidth;
+      if (w > 0) {
+        paper.style.transform = `scale(${w / 1000})`;
       }
     }
     window.addEventListener('resize', fitPreviewToStage);
 
-    function handleCertBgUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          const c = document.createElement('canvas');
-          c.width = 1400;
-          c.height = 990;
-          const ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0, 1400, 990);
-          document.getElementById('cfg-cert-bg-url').value = c.toDataURL('image/jpeg', 0.82);
-          updateCertPreviewLive();
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function applyDefaultCertBg() {
-      document.getElementById('cfg-cert-bg-url').value = settingsData.defaultCertTemplate || DEFAULT_SETTINGS.defaultCertTemplate;
-      updateCertPreviewLive();
-    }
-
-    function clearCertBg() {
-      document.getElementById('cfg-cert-bg-url').value = '';
-      updateCertPreviewLive();
-    }
-
     function resetCertLayoutToDefault() {
-      document.getElementById('cfg-show-heading').checked = DEFAULT_LAYOUT.showHeading;
-      document.getElementById('cfg-show-border').checked = DEFAULT_LAYOUT.showBorder;
-      document.getElementById('cfg-show-header').checked = DEFAULT_LAYOUT.showHeader;
-      document.getElementById('cfg-center-top').value = DEFAULT_LAYOUT.centerTop;
-      document.getElementById('cfg-name-size').value = DEFAULT_LAYOUT.nameSize;
-      document.getElementById('cfg-desc-size').value = DEFAULT_LAYOUT.descSize;
-      document.getElementById('cfg-qr-scale').value = DEFAULT_LAYOUT.qrScale;
-      document.getElementById('cfg-qr-left').value = DEFAULT_LAYOUT.qrLeft;
-      document.getElementById('cfg-qr-bottom').value = DEFAULT_LAYOUT.qrBottom;
-      document.getElementById('cfg-signer-right').value = DEFAULT_LAYOUT.signerRight;
-      document.getElementById('cfg-signer-bottom').value = DEFAULT_LAYOUT.signerBottom;
-      updateCertPreviewLive();
+      document.getElementById('lay-show-border').checked = DEFAULT_LAYOUT.showBorder;
+      document.getElementById('lay-show-header').checked = DEFAULT_LAYOUT.showHeader;
+      document.getElementById('lay-show-heading').checked = DEFAULT_LAYOUT.showHeading;
+      document.getElementById('lay-heading-text').value = DEFAULT_LAYOUT.headingText;
+      document.getElementById('lay-center-top').value = DEFAULT_LAYOUT.centerTop;
+      document.getElementById('lay-name-size').value = DEFAULT_LAYOUT.nameSize;
+      document.getElementById('lay-desc-size').value = DEFAULT_LAYOUT.descSize;
+      document.getElementById('lay-qr-left').value = DEFAULT_LAYOUT.qrLeft;
+      document.getElementById('lay-qr-bottom').value = DEFAULT_LAYOUT.qrBottom;
+      document.getElementById('lay-qr-scale').value = DEFAULT_LAYOUT.qrScale;
+      document.getElementById('lay-signer-right').value = DEFAULT_LAYOUT.signerRight;
+      document.getElementById('lay-signer-bottom').value = DEFAULT_LAYOUT.signerBottom;
+      document.getElementById('lay-signer-scale').value = DEFAULT_LAYOUT.signerScale;
+      updateLiveCertPreview();
     }
 
-    async function saveCertConfigFromEditor(e) {
+    async function saveCertConfig(e) {
       e.preventDefault();
-      const sel = document.getElementById('cert-admin-event-select');
-      const ev = eventsData.find(item => item.id === sel.value);
+      const evId = document.getElementById('cert-admin-event-select').value;
+      const ev = eventsData.find(item => item.id === evId);
       if (!ev) return;
 
-      const normalizedBg = normalizeGoogleDriveImageUrl(document.getElementById('cfg-cert-bg-url').value.trim());
-      document.getElementById('cfg-cert-bg-url').value = normalizedBg;
-
       ev.certificate = {
-        prefix: document.getElementById('cfg-cert-prefix').value.trim(),
-        jp: document.getElementById('cfg-cert-jp').value.trim(),
-        issuedPlace: document.getElementById('cfg-cert-place').value.trim(),
-        issuedDateText: document.getElementById('cfg-cert-date-text').value.trim(),
-        signerName: document.getElementById('cfg-cert-signer-name').value.trim(),
-        signerTitle: document.getElementById('cfg-cert-signer-title').value.trim(),
-        templateBg: normalizedBg,
-        layout: readLayoutInputs()
+        prefix: document.getElementById('cert-cfg-prefix').value.trim(),
+        jp: document.getElementById('cert-cfg-jp').value.trim(),
+        issuedPlace: document.getElementById('cert-cfg-place').value.trim(),
+        issuedDateText: document.getElementById('cert-cfg-date').value.trim(),
+        signerName: document.getElementById('cert-cfg-signer-name').value.trim(),
+        signerTitle: document.getElementById('cert-cfg-signer-title').value.trim(),
+        templateBg: document.getElementById('cert-cfg-bg-url').value.trim(),
+        layout: readCurrentLayoutFromInputs()
       };
 
-      try {
-        await persistEventDoc(ev);
-        alert('Desain dan tata letak E-Sertifikat berhasil disimpan ke Cloud!');
-      } catch (err) {
-        alert('Gagal menyinkronkan template sertifikat ke Cloud (pastikan ukuran gambar < 800KB atau gunakan link Google Drive): ' + err.message);
-      }
+      await persistEventDocument(ev);
+      alert('Desain & tata letak E-Sertifikat berhasil disimpan!');
     }
 
-    function fillSettingsForm() {
+    function populateSettingsForm() {
       document.getElementById('set-org-name').value = settingsData.orgName || DEFAULT_SETTINGS.orgName;
       document.getElementById('set-org-sub').value = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
       document.getElementById('set-signer-name').value = settingsData.signerName || DEFAULT_SETTINGS.signerName;
       document.getElementById('set-signer-title').value = settingsData.signerTitle || DEFAULT_SETTINGS.signerTitle;
-      document.getElementById('set-default-template').value = settingsData.defaultCertTemplate || DEFAULT_SETTINGS.defaultCertTemplate;
+      document.getElementById('set-default-template').value = settingsData.defaultCertTemplate || '';
     }
 
     async function saveGlobalSettings(e) {
       e.preventDefault();
-      const normalizedDefaultTpl = normalizeGoogleDriveImageUrl(document.getElementById('set-default-template').value.trim());
-      document.getElementById('set-default-template').value = normalizedDefaultTpl;
-
       settingsData = {
         orgName: document.getElementById('set-org-name').value.trim(),
         orgSub: document.getElementById('set-org-sub').value.trim(),
         signerName: document.getElementById('set-signer-name').value.trim(),
         signerTitle: document.getElementById('set-signer-title').value.trim(),
-        defaultCertTemplate: normalizedDefaultTpl
+        defaultCertTemplate: document.getElementById('set-default-template').value.trim()
       };
       saveLocalCache();
       if (isFirebaseReady && db) {
-        try {
-          await db.collection('settings').doc('global').set(settingsData, { merge: true });
-        } catch (err) {}
+        await db.collection('settings').doc('global').set(settingsData, { merge: true });
       }
-      alert('Pengaturan identitas portal berhasil disimpan!');
+      alert('Pengaturan global berhasil diperbarui!');
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initFirebaseAdmin();
-      if (window.lucide) lucide.createIcons();
-    });
+    document.addEventListener('DOMContentLoaded', initAdminApp);
   </script>
 </body>
 </html>

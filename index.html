@@ -34,13 +34,13 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- QRCodeJS (Client-side QR Generator Tanpa Masalah CORS) -->
+  <!-- QRCodeJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <!-- Firebase App (Compat SDK) & Firestore -->
+  <!-- Firebase App (Compat SDK), Auth & Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <!-- File konfigurasi Firebase terpisah -->
   <script src="firebase-config.js"></script>
 
   <style>
@@ -89,7 +89,6 @@
       user-select: none;
     }
 
-    /* Styling Cetak A4 Landscape Akurat */
     @media print {
       @page {
         size: A4 landscape;
@@ -152,11 +151,24 @@
           <span>Cek E-Sertifikat</span>
         </button>
 
-        <a href="admin.html" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs sm:text-sm font-semibold transition">
-          <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i>
-          <span class="hidden sm:inline">Admin Panitia</span>
-          <span class="sm:hidden">Admin</span>
-        </a>
+        <!-- Tombol Login Multiuser (menggantikan tombol Admin Panitia) -->
+        <button id="nav-login-btn" onclick="openAuthModal('login')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-navy-950 text-xs sm:text-sm font-extrabold shadow-md transition">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span>Login</span>
+        </button>
+
+        <!-- Pill Akun Aktif saat User sudah Login -->
+        <div id="nav-user-menu" class="hidden items-center gap-2">
+          <button onclick="openUserProfileModal()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-bold transition">
+            <i data-lucide="user-circle-2" class="w-4 h-4 text-sky-300"></i>
+            <span id="nav-user-name" class="max-w-[110px] truncate">Akun</span>
+            <span id="nav-user-role-badge" class="px-1.5 py-0.5 rounded bg-sky-400/25 text-sky-200 text-[10px] uppercase">Peserta</span>
+          </button>
+          <a id="nav-admin-panel-link" href="admin.html" class="hidden inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 text-xs font-extrabold transition">
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+            <span>Panel Admin</span>
+          </a>
+        </div>
       </div>
     </div>
   </header>
@@ -165,7 +177,6 @@
   <!-- VIEW 1: BERANDA KATALOG KEGIATAN                                      -->
   <!-- ===================================================================== -->
   <main id="catalog-page" class="flex-1">
-    <!-- Hero Section -->
     <section class="hero-pattern text-white py-12 sm:py-16 border-b border-blue-900">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -247,7 +258,6 @@
           </div>
         </div>
 
-        <!-- Filter Kategori -->
         <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
           <span class="text-xs font-semibold text-slate-500 mr-1">Kategori:</span>
           <button onclick="setCategoryFilter('ALL')" data-cat="ALL" class="cat-pill active px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs transition">Semua</button>
@@ -276,11 +286,11 @@
       </div>
     </section>
   </main>
+
   <!-- ===================================================================== -->
   <!-- VIEW 2: RUANG KEGIATAN & LMS TERPADU                                  -->
   <!-- ===================================================================== -->
   <section id="event-room-page" class="hidden flex-1 flex flex-col lg:flex-row">
-    <!-- Sidebar Ruang Kegiatan -->
     <aside id="room-sidebar" class="w-full lg:w-72 bg-navy-900 text-white border-b lg:border-b-0 lg:border-r border-blue-900/80 shrink-0 flex flex-col justify-between transition-all duration-200">
       <div>
         <div class="p-4 sm:p-5 border-b border-blue-800/70 space-y-3">
@@ -308,7 +318,6 @@
           </div>
         </div>
 
-        <!-- Menu Navigasi Ruang Kegiatan -->
         <nav id="room-sidebar-nav" class="grid grid-cols-5 lg:grid-cols-1 text-xs sm:text-sm">
           <button onclick="switchRoomTab('info')" id="room-nav-info" title="Informasi Kegiatan" class="room-nav-btn room-nav-active flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 px-2 lg:px-5 py-3.5 font-bold text-blue-100 hover:bg-white/5 transition">
             <i data-lucide="info" class="w-4 h-4 text-sky-300 shrink-0"></i>
@@ -347,9 +356,7 @@
       </div>
     </aside>
 
-    <!-- Konten Utama Ruang Kegiatan -->
     <div class="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto space-y-6">
-      <!-- Header Banner Ruang Kegiatan -->
       <div class="bg-gradient-to-r from-navy-900 to-blue-800 rounded-3xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1.5">
           <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -569,11 +576,9 @@
       <!-- TAB 3: MATERI NARASUMBER -->
       <div id="room-panel-materi" class="room-panel hidden space-y-5">
         <div class="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="font-display font-bold text-lg text-navy-900">Materi &amp; Modul Presentasi</h3>
-              <p class="text-xs text-slate-500">Unduh bahan tayang PDF, slide, maupun modul pendukung kegiatan.</p>
-            </div>
+          <div>
+            <h3 class="font-display font-bold text-lg text-navy-900">Materi &amp; Modul Presentasi</h3>
+            <p class="text-xs text-slate-500">Unduh bahan tayang PDF, slide, maupun modul pendukung kegiatan.</p>
           </div>
           <div id="materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
@@ -664,24 +669,21 @@
             <!-- Stage Responsif Kanvas Sertifikat 1000x707 -->
             <div class="cert-stage-wrapper border border-slate-200" id="cert-stage-wrapper">
               <div id="cert-printable-area">
-                <!-- Gambar Template Background -->
-                <img id="cert-view-bg-img" src="" alt="Template Sertifikat" crossorigin="anonymous" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
+                <!-- PENTING: Tanpa atribut crossorigin="anonymous" agar gambar dari Google Drive / lh3 langsung tampil di browser! -->
+                <img id="cert-view-bg-img" src="" alt="Template Sertifikat" class="hidden absolute inset-0 w-full h-full object-fill pointer-events-none" />
 
-                <!-- Bingkai Bawaan (Aktif jika template kosong atau opsi bingkai diaktifkan admin) -->
-                <div id="cert-view-outer-border" class="absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
-                <div id="cert-view-inner-frame" class="absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
+                <div id="cert-view-outer-border" class="hidden absolute inset-0 border-[10px] border-blue-900 pointer-events-none"></div>
+                <div id="cert-view-inner-frame" class="hidden absolute inset-5 border-2 border-amber-500/70 pointer-events-none"></div>
 
-                <!-- Header Kop Bawaan (Opsional sesuai pengaturan admin) -->
-                <div id="cert-view-default-header" class="absolute left-0 right-0 text-center px-12" style="top: 42px;">
+                <div id="cert-view-default-header" class="hidden absolute left-0 right-0 text-center px-12" style="top: 42px;">
                   <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-900 text-amber-300 text-[11px] font-bold tracking-widest uppercase">
                     Jaringan Sekolah Islam Terpadu (JSIT) Indonesia
                   </div>
                   <h2 class="font-display font-extrabold text-xl text-navy-900 tracking-wide mt-1">WILAYAH PROVINSI LAMPUNG</h2>
                 </div>
 
-                <!-- Blok Tengah Dinamis -->
                 <div id="cert-view-dynamic-block" class="absolute left-0 right-0 px-14 text-center" style="top: 158px;">
-                  <div id="cert-view-heading" class="font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
+                  <div id="cert-view-heading" class="hidden font-display font-extrabold tracking-[0.2em] text-blue-900 uppercase" style="font-size: 38px;">
                     SERTIFIKAT
                   </div>
                   <div id="cert-view-number" class="text-sm font-bold text-slate-600 mt-1">Nomor: 001/SERT-JSIT-LPG/2026</div>
@@ -700,7 +702,6 @@
                   </p>
                 </div>
 
-                <!-- Blok QR Code Verifikasi -->
                 <div id="cert-view-qr-block" class="absolute flex items-center gap-3 origin-bottom-left" style="left: 65px; bottom: 52px;">
                   <div class="p-2 bg-white rounded-xl border border-slate-300 shadow-xs">
                     <img id="cert-qr-img" src="" alt="QR Verifikasi Sertifikat" class="w-24 h-24 object-contain" />
@@ -712,7 +713,6 @@
                   </div>
                 </div>
 
-                <!-- Blok Tanda Tangan Ketua -->
                 <div id="cert-view-signer-block" class="absolute text-center w-80 origin-bottom-right" style="right: 65px; bottom: 52px;">
                   <div id="cert-view-issued" class="text-xs text-slate-700">Bandar Lampung, 2026</div>
                   <div id="cert-view-signer-title" class="text-xs font-semibold text-slate-800 mt-0.5">Ketua JSIT Indonesia Wilayah Lampung</div>
@@ -781,6 +781,144 @@
     </div>
   </div>
 
+  <!-- MODAL MULTIUSER LOGIN & PENDAFTARAN AKUN -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-blue-100 space-y-5 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-900 to-blue-600 text-white flex items-center justify-center shadow-sm">
+            <i data-lucide="user-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="auth-modal-title" class="font-display font-extrabold text-base sm:text-lg text-navy-900">Login Portal JSIT Lampung</h3>
+            <p id="auth-modal-subtitle" class="text-[11px] text-slate-500">Masuk sebagai Peserta, Panitia, atau Admin</p>
+          </div>
+        </div>
+        <button onclick="closeAuthModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="auth-feedback-box" class="hidden p-3 rounded-2xl text-xs font-semibold"></div>
+
+      <!-- FORM LOGIN -->
+      <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email / No. WhatsApp</label>
+          <input type="text" id="auth-login-user" required placeholder="Contoh: ahmad@sitlampung.id atau admin" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+          <input type="password" id="auth-login-pass" required placeholder="Masukkan kata sandi..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="submit" id="btn-portal-login" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 transition">
+          Masuk Sekarang
+        </button>
+
+        <div class="pt-3 border-t border-slate-100 text-center text-xs text-slate-600">
+          Belum punya akun?
+          <button type="button" onclick="switchAuthMode('register')" class="font-extrabold text-blue-600 hover:text-blue-800 underline ml-1">
+            Daftar sekarang!
+          </button>
+        </div>
+      </form>
+
+      <!-- FORM DAFTAR AKUN BARU -->
+      <form id="portal-register-form" onsubmit="handlePortalRegister(event)" class="hidden space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap &amp; Gelar (Untuk Sertifikat) *</label>
+          <input type="text" id="reg-fullname" required placeholder="Contoh: Ahmad Fauzi, S.Pd." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Username / Email *</label>
+            <input type="text" id="reg-username" required placeholder="ahmad.fauzi" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+            <input type="tel" id="reg-phone" required placeholder="0812xxxxxxxx" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Asal Sekolah / Instansi *</label>
+            <input type="text" id="reg-school" required placeholder="SDIT Permata Bunda" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten / Kota *</label>
+            <select id="reg-region" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+              <option value="Kota Bandar Lampung">Kota Bandar Lampung</option>
+              <option value="Kota Metro">Kota Metro</option>
+              <option value="Kab. Lampung Selatan">Kab. Lampung Selatan</option>
+              <option value="Kab. Lampung Tengah">Kab. Lampung Tengah</option>
+              <option value="Kab. Lampung Timur">Kab. Lampung Timur</option>
+              <option value="Kab. Lampung Utara">Kab. Lampung Utara</option>
+              <option value="Kab. Lampung Barat">Kab. Lampung Barat</option>
+              <option value="Kab. Pesawaran">Kab. Pesawaran</option>
+              <option value="Kab. Pringsewu">Kab. Pringsewu</option>
+              <option value="Kab. Tanggamus">Kab. Tanggamus</option>
+              <option value="Kab. Tulang Bawang">Kab. Tulang Bawang</option>
+              <option value="Kab. Tulang Bawang Barat">Kab. Tulang Bawang Barat</option>
+              <option value="Kab. Mesuji">Kab. Mesuji</option>
+              <option value="Kab. Way Kanan">Kab. Way Kanan</option>
+              <option value="Kab. Pesisir Barat">Kab. Pesisir Barat</option>
+              <option value="Luar Provinsi Lampung">Luar Provinsi Lampung</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+            <input type="password" id="reg-password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Sebagai</label>
+            <select id="reg-role" onchange="togglePanitiaCodeInput()" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+              <option value="peserta">Peserta Umum / Guru SIT</option>
+              <option value="panitia">Admin / Panitia Diklat</option>
+            </select>
+          </div>
+        </div>
+        <div id="reg-panitia-code-wrap" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200">
+          <label class="block text-xs font-bold text-amber-900 mb-1">Kode Akses Panitia JSIT *</label>
+          <input type="text" id="reg-panitia-code" placeholder="Masukkan kode undangan panitia" class="w-full px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-xs" />
+        </div>
+
+        <button type="submit" id="btn-portal-register" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition">
+          Buat Akun &amp; Masuk
+        </button>
+
+        <div class="pt-2 border-t border-slate-100 text-center text-xs text-slate-600">
+          Sudah punya akun?
+          <button type="button" onclick="switchAuthMode('login')" class="font-extrabold text-blue-600 hover:underline ml-1">
+            Login di sini
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL PROFIL PENGGUNA AKTIF -->
+  <div id="user-profile-modal" class="hidden fixed inset-0 z-50 bg-navy-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-blue-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-display font-bold text-base text-navy-900">Profil Pengguna Aktif</h3>
+        <button onclick="closeUserProfileModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="user-profile-details" class="space-y-2 text-xs"></div>
+      <div class="flex flex-wrap gap-2 pt-2">
+        <a id="profile-go-admin-btn" href="admin.html" class="hidden flex-1 text-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">
+          Buka Dashboard Admin
+        </a>
+        <button onclick="handlePortalLogout()" class="flex-1 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold text-xs transition">
+          Keluar (Logout)
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL LIGHTBOX FLYER KEGIATAN -->
   <div id="flyer-lightbox-modal" onclick="closeFlyerLightbox()" class="hidden fixed inset-0 z-50 bg-navy-950/85 backdrop-blur-xs flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="relative max-w-2xl w-full bg-white rounded-3xl p-3 shadow-2xl space-y-2">
@@ -804,7 +942,7 @@
       </div>
       <div class="flex items-center gap-4">
         <a href="#beranda" onclick="showCatalogHome(event)" class="hover:text-white transition">Katalog Kegiatan</a>
-        <a href="admin.html" class="text-sky-300 hover:text-white font-semibold transition">Login Admin Panitia</a>
+        <button onclick="openAuthModal('login')" class="text-sky-300 hover:text-white font-semibold transition">Login Akun / Panitia</button>
       </div>
     </div>
   </footer>
@@ -812,6 +950,10 @@
   <script>
     const STORAGE_KEY_EVENTS = 'jsit_lampung_events_v3';
     const STORAGE_KEY_SETTINGS = 'jsit_lampung_settings_v3';
+    const STORAGE_KEY_USERS = 'jsit_lampung_users_v3';
+    const SESSION_KEY_CURRENT_USER = 'jsit_lampung_current_user_v3';
+    const ADMIN_SESSION_KEY = 'jsit_lampung_admin_auth_v3';
+    const PANITIA_INVITE_CODE = 'JSITLAMPUNG2026';
 
     const DEFAULT_SETTINGS = {
       orgName: 'JSIT Wilayah Lampung',
@@ -944,6 +1086,7 @@
 
     let eventsData = [];
     let settingsData = { ...DEFAULT_SETTINGS };
+    let currentUser = null;
     let currentCategory = 'ALL';
     let activeEventId = null;
     let activeRoomTab = 'info';
@@ -1121,8 +1264,332 @@
       if (elSub) elSub.textContent = settingsData.orgSub || DEFAULT_SETTINGS.orgSub;
     }
 
+    /* ===================================================================== */
+    /* MULTIUSER AUTHENTICATION (PESERTA & PANITIA / ADMIN)                  */
+    /* ===================================================================== */
+    function getStoredUsers() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_USERS);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredUsers(users) {
+      try {
+        localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+      } catch (e) {}
+    }
+
+    function loadSessionUser() {
+      try {
+        const raw = sessionStorage.getItem(SESSION_KEY_CURRENT_USER) || localStorage.getItem(SESSION_KEY_CURRENT_USER);
+        if (raw) {
+          currentUser = JSON.parse(raw);
+          updateNavbarAuthUI();
+        }
+      } catch (e) {}
+    }
+
+    function setSessionUser(userObj) {
+      currentUser = userObj;
+      try {
+        if (userObj) {
+          const serialized = JSON.stringify(userObj);
+          sessionStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
+          localStorage.setItem(SESSION_KEY_CURRENT_USER, serialized);
+          if (userObj.role === 'admin' || userObj.role === 'panitia') {
+            sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+            sessionStorage.setItem('jsit_lampung_admin_user_v3', serialized);
+          }
+        } else {
+          sessionStorage.removeItem(SESSION_KEY_CURRENT_USER);
+          localStorage.removeItem(SESSION_KEY_CURRENT_USER);
+          sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          sessionStorage.removeItem('jsit_lampung_admin_user_v3');
+        }
+      } catch (e) {}
+      updateNavbarAuthUI();
+      autofillFormsFromCurrentUser();
+    }
+
+    function updateNavbarAuthUI() {
+      const loginBtn = document.getElementById('nav-login-btn');
+      const userMenu = document.getElementById('nav-user-menu');
+      const adminLink = document.getElementById('nav-admin-panel-link');
+      if (!loginBtn || !userMenu) return;
+
+      if (currentUser) {
+        loginBtn.classList.add('hidden');
+        userMenu.classList.remove('hidden');
+        userMenu.classList.add('flex');
+        document.getElementById('nav-user-name').textContent = currentUser.fullName || currentUser.username;
+        const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia';
+        document.getElementById('nav-user-role-badge').textContent = isStaff ? 'Admin' : 'Peserta';
+        if (adminLink) adminLink.classList.toggle('hidden', !isStaff);
+      } else {
+        loginBtn.classList.remove('hidden');
+        userMenu.classList.add('hidden');
+        userMenu.classList.remove('flex');
+        if (adminLink) adminLink.classList.add('hidden');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function autofillFormsFromCurrentUser() {
+      if (!currentUser) return;
+      const attName = document.getElementById('att-name');
+      const attSchool = document.getElementById('att-school');
+      const attRegion = document.getElementById('att-region');
+      const attPhone = document.getElementById('att-phone');
+      const certSearch = document.getElementById('cert-search-query');
+      const lmsSearch = document.getElementById('lms-learner-query');
+
+      if (attName && !attName.value && currentUser.fullName) attName.value = currentUser.fullName;
+      if (attSchool && !attSchool.value && currentUser.school) attSchool.value = currentUser.school;
+      if (attRegion && !attRegion.value && currentUser.region) attRegion.value = currentUser.region;
+      if (attPhone && !attPhone.value && currentUser.phone) attPhone.value = currentUser.phone;
+      if (certSearch && !certSearch.value && currentUser.fullName) certSearch.value = currentUser.fullName;
+      if (lmsSearch && !lmsSearch.value && currentUser.fullName) lmsSearch.value = currentUser.fullName;
+    }
+
+    function openAuthModal(mode = 'login') {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      switchAuthMode(mode);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthMode(mode) {
+      const loginForm = document.getElementById('portal-login-form');
+      const regForm = document.getElementById('portal-register-form');
+      const fb = document.getElementById('auth-feedback-box');
+      fb.classList.add('hidden');
+
+      if (mode === 'register') {
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        document.getElementById('auth-modal-title').textContent = 'Daftar Akun Baru';
+        document.getElementById('auth-modal-subtitle').textContent = 'Buat akun Peserta atau Panitia JSIT Wilayah Lampung';
+      } else {
+        regForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        document.getElementById('auth-modal-title').textContent = 'Login Portal JSIT Lampung';
+        document.getElementById('auth-modal-subtitle').textContent = 'Masuk dengan Username/Email dan Password Anda';
+      }
+    }
+
+    function togglePanitiaCodeInput() {
+      const role = document.getElementById('reg-role').value;
+      const wrap = document.getElementById('reg-panitia-code-wrap');
+      const inp = document.getElementById('reg-panitia-code');
+      if (role === 'panitia') {
+        wrap.classList.remove('hidden');
+        inp.required = true;
+      } else {
+        wrap.classList.add('hidden');
+        inp.required = false;
+      }
+    }
+
+    function showAuthFeedback(msg, isError = true) {
+      const box = document.getElementById('auth-feedback-box');
+      box.textContent = msg;
+      box.className = isError
+        ? 'p-3 rounded-2xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700'
+        : 'p-3 rounded-2xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800';
+      box.classList.remove('hidden');
+    }
+
+    async function handlePortalLogin(e) {
+      e.preventDefault();
+      const loginId = document.getElementById('auth-login-user').value.trim();
+      const pass = document.getElementById('auth-login-pass').value;
+      const btn = document.getElementById('btn-portal-login');
+      btn.disabled = true;
+      btn.textContent = 'Memverifikasi...';
+
+      try {
+        // 1. Cek Admin Utama bawaan
+        if ((loginId.toLowerCase() === 'admin' || loginId.toLowerCase() === 'admin@jsitlampung.or.id') && pass === 'jsitlampung2026') {
+          const adminUser = {
+            id: 'admin-master',
+            username: 'admin',
+            fullName: 'Administrator Utama JSIT Lampung',
+            school: 'JSIT Wilayah Lampung',
+            region: 'Kota Bandar Lampung',
+            role: 'admin'
+          };
+          setSessionUser(adminUser);
+          closeAuthModal();
+          window.location.href = 'admin.html';
+          return;
+        }
+
+        // 2. Cek Firebase Auth jika format email
+        if (typeof firebase !== 'undefined' && firebase.auth && loginId.includes('@')) {
+          try {
+            const cred = await firebase.auth().signInWithEmailAndPassword(loginId, pass);
+            const staffUser = {
+              id: cred.user.uid,
+              username: loginId,
+              fullName: cred.user.displayName || loginId.split('@')[0],
+              school: 'JSIT Wilayah Lampung',
+              role: 'admin'
+            };
+            setSessionUser(staffUser);
+            closeAuthModal();
+            window.location.href = 'admin.html';
+            return;
+          } catch (fbErr) {
+            // Lanjut cek database users Firestore / lokal
+          }
+        }
+
+        // 3. Cek database users Firestore & LocalStorage
+        let matchedUser = null;
+        if (isFirebaseReady && db) {
+          try {
+            const snap = await db.collection('users').get();
+            snap.forEach(doc => {
+              const u = { id: doc.id, ...doc.data() };
+              const idMatch = (u.username || '').toLowerCase() === loginId.toLowerCase() ||
+                (u.phone || '').replace(/\D/g, '') === loginId.replace(/\D/g, '') && loginId.replace(/\D/g, '').length >= 6;
+              if (idMatch && u.password === pass) {
+                matchedUser = u;
+              }
+            });
+          } catch (err) {}
+        }
+
+        if (!matchedUser) {
+          const localUsers = getStoredUsers();
+          matchedUser = localUsers.find(u => {
+            const idMatch = (u.username || '').toLowerCase() === loginId.toLowerCase() ||
+              ((u.phone || '').replace(/\D/g, '') === loginId.replace(/\D/g, '') && loginId.replace(/\D/g, '').length >= 6);
+            return idMatch && u.password === pass;
+          });
+        }
+
+        if (!matchedUser) {
+          throw new Error('Username/Email atau Password tidak ditemukan. Silakan periksa kembali atau klik "Daftar sekarang!".');
+        }
+
+        const { password, ...safeUser } = matchedUser;
+        setSessionUser(safeUser);
+        closeAuthModal();
+
+        if (safeUser.role === 'admin' || safeUser.role === 'panitia') {
+          window.location.href = 'admin.html';
+        }
+      } catch (err) {
+        showAuthFeedback(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Masuk Sekarang';
+      }
+    }
+
+    async function handlePortalRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const school = document.getElementById('reg-school').value.trim();
+      const region = document.getElementById('reg-region').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      const inviteCode = document.getElementById('reg-panitia-code').value.trim();
+
+      if (role === 'panitia' && inviteCode.toUpperCase() !== PANITIA_INVITE_CODE) {
+        showAuthFeedback('Kode Akses Panitia JSIT tidak sesuai. Pilih peran "Peserta Umum / Guru SIT" jika Anda peserta kegiatan.', true);
+        return;
+      }
+
+      const btn = document.getElementById('btn-portal-register');
+      btn.disabled = true;
+      btn.textContent = 'Mendaftarkan Akun...';
+
+      try {
+        const localUsers = getStoredUsers();
+        if (localUsers.some(u => (u.username || '').toLowerCase() === username.toLowerCase())) {
+          throw new Error('Username/Email tersebut sudah terdaftar. Silakan gunakan yang lain atau langsung Login.');
+        }
+
+        const userId = 'usr-' + Date.now();
+        const newUser = {
+          id: userId,
+          fullName,
+          username,
+          phone,
+          school,
+          region,
+          password,
+          role: role === 'panitia' ? 'panitia' : 'peserta',
+          createdAt: Date.now()
+        };
+
+        localUsers.push(newUser);
+        saveStoredUsers(localUsers);
+
+        if (isFirebaseReady && db) {
+          try {
+            await db.collection('users').doc(userId).set(newUser);
+          } catch (err) {}
+        }
+
+        const { password: _, ...safeUser } = newUser;
+        setSessionUser(safeUser);
+        closeAuthModal();
+
+        if (safeUser.role === 'panitia') {
+          window.location.href = 'admin.html';
+        }
+      } catch (err) {
+        showAuthFeedback(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Buat Akun & Masuk';
+      }
+    }
+
+    function openUserProfileModal() {
+      if (!currentUser) return;
+      const box = document.getElementById('user-profile-details');
+      const isStaff = currentUser.role === 'admin' || currentUser.role === 'panitia';
+      box.innerHTML = `
+        <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-1.5">
+          <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap</span><strong class="text-navy-900">${escapeHtml(currentUser.fullName)}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Username / Email</span><strong class="text-navy-900">${escapeHtml(currentUser.username)}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Sekolah / Instansi</span><strong class="text-navy-900">${escapeHtml(currentUser.school || '-')}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Wilayah</span><strong class="text-navy-900">${escapeHtml(currentUser.region || '-')}</strong></div>
+          <div class="flex justify-between"><span class="text-slate-500">Hak Akses</span><strong class="uppercase text-blue-700">${isStaff ? 'Admin / Panitia' : 'Peserta Kegiatan'}</strong></div>
+        </div>
+      `;
+      const goAdminBtn = document.getElementById('profile-go-admin-btn');
+      if (goAdminBtn) goAdminBtn.classList.toggle('hidden', !isStaff);
+      document.getElementById('user-profile-modal').classList.remove('hidden');
+    }
+
+    function closeUserProfileModal() {
+      document.getElementById('user-profile-modal').classList.add('hidden');
+    }
+
+    function handlePortalLogout() {
+      setSessionUser(null);
+      closeUserProfileModal();
+    }
+
+    /* ===================================================================== */
+    /* INISIALISASI FIREBASE & SINKRONISASI DATA                             */
+    /* ===================================================================== */
     async function initFirebaseAndSync() {
       loadLocalFallback();
+      loadSessionUser();
       applyBrandHeader();
       renderEvents();
 
@@ -1363,10 +1830,6 @@
         if (footerBox) footerBox.classList.add('lg:hidden');
         if (backBtn) backBtn.classList.add('hidden');
         document.querySelectorAll('.room-sidebar-label').forEach(el => el.classList.add('lg:hidden'));
-        document.querySelectorAll('.room-nav-btn').forEach(btn => {
-          btn.classList.remove('md:justify-start');
-          btn.classList.add('md:justify-center');
-        });
       } else {
         aside.classList.remove('lg:w-20');
         aside.classList.add('lg:w-72');
@@ -1374,10 +1837,6 @@
         if (footerBox) footerBox.classList.remove('lg:hidden');
         if (backBtn) backBtn.classList.remove('hidden');
         document.querySelectorAll('.room-sidebar-label').forEach(el => el.classList.remove('lg:hidden'));
-        document.querySelectorAll('.room-nav-btn').forEach(btn => {
-          btn.classList.remove('md:justify-center');
-          btn.classList.add('md:justify-start');
-        });
       }
     }
 
@@ -1424,6 +1883,7 @@
       document.getElementById('cert-not-found').classList.add('hidden');
       document.getElementById('cert-multiple-matches').classList.add('hidden');
 
+      autofillFormsFromCurrentUser();
       subscribeEventAttendees(eventId);
       refreshActiveRoomUI();
       switchRoomTab(initialTab);
@@ -1778,6 +2238,17 @@
 
       if (tabName === 'sertifikat') {
         setTimeout(fitCertificateToStage, 30);
+        // Jika user sedang login, otomatis cari dan tampilkan sertifikatnya!
+        const ev = eventsData.find(item => item.id === activeEventId);
+        if (ev && currentUser && isCertificateReleased(ev)) {
+          const matchedAtt = (ev.attendees || []).find(a =>
+            (a.name || '').toLowerCase() === (currentUser.fullName || '').toLowerCase() ||
+            ((a.phone || '').replace(/\D/g, '') === (currentUser.phone || '').replace(/\D/g, '') && (currentUser.phone || '').replace(/\D/g, '').length >= 6)
+          );
+          if (matchedAtt) {
+            renderCertificateForAttendee(ev, matchedAtt);
+          }
+        }
       }
       if (window.lucide) lucide.createIcons();
     }
@@ -1838,6 +2309,7 @@
         role,
         phone,
         email,
+        userId: currentUser ? currentUser.id : '',
         timestamp,
         createdAt: Date.now()
       };
@@ -1857,6 +2329,7 @@
         if (lmsSearchEl) lmsSearchEl.value = name;
 
         document.getElementById('attendance-form').reset();
+        autofillFormsFromCurrentUser();
         const banner = document.getElementById('att-success-banner');
         const msg = document.getElementById('att-success-msg');
         msg.textContent = isCertificateReleased(ev)
@@ -2000,7 +2473,7 @@
 
       const activeTemplateUrl = (certCfg.templateBg && certCfg.templateBg.trim())
         ? certCfg.templateBg.trim()
-        : (settingsData.defaultCertTemplate || '');
+        : (settingsData.defaultCertTemplate || DEFAULT_SETTINGS.defaultCertTemplate);
 
       if (activeTemplateUrl) {
         applyImageWithDriveFallback(bgImg, activeTemplateUrl);
@@ -2161,6 +2634,10 @@
         const bgLoaded = await loadCanvasImage(activeTemplateUrl);
         if (bgLoaded) {
           ctx.drawImage(bgLoaded, 0, 0, 1000, 707);
+        } else {
+          // Jika background Google Drive memblokir CORS canvas export, arahkan ke Print/Save PDF A4 agar template tetap tercetak 100% utuh!
+          printCertificateA4();
+          return;
         }
       }
 
@@ -2283,11 +2760,15 @@
       ctx.font = `800 ${14 * sScale}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText(signerName, sCenterX, sBottomY);
 
-      const safeFile = att.name.replace(/[^a-zA-Z0-9]/g, '_');
-      const link = document.createElement('a');
-      link.download = `E-Sertifikat_JSIT_Lampung_${safeFile}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      try {
+        const safeFile = att.name.replace(/[^a-zA-Z0-9]/g, '_');
+        const link = document.createElement('a');
+        link.download = `E-Sertifikat_JSIT_Lampung_${safeFile}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (secErr) {
+        printCertificateA4();
+      }
     }
 
     function printCertificateA4() {
@@ -2443,6 +2924,10 @@
 
     function openGlobalCertModal() {
       document.getElementById('global-cert-modal').classList.remove('hidden');
+      const inp = document.getElementById('global-cert-input');
+      if (inp && currentUser && currentUser.fullName && !inp.value) {
+        inp.value = currentUser.fullName;
+      }
       document.getElementById('global-cert-results').innerHTML = '';
       if (window.lucide) lucide.createIcons();
     }

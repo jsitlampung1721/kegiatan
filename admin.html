@@ -810,9 +810,20 @@
         .replace(/'/g, '&#39;');
     }
 
+    function normalizeGoogleDriveImageUrl(url) {
+      if (!url) return '';
+      const trimmed = String(url).trim();
+      if (trimmed.startsWith('data:image/')) return trimmed;
+      const driveMatch = trimmed.match(/(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=view&)?id=|thumbnail\?id=)|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+      if (driveMatch && driveMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+      }
+      return trimmed;
+    }
+
     function sanitizeUrl(url) {
       if (!url) return '#';
-      const trimmed = String(url).trim();
+      const trimmed = normalizeGoogleDriveImageUrl(url);
       if (/^(https?:\/\/|data:image\/|mailto:|tel:|#)/i.test(trimmed)) return trimmed;
       return 'https://' + trimmed;
     }
@@ -838,7 +849,7 @@
       const cert = ev.certificate || {};
       return {
         ...ev,
-        flyerImg: ev.flyerImg || '',
+        flyerImg: normalizeGoogleDriveImageUrl(ev.flyerImg || ''),
         speakers: Array.isArray(ev.speakers) ? ev.speakers : [],
         materials: Array.isArray(ev.materials) ? ev.materials : [],
         recordings: Array.isArray(ev.recordings) ? ev.recordings : [],
@@ -851,7 +862,7 @@
           issuedDateText: cert.issuedDateText || '2026',
           signerName: cert.signerName || settingsData.signerName || DEFAULT_SETTINGS.signerName,
           signerTitle: cert.signerTitle || settingsData.signerTitle || DEFAULT_SETTINGS.signerTitle,
-          templateBg: cert.templateBg || '',
+          templateBg: normalizeGoogleDriveImageUrl(cert.templateBg || ''),
           layout: { ...DEFAULT_LAYOUT, ...(cert.layout || {}) }
         }
       };
@@ -1112,7 +1123,7 @@
     }
 
     function updateFlyerPreviewBox() {
-      const urlVal = (document.getElementById('ev-flyer-url').value || '').trim();
+      const urlVal = normalizeGoogleDriveImageUrl((document.getElementById('ev-flyer-url').value || '').trim());
       const wrap = document.getElementById('ev-flyer-preview-wrap');
       const img = document.getElementById('ev-flyer-preview-img');
       if (!wrap || !img) return;
@@ -1133,15 +1144,16 @@
     }
 
     async function persistEventDoc(evObj) {
-      const idx = eventsData.findIndex(e => e.id === evObj.id);
-      if (idx >= 0) eventsData[idx] = evObj;
-      else eventsData.unshift(evObj);
+      const normalized = normalizeEventItem(evObj);
+      const idx = eventsData.findIndex(e => e.id === normalized.id);
+      if (idx >= 0) eventsData[idx] = normalized;
+      else eventsData.unshift(normalized);
       saveLocalCache();
       refreshAllAdminViews();
 
       if (isFirebaseReady && db) {
-        const { attendees, ...docPayload } = evObj;
-        await db.collection('events').doc(evObj.id).set(docPayload, { merge: true });
+        const { attendees, ...docPayload } = normalized;
+        await db.collection('events').doc(normalized.id).set(docPayload);
       }
     }
 
@@ -1181,7 +1193,7 @@
         certReleaseMode: document.getElementById('ev-cert-mode').value,
         certReleaseDatetime: document.getElementById('ev-cert-datetime').value || `${dateEnd}T16:00`,
         pin: document.getElementById('ev-pin').value.trim(),
-        flyerImg: document.getElementById('ev-flyer-url').value.trim(),
+        flyerImg: normalizeGoogleDriveImageUrl(document.getElementById('ev-flyer-url').value.trim()),
         description: document.getElementById('ev-description').value.trim(),
         speakers,
         materials: existingEv ? existingEv.materials : [],
@@ -1704,7 +1716,8 @@
       document.getElementById('val-signer-right').textContent = l.signerRight;
       document.getElementById('val-signer-bottom').textContent = l.signerBottom;
 
-      const bgUrl = document.getElementById('cfg-cert-bg-url').value.trim() || settingsData.defaultCertTemplate || '';
+      const rawBgInput = normalizeGoogleDriveImageUrl(document.getElementById('cfg-cert-bg-url').value.trim());
+      const bgUrl = rawBgInput || normalizeGoogleDriveImageUrl(settingsData.defaultCertTemplate || '');
       const bgImg = document.getElementById('pv-cert-bg-img');
       if (bgUrl) {
         bgImg.src = sanitizeUrl(bgUrl);
@@ -1770,7 +1783,7 @@
           c.height = 990;
           const ctx = c.getContext('2d');
           ctx.drawImage(img, 0, 0, 1400, 990);
-          document.getElementById('cfg-cert-bg-url').value = c.toDataURL('image/jpeg', 0.85);
+          document.getElementById('cfg-cert-bg-url').value = c.toDataURL('image/jpeg', 0.82);
           updateCertPreviewLive();
         };
         img.src = evt.target.result;
@@ -1809,6 +1822,9 @@
       const ev = eventsData.find(item => item.id === sel.value);
       if (!ev) return;
 
+      const normalizedBg = normalizeGoogleDriveImageUrl(document.getElementById('cfg-cert-bg-url').value.trim());
+      document.getElementById('cfg-cert-bg-url').value = normalizedBg;
+
       ev.certificate = {
         prefix: document.getElementById('cfg-cert-prefix').value.trim(),
         jp: document.getElementById('cfg-cert-jp').value.trim(),
@@ -1816,12 +1832,16 @@
         issuedDateText: document.getElementById('cfg-cert-date-text').value.trim(),
         signerName: document.getElementById('cfg-cert-signer-name').value.trim(),
         signerTitle: document.getElementById('cfg-cert-signer-title').value.trim(),
-        templateBg: document.getElementById('cfg-cert-bg-url').value.trim(),
+        templateBg: normalizedBg,
         layout: readLayoutInputs()
       };
 
-      await persistEventDoc(ev);
-      alert('Desain dan tata letak E-Sertifikat berhasil disimpan ke Cloud!');
+      try {
+        await persistEventDoc(ev);
+        alert('Desain dan tata letak E-Sertifikat berhasil disimpan ke Cloud!');
+      } catch (err) {
+        alert('Gagal menyinkronkan template sertifikat ke Cloud (pastikan ukuran gambar < 800KB atau gunakan link Google Drive): ' + err.message);
+      }
     }
 
     function fillSettingsForm() {
@@ -1834,12 +1854,15 @@
 
     async function saveGlobalSettings(e) {
       e.preventDefault();
+      const normalizedDefaultTpl = normalizeGoogleDriveImageUrl(document.getElementById('set-default-template').value.trim());
+      document.getElementById('set-default-template').value = normalizedDefaultTpl;
+
       settingsData = {
         orgName: document.getElementById('set-org-name').value.trim(),
         orgSub: document.getElementById('set-org-sub').value.trim(),
         signerName: document.getElementById('set-signer-name').value.trim(),
         signerTitle: document.getElementById('set-signer-title').value.trim(),
-        defaultCertTemplate: document.getElementById('set-default-template').value.trim()
+        defaultCertTemplate: normalizedDefaultTpl
       };
       saveLocalCache();
       if (isFirebaseReady && db) {
